@@ -1,7 +1,6 @@
 package ru.nyxsed.postscan.data.repository
 
-import com.vk.api.sdk.VKKeyValueStorage
-import com.vk.api.sdk.auth.VKAccessToken
+import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,16 +19,12 @@ import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POS
 class VkRepository(
     private val apiService: ApiService,
     private val mapper: VkMapper,
-    private val storage: VKKeyValueStorage,
     private val dataStoreInteraction: DataStoreInteraction,
 ) {
     val scope = CoroutineScope(Dispatchers.Default)
 
-    private val token
-        get() = VKAccessToken.restore(storage)
-
     private fun getAccessToken(): String {
-        return token?.accessToken ?: throw IllegalStateException("Token is null")
+        return VKID.Companion.instance.accessToken?.token ?: throw IllegalStateException("Token is null")
     }
 
     // groups TODO обертку для состояния

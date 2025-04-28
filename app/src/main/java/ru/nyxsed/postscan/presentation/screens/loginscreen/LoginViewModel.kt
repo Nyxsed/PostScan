@@ -1,30 +1,20 @@
 package ru.nyxsed.postscan.presentation.screens.loginscreen
 
-import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.UiEvent
 
-class LoginViewModel(
-    private val connectionChecker: ConnectionChecker,
-    private val resources: Resources,
-) : ViewModel() {
+class LoginViewModel() : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    fun launchActivity() {
+    fun showLoginError(failDescription: String) {
         viewModelScope.launch {
-            if (!connectionChecker.isInternetAvailable()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(resources.getString(R.string.no_internet_connection)))
-                return@launch
-            }
-            _uiEventFlow.emit(UiEvent.LaunchActivity())
+            _uiEventFlow.emit(UiEvent.ShowToast(failDescription))
         }
     }
 }

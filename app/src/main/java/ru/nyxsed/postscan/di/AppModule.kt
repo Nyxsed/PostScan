@@ -1,8 +1,6 @@
 package ru.nyxsed.postscan.di
 
 
-import com.vk.api.sdk.VKKeyValueStorage
-import com.vk.api.sdk.VKPreferencesKeyValueStorage
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.nyxsed.postscan.data.models.entity.PostEntity
@@ -23,7 +21,6 @@ val appModule = module {
         VkRepository(
             apiService = get(),
             mapper = get(),
-            storage = get(),
             dataStoreInteraction = get()
         )
     }
@@ -31,12 +28,6 @@ val appModule = module {
     single {
         DbRepository(
             dbDao = get()
-        )
-    }
-
-    single<VKKeyValueStorage> {
-        VKPreferencesKeyValueStorage(
-            context = get()
         )
     }
 
@@ -103,9 +94,6 @@ val appModule = module {
     }
 
     viewModel<LoginViewModel> {
-        LoginViewModel(
-            connectionChecker = get(),
-            resources = get(),
-        )
+        LoginViewModel()
     }
 }
