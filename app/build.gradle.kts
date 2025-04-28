@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("vkid.manifest.placeholders")
 }
 
 android {
@@ -30,6 +31,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -40,7 +42,7 @@ android {
 }
 
 dependencies {
-
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -82,8 +84,10 @@ dependencies {
     implementation("io.github.composegears:tiamat-koin:1.2.0")
 
     // vk api
-    implementation("com.vk:android-sdk-core:4.1.0")
-    implementation("com.vk:android-sdk-api:4.1.0")
+    implementation("com.vk.id:vkid:2.3.2")
+    implementation("com.vk.id:onetap-compose:2.3.2")
+    implementation("com.vk.id:vk-sdk-support:2.3.2")
+
 
     // pager
     implementation("androidx.compose.foundation:foundation:1.7.5")

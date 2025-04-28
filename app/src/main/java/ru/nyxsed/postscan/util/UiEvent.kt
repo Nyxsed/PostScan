@@ -6,7 +6,6 @@ import ru.nyxsed.postscan.data.models.entity.PostEntity
 
 sealed class UiEvent {
     class ShowToast(val message: String) : UiEvent()
-    class LaunchActivity() : UiEvent()
     class OpenUrl(val url: String) : UiEvent()
     class Navigate(val destination: NavDestination<Unit>) : UiEvent()
     class NavigateBack() : UiEvent()

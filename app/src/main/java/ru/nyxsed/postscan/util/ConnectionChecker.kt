@@ -3,12 +3,10 @@ package ru.nyxsed.postscan.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.vk.api.sdk.VKKeyValueStorage
-import com.vk.api.sdk.auth.VKAccessToken
+import com.vk.id.VKID
 
 class ConnectionChecker(
     private val context: Context,
-    private val storage: VKKeyValueStorage,
 ) {
     fun isInternetAvailable(): Boolean {
         val connectivityManager =
@@ -24,7 +22,7 @@ class ConnectionChecker(
     }
 
     fun isTokenValid(): Boolean {
-        val currentToken = VKAccessToken.restore(storage)
-        return currentToken != null && currentToken.isValid
+        val currentToken = VKID.Companion.instance.accessToken
+        return currentToken?.token != null && currentToken.expireTime > System.currentTimeMillis()
     }
 }

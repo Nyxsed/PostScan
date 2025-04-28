@@ -36,7 +36,6 @@ val utilModule = module {
     single<ConnectionChecker> {
         ConnectionChecker(
             context = get(),
-            storage = get(),
         )
     }
 

@@ -5,7 +5,9 @@ import android.content.res.Resources
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk.api.sdk.VK
+import com.vk.id.VKID
+import com.vk.id.logout.VKIDLogoutCallback
+import com.vk.id.logout.VKIDLogoutFail
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -51,7 +53,15 @@ class PreferencesScreenViewModel(
 
     fun logOut() {
         viewModelScope.launch {
-            VK.logout()
+            VKID.instance.logout(object : VKIDLogoutCallback {
+                override fun onSuccess() {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onFail(fail: VKIDLogoutFail) {
+                    TODO("Not yet implemented")
+                }
+            })
             _uiEventFlow.emit(UiEvent.ShowToast(resources.getString(R.string.log_out_message)))
         }
     }
