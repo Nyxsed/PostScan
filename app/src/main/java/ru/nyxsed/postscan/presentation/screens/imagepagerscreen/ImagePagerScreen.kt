@@ -357,7 +357,10 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                             onClick = {
                                 scope.launch {
                                     val connect = imagePagerViewModel.checkConnect()
-                                    if (!connect) return@launch
+                                    if (!connect) {
+                                        imagePagerViewModel.navigateToLogin()
+                                        return@launch
+                                    }
 
                                     imagePagerViewModel.changeLikeStatus(content[pagerState.currentPage])
 
