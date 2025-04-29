@@ -71,7 +71,7 @@ val LoginScreen by navDestination<Unit> {
                     scopes = setOf("wall", "offline", "groups")
                 },
                 scenario = OneTapTitleScenario.SignIn,
-                fastAuthEnabled = false,
+                fastAuthEnabled = true,
             )
 
         }
