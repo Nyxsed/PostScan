@@ -8,6 +8,10 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk.id.AccessToken
+import com.vk.id.VKID
+import com.vk.id.refresh.VKIDRefreshTokenCallback
+import com.vk.id.refresh.VKIDRefreshTokenFail
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -183,5 +187,27 @@ class PostsScreenViewModel(
 
     fun selectGroup(groupId: Long) {
         _groupSelected.value = groupId
+    }
+
+    fun refreshToken() {
+        viewModelScope.launch {
+            if (!connectionChecker.isTokenValid()) {
+                VKID.instance.refreshToken(
+                    callback = object : VKIDRefreshTokenCallback {
+                        override fun onSuccess(token: AccessToken) {
+                            viewModelScope.launch {
+                                _uiEventFlow.emit(UiEvent.ShowToast(resources.getString(R.string.refresh_token_success)))
+                            }
+
+                        }
+                        override fun onFail(fail: VKIDRefreshTokenFail) {
+                            viewModelScope.launch {
+                                _uiEventFlow.emit(UiEvent.ShowToast(resources.getString(R.string.refresh_token_fail)))
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 }

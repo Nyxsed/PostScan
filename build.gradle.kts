@@ -10,8 +10,8 @@ plugins {
 
 vkidManifestPlaceholders {
     vkidRedirectHost = "vk.com"
-    vkidRedirectScheme = "vk53495772"
-    vkidClientId = "53495772"
+    vkidRedirectScheme = "vk53523600"
+    vkidClientId = "53523600"
     vkidClientSecret = project.findProperty("VKID_CLIENT_SECRET").toString()
 
 }

@@ -49,4 +49,6 @@
     <string name="export_db">Экспортировать БД</string>
     <string name="import_db_message">БД успешно импортирована</string>
     <string name="export_db_message">БД успешно экспортирована</string>
+    <string name="refresh_token_success">Токен обновлен</string>
+    <string name="refresh_token_fail">Ошибка обновления токена</string>
 </resources>
