@@ -49,4 +49,6 @@
     <string name="export_db">Export DB</string>
     <string name="import_db_message">DB successfully imported</string>
     <string name="export_db_message">DB successfully exported</string>
+    <string name="refresh_token_success">Token refreshed</string>
+    <string name="refresh_token_fail">Token refresh fail</string>
 </resources>
