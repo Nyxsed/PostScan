@@ -24,9 +24,15 @@
 - Отправлять **pull request** с улучшениями.
 - Помогать с **документацией**.
 
+## ⚙️ Сборка
+Если вы хотите собрать свой .apk файл:
+- Создайте приложение в сервисе VK ID - укажите название пакета ru.nyxsed.postscan и сгенерируйте хэш
+- в файле `PostScan\build.gradle.kts` укажите параметры приложения `vkidRedirectScheme` и `vkidClientId`
+- Добавьте файл `gradle.properties` и укажите там секретный ключ приложения VK ID `VKID_CLIENT_SECRET=`
+
 ## 📄 Лицензия
 Проект распространяется под лицензией MIT. Подробнее см. в [LICENSE](LICENSE).
 
 ## 💬 Обратная связь
 Если у вас есть вопросы или предложения, создавайте issue или свяжитесь со мной:
-- GitHub: [simakover](https://github.com/simakover)
+- GitHub: [Nyxsed](https://github.com/Nyxsed)
