@@ -4,15 +4,22 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.composegears.tiamat.Navigation
 import com.composegears.tiamat.rememberNavController
-import kotlinx.coroutines.runBlocking
+import com.vk.id.AccessToken
+import com.vk.id.VKID
+import com.vk.id.refresh.VKIDRefreshTokenCallback
+import com.vk.id.refresh.VKIDRefreshTokenFail
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import ru.nyxsed.postscan.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.presentation.screens.commentsscreen.CommentsScreen
@@ -32,10 +39,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val datastore: DataStoreInteraction by inject()
-        runBlocking {
-            val isNotificationPermissionRequested = datastore.getSettingBooleanFromDataStore(NOTIFICATION_PERMISSION_REQUESTED)
+        lifecycleScope.launch {
+            val isNotificationPermissionRequested =
+                datastore.getSettingBooleanFromDataStore(NOTIFICATION_PERMISSION_REQUESTED)
 
-            if (!isNotificationPermissionRequested && !NotificationManagerCompat.from(this@MainActivity).areNotificationsEnabled()) {
+            if (!isNotificationPermissionRequested && !NotificationManagerCompat.from(this@MainActivity)
+                    .areNotificationsEnabled()
+            ) {
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle(getString(R.string.notification_permission))
                     .setMessage(getString(R.string.notification_permission_desc))
@@ -44,12 +54,12 @@ class MainActivity : ComponentActivity() {
                             .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
                         startActivity(intent)
 
-                        runBlocking {
+                        lifecycleScope.launch(Dispatchers.IO) {
                             datastore.saveSettingBooleanToDataStore(NOTIFICATION_PERMISSION_REQUESTED, true)
                         }
                     }
                     .setNegativeButton(getString(R.string.notification_permission_desc_cancel)) { _, _ ->
-                        runBlocking {
+                        lifecycleScope.launch(Dispatchers.IO) {
                             datastore.saveSettingBooleanToDataStore(NOTIFICATION_PERMISSION_REQUESTED, true)
                         }
                     }
@@ -75,6 +85,28 @@ class MainActivity : ComponentActivity() {
                 Navigation(
                     navController = navController,
                     modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val currentToken = VKID.Companion.instance.accessToken
+            if (currentToken?.token == null) return@launch
+
+            if (currentToken.expireTime <= System.currentTimeMillis()) {
+                VKID.instance.refreshToken(
+                    callback = object : VKIDRefreshTokenCallback {
+                        override fun onSuccess(token: AccessToken) {
+                            // do nothing
+                        }
+
+                        override fun onFail(fail: VKIDRefreshTokenFail) {
+                            Toast.makeText(this@MainActivity, R.string.refresh_token_fail, Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 )
             }
         }

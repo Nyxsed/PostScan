@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PostScan</string>
-    <string name="LogIn">Войти</string>
     <string name="add_group">Добавить группу</string>
     <string name="delete_group">Удалить группу</string>
     <string name="update_group">Обновить группу</string>
@@ -11,11 +10,8 @@
     <string name="last_fetch_date">Дата последней загрузки постов</string>
     <string name="undo">Отмена</string>
     <string name="post_deleted">Пост удален</string>
-    <string name="group_deleted">Группа удалена</string>
     <string name="no_internet_connection">Нет соединения</string>
     <string name="token_is_invalid">Токен не действителен</string>
-    <string name="group_not_found">Группа не найдена</string>
-    <string name="app_is_not_authorized">Приложение не авторизовано</string>
     <string name="loading_posts">Загрузка постов</string>
     <string name="loading_progress">Прогресс загрузки</string>
     <string name="loading_completed">Загрузка завершена</string>
@@ -49,6 +45,6 @@
     <string name="export_db">Экспортировать БД</string>
     <string name="import_db_message">БД успешно импортирована</string>
     <string name="export_db_message">БД успешно экспортирована</string>
-    <string name="refresh_token_success">Токен обновлен</string>
     <string name="refresh_token_fail">Ошибка обновления токена</string>
+    <string name="groups_not_found">Группы не найдены. Пожалуйста добавьте группы перед работой</string>
 </resources>

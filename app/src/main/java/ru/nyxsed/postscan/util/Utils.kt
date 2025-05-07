@@ -21,7 +21,6 @@ object Constants {
     const val TRACE_SEARCH_URL = "https://trace.moe/?url="
 
     const val DATE_MASK = "##.##.####"
-    const val DATE_LENGTH = 8
 
     const val PROGRESS_CHANNEL_ID = "progress_channel"
     const val PROGRESS_CHANNEL_NAME = "Progress Notifications"
