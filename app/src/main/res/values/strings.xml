@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">PostScan</string>
-    <integer name="com_vk_sdk_AppId">7867126</integer>
-    <string name="LogIn">Log In</string>
     <string name="add_group">Add Group</string>
     <string name="delete_group">Delete Group</string>
     <string name="update_group">Update Group</string>
@@ -11,11 +9,8 @@
     <string name="last_fetch_date">Last Fetch Date</string>
     <string name="undo">UNDO</string>
     <string name="post_deleted">Post deleted</string>
-    <string name="group_deleted">Group deleted</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="token_is_invalid">Token is invalid</string>
-    <string name="group_not_found">Group Not Found</string>
-    <string name="app_is_not_authorized">App is Not Authorized</string>
     <string name="loading_posts">Loading posts</string>
     <string name="loading_progress">Loading Progress</string>
     <string name="loading_completed">Loading Completed</string>
@@ -49,6 +44,6 @@
     <string name="export_db">Export DB</string>
     <string name="import_db_message">DB successfully imported</string>
     <string name="export_db_message">DB successfully exported</string>
-    <string name="refresh_token_success">Token refreshed</string>
     <string name="refresh_token_fail">Token refresh fail</string>
+    <string name="groups_not_found">Groups not found. Please add groups before loading posts</string>
 </resources>

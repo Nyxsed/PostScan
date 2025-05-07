@@ -17,7 +17,8 @@ val utilModule = module {
             channelName,
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            enableVibration(true)
+            enableVibration(false)
+            setSound(null, null)
         }
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)

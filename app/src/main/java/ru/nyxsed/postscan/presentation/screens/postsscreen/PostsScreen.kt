@@ -75,8 +75,6 @@ val PostsScreen by navDestination<Unit> {
         settingUseMihon = postsScreenViewModel.getSettingBoolean(USE_MIHON)
         settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(DELETE_AFTER_LIKE)
 
-        postsScreenViewModel.refreshToken()
-
         postsScreenViewModel.uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast ->
