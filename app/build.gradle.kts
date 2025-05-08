@@ -88,7 +88,6 @@ dependencies {
     implementation("com.vk.id:onetap-compose:2.3.2")
     implementation("com.vk.id:vk-sdk-support:2.3.2")
 
-
     // pager
     implementation("androidx.compose.foundation:foundation:1.7.5")
 
