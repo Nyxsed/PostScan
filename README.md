@@ -2,6 +2,12 @@
 
 **PostScan** — это приложение Android для выгрузки постов VK для последующей обработки, сохранения и поиска связанных объектов.
 
+<p align="center">
+  <img src="screenshots/Screenshot1.png" width="30%"/>
+  <img src="screenshots/Screenshot2.png" width="30%"/>
+  <img src="screenshots/Screenshot3.png" width="30%"/>
+</p>
+
 ## 🚀 Возможности
 - 🔍 Поиск постов среди групп VK: подписок или любых других найденных групп 
 - ⚙️ Выгрузка данных за период
