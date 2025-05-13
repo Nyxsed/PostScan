@@ -19,6 +19,8 @@ import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.pickgroupscreen.PickGroupScreen
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.toDateLong
+import ru.nyxsed.postscan.util.DataStoreInteraction
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
 import ru.nyxsed.postscan.util.UiEvent
 
 class GroupsScreenViewModel(
@@ -26,6 +28,7 @@ class GroupsScreenViewModel(
     private val connectionChecker: ConnectionChecker,
     private val resources: Resources,
     private val vkRepository: VkRepository,
+    private val dataStoreInteraction: DataStoreInteraction,
 ) : ViewModel() {
     val dbGroups = dbRepository.getAllGroups()
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
@@ -42,6 +45,9 @@ class GroupsScreenViewModel(
 
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog.asStateFlow()
+
+    private val _showTutorial = MutableStateFlow(false)
+    val showTutorial: StateFlow<Boolean> = _showTutorial.asStateFlow()
 
     private var groupToDelete: GroupEntity? = null
 
@@ -128,5 +134,22 @@ class GroupsScreenViewModel(
             }
         }
         toggleDownloadDialog()
+    }
+
+    fun showTutorial() {
+        viewModelScope.launch {
+            val setting = getSettingBoolean(SHOWED_TUTORIAL_GROUPS)
+            _showTutorial.value = setting
+        }
+    }
+
+    suspend fun getSettingBoolean(key: String): Boolean {
+        return dataStoreInteraction.getSettingBooleanFromDataStore(key)
+    }
+
+    fun setSettingBoolean(key: String, value: Boolean) {
+        viewModelScope.launch {
+            dataStoreInteraction.saveSettingBooleanToDataStore(key, value)
+        }
     }
 }

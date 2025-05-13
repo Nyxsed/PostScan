@@ -47,7 +47,8 @@ val appModule = module {
             dbRepository = get(),
             connectionChecker = get(),
             resources = get(),
-            vkRepository = get()
+            vkRepository = get(),
+            dataStoreInteraction = get()
         )
     }
 
@@ -74,6 +75,7 @@ val appModule = module {
             vkRepository = get(),
             connectionChecker = get(),
             resources = get(),
+            dataStoreInteraction = get(),
         )
     }
 

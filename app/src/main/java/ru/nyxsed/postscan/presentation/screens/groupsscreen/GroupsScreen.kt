@@ -3,6 +3,7 @@ package ru.nyxsed.postscan.presentation.screens.groupsscreen
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -23,11 +25,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.canopas.lib.showcase.IntroShowcase
+import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
@@ -36,6 +42,7 @@ import ru.nyxsed.postscan.data.models.entity.GroupEntity
 import ru.nyxsed.postscan.presentation.elements.AddModalDialog
 import ru.nyxsed.postscan.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.presentation.elements.DownloadModalDialog
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
 import ru.nyxsed.postscan.util.NotificationHelper.completeNotification
 import ru.nyxsed.postscan.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.util.NotificationHelper.initNotification
@@ -57,7 +64,11 @@ val GroupsScreen by navDestination<Unit> {
     val showDeleteAllDialog = groupScreenViewModel.showDeleteAllDialog.collectAsState()
     val showDownloadDialog = groupScreenViewModel.showDownloadDialog.collectAsState()
 
+    var showedTutorial = groupScreenViewModel.showTutorial.collectAsState()
+
     LaunchedEffect(Unit) {
+        groupScreenViewModel.showTutorial()
+
         groupScreenViewModel.uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast ->
@@ -97,6 +108,7 @@ val GroupsScreen by navDestination<Unit> {
         showDeleteDialog = showDeleteDialog,
         showDeleteAllDialog = showDeleteAllDialog,
         showDownloadDialog = showDownloadDialog,
+        showedTutorial = showedTutorial
     )
 }
 
@@ -110,118 +122,152 @@ fun GroupScreenContent(
     showDeleteDialog: State<Boolean>,
     showDeleteAllDialog: State<Boolean>,
     showDownloadDialog: State<Boolean>,
+    showedTutorial: State<Boolean>,
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    groupScreenViewModel.toggleAddDialog()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = null
-                )
-            }
-        },
-        topBar = {
-            GroupsScreenBar(
-                onDownloadClicked = {
-                    groupScreenViewModel.toggleDownloadDialog()
-                },
-                onDeleteClicked = {
-                    groupScreenViewModel.toggleDeleteAllDialog()
-                },
-                scrollBehavior = scrollBehavior
-            )
+    IntroShowcase(
+        showIntroShowCase = !showedTutorial.value,
+        dismissOnClickOutside = true,
+        onShowCaseCompleted = {
+            groupScreenViewModel.setSettingBoolean(SHOWED_TUTORIAL_GROUPS, true)
         }
-    ) { paddings ->
+    ) {
+        Scaffold(
+            floatingActionButton = {
 
-        if (groupsState.value.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.no_data_found),
-                    fontSize = 20.sp,
+                FloatingActionButton(
+                    onClick = {
+                        groupScreenViewModel.toggleAddDialog()
+                    },
+                    modifier = Modifier.introShowCaseTarget(
+                        index = 0,
+                        style = ShowcaseStyle.Default.copy(
+                            backgroundColor = Color(0xFF1C0A00), // specify color of background
+                            backgroundAlpha = 0.98f, // specify transparency of background
+                            targetCircleColor = Color.White
+                        ),
+                        content = {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.tutorial_add_group),
+                                    color = Color.White,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = stringResource(R.string.tutorial_add_group_desc),
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = null
+                    )
+                }
+            },
+            topBar = {
+                GroupsScreenBar(
+                    onDownloadClicked = {
+                        groupScreenViewModel.toggleDownloadDialog()
+                    },
+                    onDeleteClicked = {
+                        groupScreenViewModel.toggleDeleteAllDialog()
+                    },
+                    scrollBehavior = scrollBehavior
                 )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddings)
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(
-                    items = groupsState.value,
-                    key = { it.groupId }
+        ) { paddings ->
+
+            if (groupsState.value.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .animateItem()
+                    Text(
+                        text = stringResource(R.string.no_data_found),
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(paddings)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    contentPadding = PaddingValues(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(
+                        items = groupsState.value,
+                        key = { it.groupId }
                     ) {
-                        GroupCard(
-                            group = it,
-                            onGroupDeleteClicked = {
-                                groupScreenViewModel.toggleDeleteDialog(it)
-                            },
-                            onGroupClicked = {
-                                groupScreenViewModel.navigateToChangeGroupScreen(it)
-                            },
-                            deleteEnabled = true
-                        )
+                        Box(
+                            modifier = Modifier
+                                .animateItem()
+                        ) {
+                            GroupCard(
+                                group = it,
+                                onGroupDeleteClicked = {
+                                    groupScreenViewModel.toggleDeleteDialog(it)
+                                },
+                                onGroupClicked = {
+                                    groupScreenViewModel.navigateToChangeGroupScreen(it)
+                                },
+                                deleteEnabled = true
+                            )
+                        }
                     }
                 }
             }
+            AddModalDialog(
+                showDialog = showAddDialog.value,
+                onDismiss = {
+                    groupScreenViewModel.toggleAddDialog()
+                },
+                onSearchClicked = {
+                    groupScreenViewModel.navigateToPickScreen("SEARCH")
+                },
+                onPickClicked = {
+                    groupScreenViewModel.navigateToPickScreen("USER_GROUPS")
+                }
+            )
+            DeleteModalDialog(
+                title = stringResource(R.string.delete_group),
+                description = stringResource(R.string.group_delete_dialog_question),
+                showDialog = showDeleteDialog.value,
+                onDismiss = {
+                    groupScreenViewModel.toggleDeleteDialog()
+                },
+                onConfirmClicked = {
+                    groupScreenViewModel.deleteGroupWithPosts()
+                }
+            )
+            DeleteModalDialog(
+                title = stringResource(R.string.delete_all_posts),
+                description = stringResource(R.string.delete_all_posts_dialog_question),
+                showDialog = showDeleteAllDialog.value,
+                onDismiss = {
+                    groupScreenViewModel.toggleDeleteAllDialog()
+                },
+                onConfirmClicked = {
+                    groupScreenViewModel.deleteAllPosts()
+                }
+            )
+            DownloadModalDialog(
+                showDialog = showDownloadDialog.value,
+                onDismiss = {
+                    groupScreenViewModel.toggleDownloadDialog()
+                },
+                onDownloadClicked = { startDate, endDate ->
+                    groupScreenViewModel.loadPosts(
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                }
+            )
         }
-        AddModalDialog(
-            showDialog = showAddDialog.value,
-            onDismiss = {
-                groupScreenViewModel.toggleAddDialog()
-            },
-            onSearchClicked = {
-                groupScreenViewModel.navigateToPickScreen("SEARCH")
-            },
-            onPickClicked = {
-                groupScreenViewModel.navigateToPickScreen("USER_GROUPS")
-            }
-        )
-        DeleteModalDialog(
-            title = stringResource(R.string.delete_group),
-            description = stringResource(R.string.group_delete_dialog_question),
-            showDialog = showDeleteDialog.value,
-            onDismiss = {
-                groupScreenViewModel.toggleDeleteDialog()
-            },
-            onConfirmClicked = {
-                groupScreenViewModel.deleteGroupWithPosts()
-            }
-        )
-        DeleteModalDialog(
-            title = stringResource(R.string.delete_all_posts),
-            description = stringResource(R.string.delete_all_posts_dialog_question),
-            showDialog = showDeleteAllDialog.value,
-            onDismiss = {
-                groupScreenViewModel.toggleDeleteAllDialog()
-            },
-            onConfirmClicked = {
-                groupScreenViewModel.deleteAllPosts()
-            }
-        )
-        DownloadModalDialog(
-            showDialog = showDownloadDialog.value,
-            onDismiss = {
-                groupScreenViewModel.toggleDownloadDialog()
-            },
-            onDownloadClicked = { startDate, endDate ->
-                groupScreenViewModel.loadPosts(
-                    startDate = startDate,
-                    endDate = endDate
-                )
-            }
-        )
     }
 }

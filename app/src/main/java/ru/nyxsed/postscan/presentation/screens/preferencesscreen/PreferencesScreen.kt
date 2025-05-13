@@ -27,6 +27,9 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.DELETE_AFTER_LIKE
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POSTS
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_IMAGE
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_POSTS
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.USE_MIHON
 import ru.nyxsed.postscan.util.UiEvent
 
@@ -80,11 +83,12 @@ fun PreferencesScreenContent(
                 }
             }
 
-            val launcherExport = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
-                uri?.let { selectedUri ->
-                    preferencesViewModel.exportDb(context, selectedUri)
+            val launcherExport =
+                rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
+                    uri?.let { selectedUri ->
+                        preferencesViewModel.exportDb(context, selectedUri)
+                    }
                 }
-            }
 
             SettingRow(
                 label = stringResource(R.string.not_load_liked_posts),
@@ -123,6 +127,14 @@ fun PreferencesScreenContent(
                 label = stringResource(R.string.export_db),
                 onClick = {
                     launcherExport.launch("app_database")
+                }
+            )
+            SettingButton(
+                label = stringResource(R.string.show_tutorial),
+                onClick = {
+                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_POSTS, false)
+                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_GROUPS, false)
+                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_IMAGE, false)
                 }
             )
         }

@@ -47,4 +47,15 @@
     <string name="export_db_message">БД успешно экспортирована</string>
     <string name="refresh_token_fail">Ошибка обновления токена</string>
     <string name="groups_not_found">Группы не найдены. Пожалуйста добавьте группы перед работой</string>
+    <string name="show_tutorial">Показать подсказки</string>
+    <string name="tutorial_download">Загрузка</string>
+    <string name="tutorial_download_desc">Загрузи посты после того как добавишь группы для сканирования</string>
+    <string name="tutorial_groups">Группы</string>
+    <string name="tutorial_groups_desc">Управляй группами для сканирования</string>
+    <string name="tutorial_settings">Настройки</string>
+    <string name="tutorial_settings_desc">Настрой поведение приложения</string>
+    <string name="tutorial_add_group">Добавь группу</string>
+    <string name="tutorial_add_group_desc">Добавь группу из своих подписок или по имени</string>
+    <string name="tutorial_search_image">Поиск по картинке</string>
+    <string name="tutorial_search_image_desc">Поиск оригинала картинки или ее наименования на популярных поисковых ресурсах</string>
 </resources>
