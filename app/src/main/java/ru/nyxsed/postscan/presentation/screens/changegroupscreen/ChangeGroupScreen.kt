@@ -1,21 +1,17 @@
 package ru.nyxsed.postscan.presentation.screens.changegroupscreen
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -28,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -167,68 +162,45 @@ fun ChangeGroupScreenContent(
                     changeGroupScreenViewModel.changeLastFetchDate(newDate)
                 }
             )
-            Row(
+            Button(
                 modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                onClick = {
+                    changeGroupScreenViewModel.updateGroup(
+                        groupId.value,
+                        groupName.value,
+                        screenName.value,
+                        avatarUrl.value,
+                        lastFetchDate.value
+                    )
+                },
+                enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
             ) {
-                Button(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .weight(1f),
-                    onClick = {
-                        changeGroupScreenViewModel.updateGroup(
-                            groupId.value,
-                            groupName.value,
-                            screenName.value,
-                            avatarUrl.value,
-                            lastFetchDate.value
-                        )
-                    },
-                    enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
-                ) {
-                    Text(text = stringResource(R.string.update_group))
-                }
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .clip(CircleShape)
-                        .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primary),
-                ) {
-                    IconButton(
-                        onClick = {
-                            changeGroupScreenViewModel.toggleDownloadDialog()
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_download),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .clip(CircleShape)
-                        .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primary),
-                ) {
-                    IconButton(
-                        onClick = {
-                            changeGroupScreenViewModel.toggleDeleteDialog()
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    }
-                }
+                Text(text = stringResource(R.string.update_group))
+            }
+            Spacer(
+                modifier = Modifier.height(10.dp)
+            )
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                onClick = {
+                    changeGroupScreenViewModel.toggleDownloadDialog()
+                },
+            ) {
+                Text(text = stringResource(R.string.download_posts))
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                onClick = {
+                    changeGroupScreenViewModel.toggleDeleteDialog()
+                },
+            ) {
+                Text(text = stringResource(R.string.delete_posts))
             }
         }
         DownloadModalDialog(
