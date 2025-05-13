@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "ru.nyxsed.postscan"
-        minSdk = 33
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -102,4 +102,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
+
+    // Canopas
+    implementation("com.canopas.intro-showcase-view:introshowcaseview:2.0.2")
 }

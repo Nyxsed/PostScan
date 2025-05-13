@@ -1,5 +1,6 @@
 package ru.nyxsed.postscan.presentation.screens.imagepagerscreen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -54,12 +55,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.canopas.lib.showcase.IntroShowcase
+import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.composegears.tiamat.navArgs
 import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
@@ -76,6 +82,7 @@ import ru.nyxsed.postscan.util.Constants.SAUCENAO_SEARCH_URL
 import ru.nyxsed.postscan.util.Constants.TINEYE_SEARCH_URL
 import ru.nyxsed.postscan.util.Constants.TRACE_SEARCH_URL
 import ru.nyxsed.postscan.util.Constants.YANDEX_SEARCH_URL
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_IMAGE
 import ru.nyxsed.postscan.util.UiEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,7 +104,10 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
 
     var pageData by remember { mutableStateOf<Map<Int, Boolean>>(emptyMap()) }
 
+    var showedTutorial by remember { mutableStateOf(true) }
+
     LaunchedEffect(Unit) {
+        showedTutorial = imagePagerViewModel.getSettingBoolean(SHOWED_TUTORIAL_IMAGE)
         imagePagerViewModel.uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast ->
@@ -135,251 +145,284 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
 
     var notFullScreen by remember { mutableStateOf(true) }
 
-    Scaffold(
-        topBar = {
+    Log.d("showedTutorial", "$showedTutorial")
+
+    IntroShowcase(
+        showIntroShowCase = !showedTutorial,
+        dismissOnClickOutside = true,
+        onShowCaseCompleted = {
+            imagePagerViewModel.setSettingBoolean(SHOWED_TUTORIAL_IMAGE, true)
         }
-    ) { paddings ->
-
-        var menuExpanded by remember { mutableStateOf(false) }
-
-        Box(
-            modifier = Modifier
-                .background(Color.Black)
-                .padding(paddings)
-                .fillMaxSize()
-        ) {
-            AnimatedVisibility(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .zIndex(1f),
-                visible = notFullScreen,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically(),
-            ) {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black.copy(alpha = 0.6f)
-                    ),
-                    title = {
-                        Text(
-                            text = "${pagerState.currentPage + 1} из ${content.size}",
-                            color = Color.White
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {
-                                navController.back()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                menuExpanded = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = {
-                                menuExpanded = false
-                            }
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text("SauceNAO")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        SAUCENAO_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text("Yandex")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        YANDEX_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text("TraceMoe")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        TRACE_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text("IQDB")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        IQDB_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text("Tineye")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        TINEYE_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text("Bing")
-                                },
-                                onClick = {
-                                    imagePagerViewModel.findImage(
-                                        uriHandler,
-                                        content[pagerState.currentPage].urlBig,
-                                        BING_SEARCH_URL
-                                    )
-                                    menuExpanded = false
-                                }
-                            )
-                        }
-                    }
-                )
+    ) {
+        Scaffold(
+            topBar = {
             }
-            HorizontalPager(
+        ) { paddings ->
+
+            var menuExpanded by remember { mutableStateOf(false) }
+
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                state = pagerState,
-            ) { index ->
-                ScalableCoilImage(
-                    imageUrl = content[index].urlBig,
-                    fullScreen = !notFullScreen,
-                    onImageClicked = {
-                        notFullScreen = !notFullScreen
-                    })
-            }
-            AnimatedVisibility(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
-                visible = notFullScreen,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
-                exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
+                    .background(Color.Black)
+                    .padding(paddings)
+                    .fillMaxSize()
             ) {
-                Column {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        items(
-                            items = content,
-                            key = { it.contentId }
-                        ) { item ->
-                            AsyncImage(
-                                modifier = Modifier
-                                    .size(if (item.contentId == content[pagerState.currentPage].contentId) 60.dp else 30.dp)
-                                    .clickable(onClick = {
-                                        scope.launch {
-                                            val currentIndex = content.indexOf(item)
-                                            pagerState.scrollToPage(page = currentIndex)
-                                        }
-                                    }),
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(item.urlSmall)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = null,
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .zIndex(1f),
+                    visible = notFullScreen,
+                    enter = fadeIn() + slideInVertically(),
+                    exit = fadeOut() + slideOutVertically(),
+                ) {
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Black.copy(alpha = 0.6f)
+                        ),
+                        title = {
+                            Text(
+                                text = "${pagerState.currentPage + 1} из ${content.size}",
+                                color = Color.White
                             )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                            .padding(8.dp),
-                    ) {
-                        IconButton(
-                            onClick = {
-                                imagePagerViewModel.openPostUri(
-                                    uriHandler = uriHandler,
-                                    contentEntity = content[index]
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    navController.back()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                    tint = Color.White
                                 )
                             }
-                        ) {
-                            Image(
-                                modifier = Modifier
-                                    .size(24.dp),
-                                painter = painterResource(R.drawable.vk_logo),
-                                contentDescription = null
-                            )
-                        }
-                        Spacer(
-                            modifier = Modifier
-                                .weight(1f)
-                        )
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    val connect = imagePagerViewModel.checkConnect()
-                                    if (!connect) {
-                                        imagePagerViewModel.navigateToLogin()
-                                        return@launch
-                                    }
-
-                                    imagePagerViewModel.changeLikeStatus(content[pagerState.currentPage])
-
-                                    val updatedContent = content.mapIndexed { index, entity ->
-                                        if (index == pagerState.currentPage) {
-                                            entity.copy(isLiked = !entity.isLiked)
-                                        } else {
-                                            entity
+                        },
+                        actions = {
+                            IconButton(
+                                modifier = Modifier.introShowCaseTarget(
+                                    index = 0,
+                                    style = ShowcaseStyle.Default.copy(
+                                        backgroundColor = Color(0xFF1C0A00), // specify color of background
+                                        backgroundAlpha = 0.98f, // specify transparency of background
+                                        targetCircleColor = Color.White
+                                    ),
+                                    content = {
+                                        Column {
+                                            Text(
+                                                text = stringResource(R.string.tutorial_search_image),
+                                                color = Color.White,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text(
+                                                text = stringResource(R.string.tutorial_search_image_desc),
+                                                color = Color.White,
+                                                fontSize = 16.sp
+                                            )
                                         }
                                     }
-                                    content = updatedContent
-                                }
+                                ),
+                                onClick = {
+                                    menuExpanded = true
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Search,
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
                             }
+                            DropdownMenu(
+                                expanded = menuExpanded,
+                                onDismissRequest = {
+                                    menuExpanded = false
+                                }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("SauceNAO")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            SAUCENAO_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("Yandex")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            YANDEX_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("TraceMoe")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            TRACE_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("IQDB")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            IQDB_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("Tineye")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            TINEYE_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("Bing")
+                                    },
+                                    onClick = {
+                                        imagePagerViewModel.findImage(
+                                            uriHandler,
+                                            content[pagerState.currentPage].urlBig,
+                                            BING_SEARCH_URL
+                                        )
+                                        menuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+                HorizontalPager(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    state = pagerState,
+                ) { index ->
+                    ScalableCoilImage(
+                        imageUrl = content[index].urlBig,
+                        fullScreen = !notFullScreen,
+                        onImageClicked = {
+                            notFullScreen = !notFullScreen
+                        })
+                }
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    visible = notFullScreen,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
+                ) {
+                    Column {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Black.copy(alpha = 0.6f))
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_like),
-                                tint = if (content[pagerState.currentPage].isLiked) LikedHeart else Color.White,
-                                contentDescription = null
+                            items(
+                                items = content,
+                                key = { it.contentId }
+                            ) { item ->
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .size(if (item.contentId == content[pagerState.currentPage].contentId) 60.dp else 30.dp)
+                                        .clickable(onClick = {
+                                            scope.launch {
+                                                val currentIndex = content.indexOf(item)
+                                                pagerState.scrollToPage(page = currentIndex)
+                                            }
+                                        }),
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(item.urlSmall)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Black.copy(alpha = 0.6f))
+                                .padding(8.dp),
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    imagePagerViewModel.openPostUri(
+                                        uriHandler = uriHandler,
+                                        contentEntity = content[index]
+                                    )
+                                }
+                            ) {
+                                Image(
+                                    modifier = Modifier
+                                        .size(24.dp),
+                                    painter = painterResource(R.drawable.vk_logo),
+                                    contentDescription = null
+                                )
+                            }
+                            Spacer(
+                                modifier = Modifier
+                                    .weight(1f)
                             )
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        val connect = imagePagerViewModel.checkConnect()
+                                        if (!connect) {
+                                            imagePagerViewModel.navigateToLogin()
+                                            return@launch
+                                        }
+
+                                        imagePagerViewModel.changeLikeStatus(content[pagerState.currentPage])
+
+                                        val updatedContent = content.mapIndexed { index, entity ->
+                                            if (index == pagerState.currentPage) {
+                                                entity.copy(isLiked = !entity.isLiked)
+                                            } else {
+                                                entity
+                                            }
+                                        }
+                                        content = updatedContent
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_like),
+                                    tint = if (content[pagerState.currentPage].isLiked) LikedHeart else Color.White,
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 }

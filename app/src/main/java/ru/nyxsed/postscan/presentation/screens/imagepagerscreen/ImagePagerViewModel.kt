@@ -14,12 +14,14 @@ import ru.nyxsed.postscan.data.repository.VkRepository
 import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.VK_PHOTO_URL
+import ru.nyxsed.postscan.util.DataStoreInteraction
 import ru.nyxsed.postscan.util.UiEvent
 
 class ImagePagerViewModel(
     private val vkRepository: VkRepository,
     private val connectionChecker: ConnectionChecker,
     private val resources: Resources,
+    private val dataStoreInteraction: DataStoreInteraction,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
@@ -65,5 +67,15 @@ class ImagePagerViewModel(
             return false
         }
         return true
+    }
+
+    suspend fun getSettingBoolean(key: String): Boolean {
+        return dataStoreInteraction.getSettingBooleanFromDataStore(key)
+    }
+
+    fun setSettingBoolean(key: String, value: Boolean) {
+        viewModelScope.launch {
+            dataStoreInteraction.saveSettingBooleanToDataStore(key, value)
+        }
     }
 }

@@ -148,6 +148,12 @@ class PostsScreenViewModel(
         return dataStoreInteraction.getSettingBooleanFromDataStore(key)
     }
 
+    fun setSettingBoolean(key: String, value: Boolean) {
+        viewModelScope.launch {
+            dataStoreInteraction.saveSettingBooleanToDataStore(key, value)
+        }
+    }
+
     fun refreshPosts(context: Context) {
         viewModelScope.launch {
             if (!connectionChecker.isInternetAvailable()) {
