@@ -78,7 +78,7 @@ fun PostsScreenBar(
                 ) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(R.drawable.ic_download),
+                        painter = painterResource(R.drawable.ic_reload),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = null,
                     )
