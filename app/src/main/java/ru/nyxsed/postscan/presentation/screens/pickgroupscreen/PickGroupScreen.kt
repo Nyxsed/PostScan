@@ -19,10 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +42,8 @@ val PickGroupScreen by navDestination<String> {
     val pickGroupScreenViewModel = koinViewModel<PickGroupScreenViewModel>()
     val screenState = pickGroupScreenViewModel.screenStateFlow.collectAsState()
 
+    var searchQuery  = pickGroupScreenViewModel.searchQuery.collectAsState()
+
     LaunchedEffect(mode) {
         pickGroupScreenViewModel.setMode(mode)
         pickGroupScreenViewModel.uiEventFlow.collect { event ->
@@ -63,7 +61,8 @@ val PickGroupScreen by navDestination<String> {
 
     PickGroupContent(
         pickGroupScreenViewModel = pickGroupScreenViewModel,
-        screenState = screenState
+        screenState = screenState,
+        searchQuery = searchQuery
     )
 }
 
@@ -71,6 +70,7 @@ val PickGroupScreen by navDestination<String> {
 fun PickGroupContent(
     pickGroupScreenViewModel: PickGroupScreenViewModel,
     screenState: State<PickGroupState>,
+    searchQuery: State<String>,
 ) {
     Scaffold { paddings ->
         Column(
@@ -83,6 +83,10 @@ fun PickGroupContent(
             when (currentState) {
                 is PickGroupState.Loading -> {
                     SearchView(
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = {
+                            pickGroupScreenViewModel.changeSearchQuery(it)
+                        },
                         onSearchClicked = {
                             pickGroupScreenViewModel.fetchedGroups(it)
                         }
@@ -100,7 +104,11 @@ fun PickGroupContent(
                     SearchView(
                         onSearchClicked = {
                             pickGroupScreenViewModel.fetchedGroups(it)
-                        }
+                        },
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = {
+                            pickGroupScreenViewModel.changeSearchQuery(it)
+                        },
                     )
                     GroupsLazyColum(
                         groups = currentState.groups,
@@ -125,17 +133,17 @@ fun PickGroupContent(
 
 @Composable
 fun SearchView(
+    searchQuery: State<String>,
+    onSearchQueryChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp),
-        value = searchQuery,
+        value = searchQuery.value,
         onValueChange = {
-            searchQuery = it
+            onSearchQueryChange(it)
         },
         label = {
             Text(stringResource(R.string.search_query))
@@ -146,7 +154,7 @@ fun SearchView(
             .fillMaxWidth()
             .padding(top = 10.dp),
         onClick = {
-            onSearchClicked(searchQuery)
+            onSearchClicked(searchQuery.value)
         }
     ) {
         Text(stringResource(R.string.search_for_group))
