@@ -27,12 +27,15 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
+import ru.nyxsed.postscan.presentation.ui.theme.Green80
+import ru.nyxsed.postscan.presentation.ui.theme.SoftGreen80
 import ru.nyxsed.postscan.util.Constants.toStringDate
 
 @Composable
 fun GroupCard(
     group: GroupEntity,
     deleteEnabled: Boolean,
+    existingGroup: Boolean = false,
     onGroupDeleteClicked: (GroupEntity) -> Unit,
     onGroupClicked: (GroupEntity) -> Unit,
 ) {
@@ -40,7 +43,7 @@ fun GroupCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.secondary)
+                .background(color = if (existingGroup) SoftGreen80 else MaterialTheme.colorScheme.secondary)
                 .padding(8.dp)
                 .clickable {
                     onGroupClicked(group)
@@ -94,6 +97,12 @@ fun GroupCard(
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
+                } else if (existingGroup) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_checkmark),
+                        contentDescription = null,
+                        tint = Green80
+                    )
                 }
             }
         }

@@ -6,12 +6,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
@@ -21,7 +18,6 @@ import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.pickgroupscreen.PickGroupState.*
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.UiEvent
-import kotlin.collections.filter
 
 class PickGroupScreenViewModel(
     private val dbRepository: DbRepository,
@@ -36,21 +32,11 @@ class PickGroupScreenViewModel(
     val screenStateFlow: StateFlow<PickGroupState> = _screenStateFlow.asStateFlow()
 
     private val fetchedGroupsState = MutableStateFlow<List<GroupEntity>>(emptyList())
-    private val filteredGroupsState: StateFlow<List<GroupEntity>> = combine(
-        fetchedGroupsState,
-        dbRepository.getAllGroups()
-    ) { fetchedGroups, dbGroups ->
-        fetchedGroups.filter { group ->
-            dbGroups.none { it.groupId == group.groupId }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
-    )
+
+    private val existingGroupsSate: StateFlow<List<GroupEntity>> = dbRepository.getAllGroups()
 
     private val _searchQuery = MutableStateFlow<String>("")
-    val searchQuery : StateFlow<String> = _searchQuery.asStateFlow()
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     fun setMode(mode: String) {
         when (mode) {
@@ -59,7 +45,10 @@ class PickGroupScreenViewModel(
                     vkRepository.getGroupsStateFlow()
                         .collect {
                             fetchedGroupsState.value = it
-                            _screenStateFlow.value = PickGroupState.User(filteredGroupsState.value)
+                            _screenStateFlow.value = PickGroupState.User(
+                                groups = fetchedGroupsState.value,
+                                existingGroups = existingGroupsSate.value
+                            )
                         }
                 }
             }
@@ -85,30 +74,33 @@ class PickGroupScreenViewModel(
             _screenStateFlow.value = PickGroupState.Loading
             try {
                 val groups = vkRepository.searchGroups(searchQuery)
-                fetchedGroupsState.value = groups
+                fetchedGroupsState.value = groups.distinctBy { it.groupId }
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
             }
 
-            _screenStateFlow.value = PickGroupState.Search(groups = filteredGroupsState.value)
+            _screenStateFlow.value =
+                PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = existingGroupsSate.value)
         }
     }
 
     fun addGroup(group: GroupEntity) {
         viewModelScope.launch {
             dbRepository.addGroup(group)
-            val currentState = _screenStateFlow.value
-            fetchedGroupsState.value = fetchedGroupsState.value.filter { it.groupId != group.groupId }
+            dbRepository.getAllGroups().collect {
+                when (_screenStateFlow.value) {
+                    is PickGroupState.Search -> _screenStateFlow.value =
+                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
 
-            when (currentState) {
-                is PickGroupState.Search -> _screenStateFlow.value =
-                    PickGroupState.Search(groups = filteredGroupsState.value)
+                    is PickGroupState.User -> _screenStateFlow.value =
+                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
 
-                is PickGroupState.User -> _screenStateFlow.value = PickGroupState.User(groups = filteredGroupsState.value)
-                else -> {}
+                    else -> {}
+                }
             }
         }
     }
+
 
     fun changeSearchQuery(value: String) {
         _searchQuery.value = value
@@ -117,6 +109,35 @@ class PickGroupScreenViewModel(
     fun navigateBack() {
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.NavigateBack())
+        }
+    }
+
+    private var groupToDelete: GroupEntity? = null
+
+    private val _showDeleteDialog = MutableStateFlow(false)
+    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
+
+    fun toggleDeleteDialog(group: GroupEntity? = null) {
+        _showDeleteDialog.value = !_showDeleteDialog.value
+        groupToDelete = group
+    }
+
+    fun deleteGroupWithPosts() {
+        viewModelScope.launch {
+            dbRepository.deleteGroup(groupToDelete!!)
+            dbRepository.deleteAllPostsForGroup(groupToDelete!!)
+            toggleDeleteDialog()
+            dbRepository.getAllGroups().collect {
+                when (_screenStateFlow.value) {
+                    is PickGroupState.Search -> _screenStateFlow.value =
+                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
+
+                    is PickGroupState.User -> _screenStateFlow.value =
+                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
+
+                    else -> {}
+                }
+            }
         }
     }
 }
