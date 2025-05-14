@@ -157,6 +157,16 @@ class PostsScreenViewModel(
         }
     }
 
+    suspend fun getSetting(key: String): String {
+        return dataStoreInteraction.getSettingFromDataStore(key)
+    }
+
+    fun setSetting(key: String, value: String) {
+        viewModelScope.launch {
+            dataStoreInteraction.saveSettingToDataStore(key, value)
+        }
+    }
+
     fun refreshPosts(context: Context) {
         viewModelScope.launch {
             if (!connectionChecker.isInternetAvailable()) {

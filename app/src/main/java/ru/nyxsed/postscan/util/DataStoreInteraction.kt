@@ -40,5 +40,6 @@ class DataStoreInteraction(
         const val SHOWED_TUTORIAL_POSTS = "SHOWED_TUTORIAL_POSTS"
         const val SHOWED_TUTORIAL_GROUPS = "SHOWED_TUTORIAL_GROUPS"
         const val SHOWED_TUTORIAL_IMAGE = "SHOWED_TUTORIAL_IMAGE"
+        const val SORT_OPTION = "SORT_OPTION"
     }
 }

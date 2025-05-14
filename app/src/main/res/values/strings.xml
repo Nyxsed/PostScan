@@ -57,5 +57,7 @@
     <string name="tutorial_add_group_desc">Add groups from your subscribes or by name</string>
     <string name="tutorial_search_image">Search for Image</string>
     <string name="tutorial_search_image_desc">Search for original image or name via popular search engines</string>
+    <string name="tutorial_sort">Sort</string>
+    <string name="tutorial_sort_desc">Sort post by date</string>
     <string name="back">Back</string>
 </resources>

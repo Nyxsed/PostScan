@@ -46,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.GroupsScreen
+import ru.nyxsed.postscan.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerArgs
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.presentation.screens.preferencesscreen.PreferencesScreen
@@ -53,6 +54,7 @@ import ru.nyxsed.postscan.util.Constants.findOrFirst
 import ru.nyxsed.postscan.util.Constants.mihonIntent
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.DELETE_AFTER_LIKE
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_POSTS
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SORT_OPTION
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.USE_MIHON
 import ru.nyxsed.postscan.util.UiEvent
 import kotlin.math.absoluteValue
@@ -82,11 +84,18 @@ val PostsScreen by navDestination<Unit> {
     var showedTutorial by remember { mutableStateOf(true) }
 
     var showCircularIndicator by remember { mutableStateOf(false) }
+    var sortOption by remember { mutableStateOf(SortOption.ASCENDING) }
 
     LaunchedEffect(Unit) {
         settingUseMihon = postsScreenViewModel.getSettingBoolean(USE_MIHON)
         settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(DELETE_AFTER_LIKE)
         showedTutorial = postsScreenViewModel.getSettingBoolean(SHOWED_TUTORIAL_POSTS)
+
+        sortOption = if (postsScreenViewModel.getSetting(SORT_OPTION) == "DESCENDING") {
+            SortOption.DESCENDING
+        } else {
+            SortOption.ASCENDING
+        }
 
         postsScreenViewModel.uiEventFlow.collect { event ->
             when (event) {
@@ -128,6 +137,15 @@ val PostsScreen by navDestination<Unit> {
                     showedTutorial = true
                     postsScreenViewModel.setSettingBoolean(SHOWED_TUTORIAL_POSTS, true)
                 },
+                onSortClicked = {
+                    if (sortOption == SortOption.ASCENDING) {
+                        sortOption = SortOption.DESCENDING
+                        postsScreenViewModel.setSetting(SORT_OPTION, "DESCENDING")
+                    } else {
+                        sortOption = SortOption.ASCENDING
+                        postsScreenViewModel.setSetting(SORT_OPTION, "ASCENDING")
+                    }
+                }
             )
         },
         snackbarHost = {
@@ -143,6 +161,7 @@ val PostsScreen by navDestination<Unit> {
                 modifier = Modifier
                     .fillMaxSize(),
             ) {
+                // Group Chips
                 LazyRow(
                     modifier = Modifier
                         .padding(4.dp)
@@ -175,6 +194,7 @@ val PostsScreen by navDestination<Unit> {
                         }
                     }
                 }
+                // Posts
                 if (postListState.value.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -201,8 +221,12 @@ val PostsScreen by navDestination<Unit> {
                                     .height(37.dp),
                             )
                         }
+                        val sortedList = when (sortOption) {
+                            SortOption.ASCENDING -> postListState.value.sortedBy { it.postId }
+                            SortOption.DESCENDING -> postListState.value.sortedByDescending { it.postId }
+                        }
                         items(
-                            items = postListState.value.filter {
+                            items = sortedList.filter {
                                 if (groupSelected.value == 0L) true else it.ownerId.absoluteValue == groupSelected.value
                             },
                             key = { it.postId }
@@ -254,7 +278,8 @@ val PostsScreen by navDestination<Unit> {
                                         postsScreenViewModel.toComments(it)
                                     },
                                     onGroupClicked = { post ->
-                                        val group = groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
+                                        val group =
+                                            groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
                                         postsScreenViewModel.openGroupUri(
                                             uriHandler = uriHandler,
                                             group = group
