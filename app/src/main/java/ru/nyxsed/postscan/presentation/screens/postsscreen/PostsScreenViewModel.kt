@@ -21,11 +21,13 @@ import ru.nyxsed.postscan.data.models.entity.PostEntity
 import ru.nyxsed.postscan.data.repository.DbRepository
 import ru.nyxsed.postscan.data.repository.VkRepository
 import ru.nyxsed.postscan.presentation.screens.commentsscreen.CommentsScreen
+import ru.nyxsed.postscan.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.VK_URL
 import ru.nyxsed.postscan.util.Constants.VK_WALL_URL
 import ru.nyxsed.postscan.util.DataStoreInteraction
+import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SORT_OPTION
 import ru.nyxsed.postscan.util.NotificationHelper.completeNotification
 import ru.nyxsed.postscan.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.util.NotificationHelper.initNotification
@@ -47,6 +49,16 @@ class PostsScreenViewModel(
 
     private val _groupSelected = MutableStateFlow<Long>(0L)
     val groupSelected: StateFlow<Long> = _groupSelected.asStateFlow()
+
+    private val _sortOption = MutableStateFlow<SortOption?>(null)
+    val sortOption: StateFlow<SortOption?> = _sortOption.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val setting = getSetting(SORT_OPTION)
+            _sortOption.value = if (setting == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
+        }
+    }
 
     fun loadPosts(context: Context) {
         viewModelScope.launch {
@@ -207,5 +219,10 @@ class PostsScreenViewModel(
 
     fun selectGroup(groupId: Long) {
         _groupSelected.value = groupId
+    }
+
+    fun changeSorting(sortOption: SortOption) {
+        _sortOption.value = sortOption
+        setSetting(SORT_OPTION, sortOption.toString())
     }
 }
