@@ -113,4 +113,10 @@ class PickGroupScreenViewModel(
     fun changeSearchQuery(value: String) {
         _searchQuery.value = value
     }
+
+    fun navigateBack() {
+        viewModelScope.launch {
+            _uiEventFlow.emit(UiEvent.NavigateBack())
+        }
+    }
 }

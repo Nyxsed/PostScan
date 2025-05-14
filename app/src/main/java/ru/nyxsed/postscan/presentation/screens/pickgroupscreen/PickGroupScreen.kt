@@ -42,7 +42,7 @@ val PickGroupScreen by navDestination<String> {
     val pickGroupScreenViewModel = koinViewModel<PickGroupScreenViewModel>()
     val screenState = pickGroupScreenViewModel.screenStateFlow.collectAsState()
 
-    var searchQuery  = pickGroupScreenViewModel.searchQuery.collectAsState()
+    var searchQuery = pickGroupScreenViewModel.searchQuery.collectAsState()
 
     LaunchedEffect(mode) {
         pickGroupScreenViewModel.setMode(mode)
@@ -53,6 +53,9 @@ val PickGroupScreen by navDestination<String> {
 
                 is UiEvent.Navigate ->
                     navController.navigate(event.destination)
+
+                is UiEvent.NavigateBack ->
+                    navController.back()
 
                 else -> {}
             }
@@ -77,55 +80,70 @@ fun PickGroupContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddings)
-                .padding(8.dp),
+                .padding(8.dp)
         ) {
-            val currentState = screenState.value
-            when (currentState) {
-                is PickGroupState.Loading -> {
-                    SearchView(
-                        searchQuery = searchQuery,
-                        onSearchQueryChange = {
-                            pickGroupScreenViewModel.changeSearchQuery(it)
-                        },
-                        onSearchClicked = {
-                            pickGroupScreenViewModel.fetchedGroups(it)
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+            ) {
+                val currentState = screenState.value
+                when (currentState) {
+                    is PickGroupState.Loading -> {
+                        SearchView(
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = {
+                                pickGroupScreenViewModel.changeSearchQuery(it)
+                            },
+                            onSearchClicked = {
+                                pickGroupScreenViewModel.fetchedGroups(it)
+                            }
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                    }
+
+                    is PickGroupState.Search -> {
+                        SearchView(
+                            onSearchClicked = {
+                                pickGroupScreenViewModel.fetchedGroups(it)
+                            },
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = {
+                                pickGroupScreenViewModel.changeSearchQuery(it)
+                            },
+                        )
+                        GroupsLazyColum(
+                            groups = currentState.groups,
+                            onGroupCardClicked = {
+                                pickGroupScreenViewModel.addGroup(it)
+                            }
+                        )
+                    }
+
+                    is PickGroupState.User -> {
+                        GroupsLazyColum(
+                            groups = currentState.groups,
+                            onGroupCardClicked = {
+                                pickGroupScreenViewModel.addGroup(it)
+                            }
+                        )
                     }
                 }
-
-                is PickGroupState.Search -> {
-                    SearchView(
-                        onSearchClicked = {
-                            pickGroupScreenViewModel.fetchedGroups(it)
-                        },
-                        searchQuery = searchQuery,
-                        onSearchQueryChange = {
-                            pickGroupScreenViewModel.changeSearchQuery(it)
-                        },
-                    )
-                    GroupsLazyColum(
-                        groups = currentState.groups,
-                        onGroupCardClicked = {
-                            pickGroupScreenViewModel.addGroup(it)
-                        }
-                    )
-                }
-
-                is PickGroupState.User -> {
-                    GroupsLazyColum(
-                        groups = currentState.groups,
-                        onGroupCardClicked = {
-                            pickGroupScreenViewModel.addGroup(it)
-                        }
-                    )
-                }
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                onClick = {
+                    pickGroupScreenViewModel.navigateBack()
+                },
+            ) {
+                Text(text = stringResource(R.string.ok))
             }
         }
     }
