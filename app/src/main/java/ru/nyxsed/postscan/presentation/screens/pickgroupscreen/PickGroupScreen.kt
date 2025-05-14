@@ -31,6 +31,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
+import ru.nyxsed.postscan.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.GroupCard
 import ru.nyxsed.postscan.util.UiEvent
 
@@ -43,6 +44,7 @@ val PickGroupScreen by navDestination<String> {
     val screenState = pickGroupScreenViewModel.screenStateFlow.collectAsState()
 
     var searchQuery = pickGroupScreenViewModel.searchQuery.collectAsState()
+    val showDeleteDialog = pickGroupScreenViewModel.showDeleteDialog.collectAsState()
 
     LaunchedEffect(mode) {
         pickGroupScreenViewModel.setMode(mode)
@@ -65,7 +67,8 @@ val PickGroupScreen by navDestination<String> {
     PickGroupContent(
         pickGroupScreenViewModel = pickGroupScreenViewModel,
         screenState = screenState,
-        searchQuery = searchQuery
+        searchQuery = searchQuery,
+        showDeleteDialog = showDeleteDialog
     )
 }
 
@@ -74,6 +77,7 @@ fun PickGroupContent(
     pickGroupScreenViewModel: PickGroupScreenViewModel,
     screenState: State<PickGroupState>,
     searchQuery: State<String>,
+    showDeleteDialog: State<Boolean>,
 ) {
     Scaffold { paddings ->
         Column(
@@ -87,6 +91,7 @@ fun PickGroupContent(
                     .weight(1f),
             ) {
                 val currentState = screenState.value
+
                 when (currentState) {
                     is PickGroupState.Loading -> {
                         SearchView(
@@ -118,18 +123,32 @@ fun PickGroupContent(
                             },
                         )
                         GroupsLazyColum(
-                            groups = currentState.groups,
+                            groupState = screenState,
                             onGroupCardClicked = {
-                                pickGroupScreenViewModel.addGroup(it)
+                                val existingGroup = currentState.existingGroups.any { existed ->
+                                    existed.groupId == it.groupId
+                                }
+                                if (existingGroup) {
+                                    pickGroupScreenViewModel.toggleDeleteDialog(it)
+                                } else {
+                                    pickGroupScreenViewModel.addGroup(it)
+                                }
                             }
                         )
                     }
 
                     is PickGroupState.User -> {
                         GroupsLazyColum(
-                            groups = currentState.groups,
+                            groupState = screenState,
                             onGroupCardClicked = {
-                                pickGroupScreenViewModel.addGroup(it)
+                                val existingGroup = currentState.existingGroups.any { existed ->
+                                    existed.groupId == it.groupId
+                                }
+                                if (existingGroup) {
+                                    pickGroupScreenViewModel.toggleDeleteDialog(it)
+                                } else {
+                                    pickGroupScreenViewModel.addGroup(it)
+                                }
                             }
                         )
                     }
@@ -143,9 +162,20 @@ fun PickGroupContent(
                     pickGroupScreenViewModel.navigateBack()
                 },
             ) {
-                Text(text = stringResource(R.string.ok))
+                Text(text = stringResource(R.string.back))
             }
         }
+        DeleteModalDialog(
+            title = stringResource(R.string.delete_group),
+            description = stringResource(R.string.group_delete_dialog_question),
+            showDialog = showDeleteDialog.value,
+            onDismiss = {
+                pickGroupScreenViewModel.toggleDeleteDialog()
+            },
+            onConfirmClicked = {
+                pickGroupScreenViewModel.deleteGroupWithPosts()
+            }
+        )
     }
 }
 
@@ -181,10 +211,22 @@ fun SearchView(
 
 @Composable
 fun GroupsLazyColum(
-    groups: List<GroupEntity>,
+    groupState:  State<PickGroupState>,
     onGroupCardClicked: (GroupEntity) -> Unit,
 ) {
-    if (groups.isEmpty()) {
+    val existingGroups = when (val state = groupState.value) {
+        is PickGroupState.Search -> state.existingGroups
+        is PickGroupState.User -> state.existingGroups
+        is PickGroupState.Loading -> emptyList()
+    }
+
+    val fetchedGroups = when (val state = groupState.value) {
+        is PickGroupState.Search -> state.groups
+        is PickGroupState.User -> state.groups
+        is PickGroupState.Loading -> emptyList()
+    }
+
+    if (fetchedGroups.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -200,7 +242,7 @@ fun GroupsLazyColum(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(
-                items = groups,
+                items = fetchedGroups,
                 key = { it.groupId }
             ) {
                 Box(
@@ -209,11 +251,14 @@ fun GroupsLazyColum(
                 ) {
                     GroupCard(
                         group = it,
+                        deleteEnabled = false,
+                        existingGroup = existingGroups.any { existed ->
+                            existed.groupId == it.groupId
+                        },
                         onGroupDeleteClicked = { },
                         onGroupClicked = {
                             onGroupCardClicked(it)
                         },
-                        deleteEnabled = false
                     )
                 }
             }
