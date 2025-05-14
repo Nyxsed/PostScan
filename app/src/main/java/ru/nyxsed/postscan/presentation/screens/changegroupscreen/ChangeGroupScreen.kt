@@ -3,6 +3,7 @@ package ru.nyxsed.postscan.presentation.screens.changegroupscreen
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
+import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.elements.DatePickerTextField
 import ru.nyxsed.postscan.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.presentation.elements.DownloadModalDialog
@@ -60,6 +62,8 @@ val ChangeGroupScreen by navDestination<GroupEntity> {
 
     val showDeleteDialog = changeGroupScreenViewModel.showDeleteDialog.collectAsState()
     val showDownloadDialog = changeGroupScreenViewModel.showDownloadDialog.collectAsState()
+
+    var showCircularIndicator = changeGroupScreenViewModel.showCircularIndicator.collectAsState()
 
     LaunchedEffect(Unit) {
         group.let {
@@ -104,6 +108,7 @@ val ChangeGroupScreen by navDestination<GroupEntity> {
         lastFetchDate = lastFetchDate,
         showDownloadDialog = showDownloadDialog,
         showDeleteDialog = showDeleteDialog,
+        showCircularIndicator = showCircularIndicator,
     )
 }
 
@@ -118,89 +123,96 @@ fun ChangeGroupScreenContent(
     lastFetchDate: State<String>,
     showDeleteDialog: State<Boolean>,
     showDownloadDialog: State<Boolean>,
+    showCircularIndicator: State<Boolean>,
 ) {
     Scaffold { paddings ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddings)
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(8.dp)
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(50.dp)
-                    .clickable(
-                        onClick = {
-                            changeGroupScreenViewModel.openGroupUri(group)
-                        }
-                    ),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(avatarUrl.value)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-            )
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp),
-                value = groupName.value,
-                onValueChange = {
-                    changeGroupScreenViewModel.changeGroupName(it)
-                },
-                label = {
-                    Text(stringResource(R.string.group_name))
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(50.dp)
+                        .clickable(
+                            onClick = {
+                                changeGroupScreenViewModel.openGroupUri(group)
+                            }
+                        ),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(avatarUrl.value)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                )
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp),
+                    value = groupName.value,
+                    onValueChange = {
+                        changeGroupScreenViewModel.changeGroupName(it)
+                    },
+                    label = {
+                        Text(stringResource(R.string.group_name))
+                    }
+                )
+                DatePickerTextField(
+                    label = stringResource(R.string.last_fetch_date),
+                    selectedDate = lastFetchDate.value,
+                    onDateSelected = { newDate ->
+                        changeGroupScreenViewModel.changeLastFetchDate(newDate)
+                    }
+                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    onClick = {
+                        changeGroupScreenViewModel.updateGroup(
+                            groupId.value,
+                            groupName.value,
+                            screenName.value,
+                            avatarUrl.value,
+                            lastFetchDate.value
+                        )
+                    },
+                    enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
+                ) {
+                    Text(text = stringResource(R.string.update_group))
                 }
-            )
-            DatePickerTextField(
-                label = stringResource(R.string.last_fetch_date),
-                selectedDate = lastFetchDate.value,
-                onDateSelected = { newDate ->
-                    changeGroupScreenViewModel.changeLastFetchDate(newDate)
+                Spacer(
+                    modifier = Modifier.height(10.dp)
+                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    onClick = {
+                        changeGroupScreenViewModel.toggleDownloadDialog()
+                    },
+                ) {
+                    Text(text = stringResource(R.string.download_posts))
                 }
-            )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                onClick = {
-                    changeGroupScreenViewModel.updateGroup(
-                        groupId.value,
-                        groupName.value,
-                        screenName.value,
-                        avatarUrl.value,
-                        lastFetchDate.value
-                    )
-                },
-                enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
-            ) {
-                Text(text = stringResource(R.string.update_group))
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    onClick = {
+                        changeGroupScreenViewModel.toggleDeleteDialog()
+                    },
+                ) {
+                    Text(text = stringResource(R.string.delete_posts))
+                }
             }
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                onClick = {
-                    changeGroupScreenViewModel.toggleDownloadDialog()
-                },
-            ) {
-                Text(text = stringResource(R.string.download_posts))
-            }
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                onClick = {
-                    changeGroupScreenViewModel.toggleDeleteDialog()
-                },
-            ) {
-                Text(text = stringResource(R.string.delete_posts))
+            if (showCircularIndicator.value) {
+                CenteredLoadingIndicator()
             }
         }
         DownloadModalDialog(

@@ -28,7 +28,7 @@ class PreferencesScreenViewModel(
     private val resources: Resources,
     private val dbRepository: DbRepository,
 ) : ViewModel() {
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private var _settingNotLoadLikedPosts = MutableStateFlow<Boolean>(false)

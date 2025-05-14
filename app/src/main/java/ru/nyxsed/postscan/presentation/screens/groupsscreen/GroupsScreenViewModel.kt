@@ -31,7 +31,7 @@ class GroupsScreenViewModel(
     private val dataStoreInteraction: DataStoreInteraction,
 ) : ViewModel() {
     val dbGroups = dbRepository.getAllGroups()
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private val _showAddDialog = MutableStateFlow(false)
@@ -48,6 +48,9 @@ class GroupsScreenViewModel(
 
     private val _showTutorial = MutableStateFlow(false)
     val showTutorial: StateFlow<Boolean> = _showTutorial.asStateFlow()
+
+    private val _showCircularIndicator = MutableStateFlow(false)
+    val showCircularIndicator: StateFlow<Boolean> = _showCircularIndicator.asStateFlow()
 
     private var groupToDelete: GroupEntity? = null
 
@@ -112,6 +115,7 @@ class GroupsScreenViewModel(
 
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.InitNotification())
+            _showCircularIndicator.value = true
             try {
                 dbGroups.value.forEachIndexed { index, group ->
                     val postEntities = vkRepository.getPostsForGroupDateInterval(
@@ -128,9 +132,11 @@ class GroupsScreenViewModel(
 
                 }
                 _uiEventFlow.emit(UiEvent.CompleteNotification())
+                _showCircularIndicator.value = false
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
                 _uiEventFlow.emit(UiEvent.ErrorNotification(e.message!!))
+                _showCircularIndicator.value = false
             }
         }
         toggleDownloadDialog()

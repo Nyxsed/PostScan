@@ -42,7 +42,7 @@ class PostsScreenViewModel(
     val posts = dbRepository.getAllPosts()
     val groups = dbRepository.getAllGroups()
 
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private val _groupSelected = MutableStateFlow<Long>(0L)
@@ -51,6 +51,7 @@ class PostsScreenViewModel(
     fun loadPosts(context: Context) {
         viewModelScope.launch {
             initNotification(context)
+            _uiEventFlow.emit(UiEvent.UpdateStatus(true))
             try {
                 groups.value.forEachIndexed { index, group ->
                     val postEntities = vkRepository.getPostsForGroup(group)
@@ -67,9 +68,11 @@ class PostsScreenViewModel(
                     updateProgress(context, percentage)
                 }
                 completeNotification(context)
+                _uiEventFlow.emit(UiEvent.UpdateStatus(false))
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
                 errorNotification(context, e.message!!)
+                _uiEventFlow.emit(UiEvent.UpdateStatus(false))
             }
         }
     }

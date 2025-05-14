@@ -25,7 +25,7 @@ class ChangeGroupScreenViewModel(
     private val connectionChecker: ConnectionChecker,
     private val resources: Resources,
 ) : ViewModel() {
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private val _groupId = MutableStateFlow<Long>(0)
@@ -48,6 +48,9 @@ class ChangeGroupScreenViewModel(
 
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog.asStateFlow()
+
+    private val _showCircularIndicator = MutableStateFlow(false)
+    val showCircularIndicator: StateFlow<Boolean> = _showCircularIndicator.asStateFlow()
 
     fun toggleDeleteDialog() {
         _showDeleteDialog.value = !_showDeleteDialog.value
@@ -119,6 +122,7 @@ class ChangeGroupScreenViewModel(
 
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.InitNotification())
+            _showCircularIndicator.value = true
             try {
                 val postEntities = vkRepository.getPostsForGroupDateInterval(
                     groupEntity = group,
@@ -129,9 +133,11 @@ class ChangeGroupScreenViewModel(
                     dbRepository.addPost(post)
                 }
                 _uiEventFlow.emit(UiEvent.CompleteNotification())
+                _showCircularIndicator.value = false
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
                 _uiEventFlow.emit(UiEvent.ErrorNotification(e.message!!))
+                _showCircularIndicator.value = false
             }
         }
         toggleDownloadDialog()

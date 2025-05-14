@@ -40,6 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
 import ru.nyxsed.postscan.presentation.elements.AddModalDialog
+import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.presentation.elements.DownloadModalDialog
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
@@ -65,6 +66,8 @@ val GroupsScreen by navDestination<Unit> {
     val showDownloadDialog = groupScreenViewModel.showDownloadDialog.collectAsState()
 
     var showedTutorial = groupScreenViewModel.showTutorial.collectAsState()
+
+    var showCircularIndicator = groupScreenViewModel.showCircularIndicator.collectAsState()
 
     LaunchedEffect(Unit) {
         groupScreenViewModel.showTutorial()
@@ -108,7 +111,8 @@ val GroupsScreen by navDestination<Unit> {
         showDeleteDialog = showDeleteDialog,
         showDeleteAllDialog = showDeleteAllDialog,
         showDownloadDialog = showDownloadDialog,
-        showedTutorial = showedTutorial
+        showedTutorial = showedTutorial,
+        showCircularIndicator = showCircularIndicator,
     )
 }
 
@@ -123,6 +127,7 @@ fun GroupScreenContent(
     showDeleteAllDialog: State<Boolean>,
     showDownloadDialog: State<Boolean>,
     showedTutorial: State<Boolean>,
+    showCircularIndicator: State<Boolean>
 ) {
     IntroShowcase(
         showIntroShowCase = !showedTutorial.value,
@@ -180,46 +185,53 @@ fun GroupScreenContent(
                 )
             }
         ) { paddings ->
-
-            if (groupsState.value.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.no_data_found),
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(paddings)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    contentPadding = PaddingValues(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    items(
-                        items = groupsState.value,
-                        key = { it.groupId }
+            Box(
+                modifier = Modifier
+                    .padding(paddings)
+                    .fillMaxSize()
+            ) {
+                if (groupsState.value.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .animateItem()
+                        Text(
+                            text = stringResource(R.string.no_data_found),
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                        contentPadding = PaddingValues(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        items(
+                            items = groupsState.value,
+                            key = { it.groupId }
                         ) {
-                            GroupCard(
-                                group = it,
-                                onGroupDeleteClicked = {
-                                    groupScreenViewModel.toggleDeleteDialog(it)
-                                },
-                                onGroupClicked = {
-                                    groupScreenViewModel.navigateToChangeGroupScreen(it)
-                                },
-                                deleteEnabled = true
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .animateItem()
+                            ) {
+                                GroupCard(
+                                    group = it,
+                                    onGroupDeleteClicked = {
+                                        groupScreenViewModel.toggleDeleteDialog(it)
+                                    },
+                                    onGroupClicked = {
+                                        groupScreenViewModel.navigateToChangeGroupScreen(it)
+                                    },
+                                    deleteEnabled = true
+                                )
+                            }
                         }
                     }
+                }
+                if (showCircularIndicator.value) {
+                    CenteredLoadingIndicator()
                 }
             }
             AddModalDialog(

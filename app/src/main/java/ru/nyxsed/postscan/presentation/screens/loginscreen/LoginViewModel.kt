@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.util.UiEvent
 
 class LoginViewModel() : ViewModel() {
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     fun showLoginError(failDescription: String) {

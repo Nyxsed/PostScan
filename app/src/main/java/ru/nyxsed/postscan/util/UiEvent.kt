@@ -17,4 +17,5 @@ sealed class UiEvent {
     class ErrorNotification(val message: String) : UiEvent()
     class UpdateNotification(val percent: Int) : UiEvent()
     class CompleteNotification() : UiEvent()
+    class UpdateStatus(val status: Boolean) : UiEvent()
 }

@@ -23,7 +23,7 @@ class ImagePagerViewModel(
     private val resources: Resources,
     private val dataStoreInteraction: DataStoreInteraction,
 ) : ViewModel() {
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     fun changeLikeStatus(contentEntity: ContentEntity) {

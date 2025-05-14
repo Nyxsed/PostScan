@@ -44,6 +44,7 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.GroupsScreen
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerArgs
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerScreen
@@ -80,6 +81,8 @@ val PostsScreen by navDestination<Unit> {
 
     var showedTutorial by remember { mutableStateOf(true) }
 
+    var showCircularIndicator by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         settingUseMihon = postsScreenViewModel.getSettingBoolean(USE_MIHON)
         settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(DELETE_AFTER_LIKE)
@@ -98,6 +101,9 @@ val PostsScreen by navDestination<Unit> {
 
                 is UiEvent.Scroll ->
                     scrollState.scrollToItem(0)
+
+                is UiEvent.UpdateStatus ->
+                    showCircularIndicator = event.status
 
                 else -> {}
             }
@@ -131,130 +137,139 @@ val PostsScreen by navDestination<Unit> {
         Box(
             modifier = Modifier
                 .padding(paddings)
-                .fillMaxSize(),
+                .fillMaxSize()
         ) {
-            LazyRow(
+            Box(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-                    .zIndex(1f),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxSize(),
             ) {
-                groupListState.value.forEach { group ->
-                    val postCount = postListState.value.filter { it.ownerId.absoluteValue == group.groupId }.size
-                    if (postCount > 0) {
-                        item(
-                            key = group.groupId
-                        ) {
-                            GroupChip(
-                                group = group,
-                                isSelected = group.groupId == groupSelected.value,
-                                postCount = postCount,
-                                onChipClicked = {
-                                    if (groupSelected.value != group.groupId) {
-                                        postsScreenViewModel.selectGroup(group.groupId)
-                                    } else {
-                                        postsScreenViewModel.selectGroup(0L)
+                LazyRow(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth()
+                        .zIndex(1f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    groupListState.value.forEach { group ->
+                        val postCount = postListState.value.filter { it.ownerId.absoluteValue == group.groupId }.size
+                        if (postCount > 0) {
+                            item(
+                                key = group.groupId
+                            ) {
+                                GroupChip(
+                                    group = group,
+                                    isSelected = group.groupId == groupSelected.value,
+                                    postCount = postCount,
+                                    onChipClicked = {
+                                        if (groupSelected.value != group.groupId) {
+                                            postsScreenViewModel.selectGroup(group.groupId)
+                                        } else {
+                                            postsScreenViewModel.selectGroup(0L)
+                                        }
+                                        scope.launch {
+                                            scrollState.scrollToItem(0)
+                                        }
                                     }
-                                    scope.launch {
-                                        scrollState.scrollToItem(0)
-                                    }
-                                }
+                                )
+                            }
+                        }
+                    }
+                }
+                if (postListState.value.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_data_found),
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                        contentPadding = PaddingValues(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(37.dp),
                             )
+                        }
+                        items(
+                            items = postListState.value.filter {
+                                if (groupSelected.value == 0L) true else it.ownerId.absoluteValue == groupSelected.value
+                            },
+                            key = { it.postId }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .animateItem()
+                            ) {
+                                PostCard(
+                                    post = it,
+                                    settingUseMihon = settingUseMihon,
+                                    onPostDeleteClicked = {
+                                        postsScreenViewModel.deletePost(
+                                            post = it,
+                                            context = context,
+                                            snackbarHostState = snackbarHostState
+                                        )
+                                    },
+                                    onLikeClicked = {
+                                        postsScreenViewModel.changeLikeStatus(
+                                            post = it,
+                                            settingDeleteAfterLike = settingDeleteAfterLike,
+                                            context = context,
+                                            snackbarHostState = snackbarHostState
+                                        )
+                                    },
+                                    onToVkClicked = {
+                                        postsScreenViewModel.openPostUri(
+                                            uriHandler = uriHandler,
+                                            post = it
+                                        )
+                                    },
+                                    onToMihonClicked = {
+                                        val intent = mihonIntent(
+                                            query = it
+                                        )
+                                        context.startActivity(intent)
+                                    },
+                                    onTextLongClick = {
+                                        clipboardManager.setText(
+                                            annotatedString = AnnotatedString(it.contentText)
+                                        )
+                                    },
+                                    onImageClicked = { content, index ->
+                                        val imagePagerArgs = ImagePagerArgs(content, index)
+                                        navController.navigate(ImagePagerScreen, imagePagerArgs)
+                                    },
+                                    onCommentsClicked = {
+                                        postsScreenViewModel.toComments(it)
+                                    },
+                                    onGroupClicked = { post ->
+                                        val group = groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
+                                        postsScreenViewModel.openGroupUri(
+                                            uriHandler = uriHandler,
+                                            group = group
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
-            if (postListState.value.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.no_data_found),
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                LazyColumn(
-                    state = scrollState,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    contentPadding = PaddingValues(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(37.dp),
-                        )
-                    }
-                    items(
-                        items = postListState.value.filter {
-                            if (groupSelected.value == 0L) true else it.ownerId.absoluteValue == groupSelected.value
-                        },
-                        key = { it.postId }
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .animateItem()
-                        ) {
-                            PostCard(
-                                post = it,
-                                settingUseMihon = settingUseMihon,
-                                onPostDeleteClicked = {
-                                    postsScreenViewModel.deletePost(
-                                        post = it,
-                                        context = context,
-                                        snackbarHostState = snackbarHostState
-                                    )
-                                },
-                                onLikeClicked = {
-                                    postsScreenViewModel.changeLikeStatus(
-                                        post = it,
-                                        settingDeleteAfterLike = settingDeleteAfterLike,
-                                        context = context,
-                                        snackbarHostState = snackbarHostState
-                                    )
-                                },
-                                onToVkClicked = {
-                                    postsScreenViewModel.openPostUri(
-                                        uriHandler = uriHandler,
-                                        post = it
-                                    )
-                                },
-                                onToMihonClicked = {
-                                    val intent = mihonIntent(
-                                        query = it
-                                    )
-                                    context.startActivity(intent)
-                                },
-                                onTextLongClick = {
-                                    clipboardManager.setText(
-                                        annotatedString = AnnotatedString(it.contentText)
-                                    )
-                                },
-                                onImageClicked = { content, index ->
-                                    val imagePagerArgs = ImagePagerArgs(content, index)
-                                    navController.navigate(ImagePagerScreen, imagePagerArgs)
-                                },
-                                onCommentsClicked = {
-                                    postsScreenViewModel.toComments(it)
-                                },
-                                onGroupClicked = { post ->
-                                    val group = groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
-                                    postsScreenViewModel.openGroupUri(
-                                        uriHandler = uriHandler,
-                                        group = group
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
+            if (showCircularIndicator) {
+                CenteredLoadingIndicator()
             }
         }
     }
 }
+
