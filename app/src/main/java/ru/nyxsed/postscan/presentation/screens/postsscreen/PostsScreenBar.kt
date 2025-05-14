@@ -31,6 +31,7 @@ fun PostsScreenBar(
     scrollBehavior: TopAppBarScrollBehavior,
     showShowcase: Boolean,
     onShowcaseShowed: () -> Unit,
+    onSortClicked: () -> Unit,
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -112,6 +113,40 @@ fun PostsScreenBar(
                     Icon(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.ic_groups),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        contentDescription = null,
+                    )
+                }
+
+                IconButton(
+                    onClick = onSortClicked,
+                    modifier = Modifier.introShowCaseTarget(
+                        index = 3,
+                        style = ShowcaseStyle.Default.copy(
+                            backgroundColor = Color(0xFF1C0A00), // specify color of background
+                            backgroundAlpha = 0.98f, // specify transparency of background
+                            targetCircleColor = Color.White
+                        ),
+                        content = {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.tutorial_sort),
+                                    color = Color.White,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = stringResource(R.string.tutorial_sort_desc),
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    ),
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.ic_sort),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = null,
                     )
