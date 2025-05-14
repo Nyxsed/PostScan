@@ -58,4 +58,5 @@
     <string name="tutorial_add_group_desc">Добавь группу из своих подписок или по имени</string>
     <string name="tutorial_search_image">Поиск по картинке</string>
     <string name="tutorial_search_image_desc">Поиск оригинала картинки или ее наименования на популярных поисковых ресурсах</string>
+    <string name="ok">ОК</string>
 </resources>
