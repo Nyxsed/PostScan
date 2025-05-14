@@ -49,6 +49,9 @@ class PickGroupScreenViewModel(
         initialValue = emptyList()
     )
 
+    private val _searchQuery = MutableStateFlow<String>("")
+    val searchQuery : StateFlow<String> = _searchQuery.asStateFlow()
+
     fun setMode(mode: String) {
         when (mode) {
             "USER_GROUPS" -> {
@@ -105,5 +108,9 @@ class PickGroupScreenViewModel(
                 else -> {}
             }
         }
+    }
+
+    fun changeSearchQuery(value: String) {
+        _searchQuery.value = value
     }
 }
