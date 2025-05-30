@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
 import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.VK_PHOTO_URL

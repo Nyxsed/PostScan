@@ -1,6 +1,6 @@
 package ru.nyxsed.postscan.presentation.screens.pickgroupscreen
 
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 
 sealed class PickGroupState {
     data class Search(

@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.data.repository.DbRepository
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.VK_URL
 import ru.nyxsed.postscan.util.Constants.toDateLong

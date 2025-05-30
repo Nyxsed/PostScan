@@ -1,10 +1,10 @@
 package ru.nyxsed.postscan.common.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
-import ru.nyxsed.postscan.data.models.entity.CommentEntity
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.data.models.entity.PostEntity
+import ru.nyxsed.postscan.common.domain.models.entity.CommentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 
 interface VkRepository {
     fun getGroupsStateFlow(): StateFlow<List<GroupEntity>>
