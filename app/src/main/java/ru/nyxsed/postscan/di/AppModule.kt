@@ -13,7 +13,6 @@ import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerViewMo
 import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginViewModel
 import ru.nyxsed.postscan.presentation.screens.pickgroupscreen.PickGroupScreenViewModel
 import ru.nyxsed.postscan.presentation.screens.postsscreen.PostsScreenViewModel
-import ru.nyxsed.postscan.presentation.screens.preferencesscreen.PreferencesScreenViewModel
 
 val appModule = module {
     // repositories
@@ -84,14 +83,6 @@ val appModule = module {
             vkRepository = get(),
             post = post,
             dataStoreInteraction = get()
-        )
-    }
-
-    viewModel<PreferencesScreenViewModel> {
-        PreferencesScreenViewModel(
-            dataStoreInteraction = get(),
-            resources = get(),
-            dbRepository = get(),
         )
     }
 

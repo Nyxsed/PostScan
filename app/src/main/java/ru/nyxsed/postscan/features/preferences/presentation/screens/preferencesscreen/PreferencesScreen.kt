@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.presentation.screens.preferencesscreen
+package ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen
 
 import android.content.Context
 import android.widget.Toast
@@ -25,12 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.DELETE_AFTER_LIKE
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POSTS
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_IMAGE
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_POSTS
-import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.USE_MIHON
+import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
 import ru.nyxsed.postscan.util.UiEvent
 
 val PreferencesScreen by navDestination<Unit> {
@@ -79,14 +74,14 @@ fun PreferencesScreenContent(
         ) {
             val launcherImport = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
                 uri?.let { selectedUri ->
-                    preferencesViewModel.importDb(context, selectedUri)
+                    preferencesViewModel.importDataBaseFromFile(selectedUri)
                 }
             }
 
             val launcherExport =
                 rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
                     uri?.let { selectedUri ->
-                        preferencesViewModel.exportDb(context, selectedUri)
+                        preferencesViewModel.exportDataBaseToFile(selectedUri)
                     }
                 }
 
@@ -94,21 +89,21 @@ fun PreferencesScreenContent(
                 label = stringResource(R.string.not_load_liked_posts),
                 checked = settingNotLoadLikedPosts.value,
                 onCheckChange = {
-                    preferencesViewModel.saveSettingBoolean(NOT_LOAD_LIKED_POSTS, it)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.NOT_LOAD_LIKED_POSTS, it)
                 }
             )
             SettingRow(
                 label = stringResource(R.string.use_mihon_for_manga_search),
                 checked = settingUseMihon.value,
                 onCheckChange = {
-                    preferencesViewModel.saveSettingBoolean(USE_MIHON, it)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.USE_MIHON, it)
                 }
             )
             SettingRow(
                 label = stringResource(R.string.delete_post_after_liking),
                 checked = settingDeleteAfterLike.value,
                 onCheckChange = {
-                    preferencesViewModel.saveSettingBoolean(DELETE_AFTER_LIKE, it)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.DELETE_AFTER_LIKE, it)
                 }
             )
             SettingButton(
@@ -132,9 +127,9 @@ fun PreferencesScreenContent(
             SettingButton(
                 label = stringResource(R.string.show_tutorial),
                 onClick = {
-                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_POSTS, false)
-                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_GROUPS, false)
-                    preferencesViewModel.saveSettingBoolean(SHOWED_TUTORIAL_IMAGE, false)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS, false)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.SHOWED_TUTORIAL_GROUPS, false)
+                    preferencesViewModel.saveSettingBoolean(SettingKey.SHOWED_TUTORIAL_IMAGE, false)
                 }
             )
         }
