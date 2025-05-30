@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.data.repository
+package ru.nyxsed.postscan.common.data.repository
 
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.data.mapper.VkMapper
 import ru.nyxsed.postscan.data.models.entity.ContentEntity
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
@@ -16,11 +17,12 @@ import ru.nyxsed.postscan.data.network.ApiService
 import ru.nyxsed.postscan.util.DataStoreInteraction
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POSTS
 
-class VkRepository(
+class VkRepositoryImpl(
     private val apiService: ApiService,
     private val mapper: VkMapper,
     private val dataStoreInteraction: DataStoreInteraction,
-) {
+) : VkRepository {
+
     val scope = CoroutineScope(Dispatchers.Default)
 
     private fun getAccessToken(): String {
@@ -28,7 +30,7 @@ class VkRepository(
     }
 
     // groups TODO обертку для состояния
-    fun getGroupsStateFlow() =
+    override fun getGroupsStateFlow() =
         flow {
             val response = apiService.groupsGet(
                 token = getAccessToken()
@@ -42,7 +44,7 @@ class VkRepository(
                 initialValue = listOf()
             )
 
-    suspend fun searchGroups(searchQuery: String): List<GroupEntity> {
+    override suspend fun searchGroups(searchQuery: String): List<GroupEntity> {
         val result = mutableListOf<GroupEntity>()
 
 
@@ -69,7 +71,7 @@ class VkRepository(
     }
 
     // post
-    suspend fun getPostsForGroup(groupEntity: GroupEntity): List<PostEntity> {
+    override suspend fun getPostsForGroup(groupEntity: GroupEntity): List<PostEntity> {
         var offset: Int = 0
         val posts = mutableListOf<PostEntity>()
         val lastFetchDate = groupEntity.lastFetchDate
@@ -113,7 +115,7 @@ class VkRepository(
     }
 
     // post
-    suspend fun getPostsForGroupDateInterval(groupEntity: GroupEntity, startDate: Long, endDate: Long): List<PostEntity> {
+    override suspend fun getPostsForGroupDateInterval(groupEntity: GroupEntity, startDate: Long, endDate: Long): List<PostEntity> {
         var offset: Int = 0
         val posts = mutableListOf<PostEntity>()
         val notLoadLikedPosts = dataStoreInteraction.getSettingBooleanFromDataStore(NOT_LOAD_LIKED_POSTS)
@@ -156,7 +158,7 @@ class VkRepository(
         return posts.toList()
     }
 
-    suspend fun changeLikeStatus(post: PostEntity) {
+    override suspend fun changeLikeStatus(post: PostEntity) {
         val response = if (!post.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
@@ -179,7 +181,7 @@ class VkRepository(
     }
 
     // content
-    suspend fun changeLikeStatus(contentEntity: ContentEntity) {
+    override suspend fun changeLikeStatus(contentEntity: ContentEntity) {
         val response = if (!contentEntity.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
@@ -201,7 +203,7 @@ class VkRepository(
         }
     }
 
-    suspend fun checkLikeStatus(contentEntity: ContentEntity): Boolean {
+    override suspend fun checkLikeStatus(contentEntity: ContentEntity): Boolean {
         val response = apiService.isLiked(
             token = getAccessToken(),
             ownerId = contentEntity.ownerId,
@@ -212,7 +214,7 @@ class VkRepository(
     }
 
     // comments TODO обертку для состояния
-    fun getCommentsStateFlow(post: PostEntity) =
+    override fun getCommentsStateFlow(post: PostEntity) =
         flow {
             val response = apiService.wallGetComments(
                 token = getAccessToken(),
@@ -227,4 +229,5 @@ class VkRepository(
                 started = SharingStarted.Eagerly,
                 initialValue = listOf()
             )
+
 }

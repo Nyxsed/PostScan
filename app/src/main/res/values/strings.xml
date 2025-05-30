@@ -1,4 +1,5 @@
 <resources>
+    <integer name="com_vk_sdk_AppId">53523600</integer>
     <string name="app_name">PostScan</string>
     <string name="add_group">Add Group</string>
     <string name="delete_group">Delete Group</string>
