@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.data.models.entity.GroupEntity
 import ru.nyxsed.postscan.data.models.entity.PostEntity
 import ru.nyxsed.postscan.data.repository.DbRepository
-import ru.nyxsed.postscan.data.repository.VkRepository
 import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.SortOption

@@ -1,8 +1,8 @@
 package ru.nyxsed.postscan.presentation.screens.commentsscreen
 
 import androidx.lifecycle.ViewModel
+import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.data.models.entity.PostEntity
-import ru.nyxsed.postscan.data.repository.VkRepository
 import ru.nyxsed.postscan.util.DataStoreInteraction
 
 class CommentsScreenViewModel(
