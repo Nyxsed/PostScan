@@ -1,8 +1,8 @@
 package ru.nyxsed.postscan.features.preferences.data.repository
 
+import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
 import ru.nyxsed.postscan.features.preferences.domain.repository.UserSettingsRepository
-import ru.nyxsed.postscan.util.DataStoreInteraction
 
 class UserSettingsRepositoryImpl(
     private val dataStoreInteraction: DataStoreInteraction

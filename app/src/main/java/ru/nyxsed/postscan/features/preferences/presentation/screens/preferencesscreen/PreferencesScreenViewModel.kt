@@ -14,13 +14,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.GetSettingUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.SetSettingUseCase
 import ru.nyxsed.postscan.features.preferences.domain.util.CustomResourcesProvider
-import ru.nyxsed.postscan.util.UiEvent
 
 class PreferencesScreenViewModel(
     private val getSetting: GetSettingUseCase,
