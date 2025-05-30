@@ -20,9 +20,9 @@ import ru.nyxsed.postscan.data.models.entity.GroupEntity
 import ru.nyxsed.postscan.data.models.entity.PostEntity
 import ru.nyxsed.postscan.data.repository.DbRepository
 import ru.nyxsed.postscan.data.repository.VkRepository
+import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.SortOption
-import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.util.ConnectionChecker
 import ru.nyxsed.postscan.util.Constants.VK_URL
 import ru.nyxsed.postscan.util.Constants.VK_WALL_URL
