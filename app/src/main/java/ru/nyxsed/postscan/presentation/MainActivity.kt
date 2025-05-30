@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan
+package ru.nyxsed.postscan.presentation
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -22,6 +22,8 @@ import com.vk.id.refresh.VKIDRefreshTokenFail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreen
 import ru.nyxsed.postscan.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.GroupsScreen
@@ -29,7 +31,6 @@ import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.pickgroupscreen.PickGroupScreen
 import ru.nyxsed.postscan.presentation.screens.postsscreen.PostsScreen
-import ru.nyxsed.postscan.presentation.screens.preferencesscreen.PreferencesScreen
 import ru.nyxsed.postscan.presentation.ui.theme.PostScanTheme
 import ru.nyxsed.postscan.util.DataStoreInteraction
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOTIFICATION_PERMISSION_REQUESTED

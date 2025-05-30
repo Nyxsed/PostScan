@@ -44,12 +44,12 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreen
 import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.GroupsScreen
 import ru.nyxsed.postscan.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerArgs
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerScreen
-import ru.nyxsed.postscan.presentation.screens.preferencesscreen.PreferencesScreen
 import ru.nyxsed.postscan.util.Constants.findOrFirst
 import ru.nyxsed.postscan.util.Constants.mihonIntent
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.DELETE_AFTER_LIKE

@@ -8,6 +8,8 @@ import androidx.core.app.NotificationCompat
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.features.preferences.data.util.AndroidCustomResourcesProvider
+import ru.nyxsed.postscan.features.preferences.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.util.ConnectionChecker
 
 val utilModule = module {
@@ -42,5 +44,9 @@ val utilModule = module {
 
     single<Resources> {
         androidContext().resources
+    }
+
+    single< CustomResourcesProvider> {
+        AndroidCustomResourcesProvider(androidContext())
     }
 }

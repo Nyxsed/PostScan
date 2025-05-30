@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import ru.nyxsed.postscan.di.appModule
 import ru.nyxsed.postscan.di.dbModule
 import ru.nyxsed.postscan.di.networkModule
+import ru.nyxsed.postscan.di.preferencesModule
 import ru.nyxsed.postscan.di.utilModule
 import java.util.Locale
 
@@ -18,7 +19,7 @@ class App : Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(appModule, dbModule, networkModule, utilModule)
+            modules(appModule, dbModule, networkModule, utilModule, preferencesModule)
         }
     }
 }
