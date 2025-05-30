@@ -29,7 +29,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.data.models.entity.PostEntity
+import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerArgs
 import ru.nyxsed.postscan.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.util.Constants.mihonIntent

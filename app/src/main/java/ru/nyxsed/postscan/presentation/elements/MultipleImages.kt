@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
 
 @Composable
 fun MultipleImages(

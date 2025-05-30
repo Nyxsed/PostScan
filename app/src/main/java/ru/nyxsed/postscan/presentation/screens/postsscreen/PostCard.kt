@@ -35,8 +35,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
-import ru.nyxsed.postscan.data.models.entity.PostEntity
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.presentation.elements.MultipleImages
 import ru.nyxsed.postscan.presentation.ui.theme.LikedHeart
 import ru.nyxsed.postscan.presentation.ui.theme.VkBlue

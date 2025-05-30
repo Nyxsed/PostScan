@@ -2,7 +2,7 @@ package ru.nyxsed.postscan.features.preferences.data.repository
 
 import android.content.Context
 import android.net.Uri
-import ru.nyxsed.postscan.data.repository.DbRepository
+import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.features.preferences.domain.repository.DatabaseRepository
 
 class DatabaseRepositoryImpl(

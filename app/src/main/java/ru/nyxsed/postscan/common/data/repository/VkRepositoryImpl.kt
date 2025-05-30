@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.data.mapper.VkMapper
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.data.models.entity.PostEntity
 import ru.nyxsed.postscan.data.network.ApiService
 import ru.nyxsed.postscan.util.DataStoreInteraction
 import ru.nyxsed.postscan.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POSTS

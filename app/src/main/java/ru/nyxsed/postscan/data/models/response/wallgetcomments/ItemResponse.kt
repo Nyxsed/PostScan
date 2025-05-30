@@ -2,7 +2,7 @@ package ru.nyxsed.postscan.data.models.response.wallgetcomments
 
 
 import com.google.gson.annotations.SerializedName
-import ru.nyxsed.postscan.data.models.response.newsfeedget.AttachmentResponse
+import ru.nyxsed.postscan.common.data.models.response.newsfeedget.AttachmentResponse
 
 data class ItemResponse(
     @SerializedName("attachments")

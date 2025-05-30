@@ -38,7 +38,7 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.presentation.elements.AddModalDialog
 import ru.nyxsed.postscan.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.presentation.elements.DeleteModalDialog

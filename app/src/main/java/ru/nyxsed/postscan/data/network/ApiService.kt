@@ -2,10 +2,10 @@ package ru.nyxsed.postscan.data.network
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import ru.nyxsed.postscan.data.models.response.groupsget.GroupsGetResponse
-import ru.nyxsed.postscan.data.models.response.isliked.IsLikedResponse
-import ru.nyxsed.postscan.data.models.response.likes.LikesCountResponse
-import ru.nyxsed.postscan.data.models.response.newsfeedget.WallGetResponse
+import ru.nyxsed.postscan.common.data.models.response.groupsget.GroupsGetResponse
+import ru.nyxsed.postscan.common.data.models.response.isliked.IsLikedResponse
+import ru.nyxsed.postscan.common.data.models.response.likes.LikesCountResponse
+import ru.nyxsed.postscan.common.data.models.response.newsfeedget.WallGetResponse
 import ru.nyxsed.postscan.data.models.response.wallgetcomments.WallGetCommentsResponse
 import ru.nyxsed.postscan.util.Constants.VK_API_VERSION
 

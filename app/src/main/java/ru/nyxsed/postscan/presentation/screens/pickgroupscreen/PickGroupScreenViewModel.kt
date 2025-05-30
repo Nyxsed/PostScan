@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.data.repository.DbRepository
 import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.presentation.screens.pickgroupscreen.PickGroupState.*
 import ru.nyxsed.postscan.util.ConnectionChecker
@@ -89,11 +89,11 @@ class PickGroupScreenViewModel(
             dbRepository.addGroup(group)
             dbRepository.getAllGroups().collect {
                 when (_screenStateFlow.value) {
-                    is PickGroupState.Search -> _screenStateFlow.value =
-                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
+                    is Search -> _screenStateFlow.value =
+                        Search(groups = fetchedGroupsState.value, existingGroups = it)
 
-                    is PickGroupState.User -> _screenStateFlow.value =
-                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
+                    is User -> _screenStateFlow.value =
+                        User(groups = fetchedGroupsState.value, existingGroups = it)
 
                     else -> {}
                 }
@@ -129,11 +129,11 @@ class PickGroupScreenViewModel(
             toggleDeleteDialog()
             dbRepository.getAllGroups().collect {
                 when (_screenStateFlow.value) {
-                    is PickGroupState.Search -> _screenStateFlow.value =
-                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
+                    is Search -> _screenStateFlow.value =
+                        Search(groups = fetchedGroupsState.value, existingGroups = it)
 
-                    is PickGroupState.User -> _screenStateFlow.value =
-                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
+                    is User -> _screenStateFlow.value =
+                        User(groups = fetchedGroupsState.value, existingGroups = it)
 
                     else -> {}
                 }

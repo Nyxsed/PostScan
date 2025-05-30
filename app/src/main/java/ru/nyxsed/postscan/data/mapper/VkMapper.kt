@@ -1,12 +1,12 @@
 package ru.nyxsed.postscan.data.mapper
 
-import ru.nyxsed.postscan.data.models.entity.CommentEntity
-import ru.nyxsed.postscan.data.models.entity.ContentEntity
-import ru.nyxsed.postscan.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.data.models.entity.PostEntity
-import ru.nyxsed.postscan.data.models.response.groupsget.GroupsGetResponse
-import ru.nyxsed.postscan.data.models.response.newsfeedget.AttachmentResponse
-import ru.nyxsed.postscan.data.models.response.newsfeedget.WallGetResponse
+import ru.nyxsed.postscan.common.data.models.response.groupsget.GroupsGetResponse
+import ru.nyxsed.postscan.common.data.models.response.newsfeedget.AttachmentResponse
+import ru.nyxsed.postscan.common.data.models.response.newsfeedget.WallGetResponse
+import ru.nyxsed.postscan.common.domain.models.entity.CommentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.data.models.response.wallgetcomments.ItemResponse
 import ru.nyxsed.postscan.data.models.response.wallgetcomments.ProfilesResponse
 import ru.nyxsed.postscan.data.models.response.wallgetcomments.WallGetCommentsResponse
