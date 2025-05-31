@@ -20,7 +20,6 @@ import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.common.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_URL
@@ -32,6 +31,7 @@ import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.updateProgress
 import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 
 class PostsScreenViewModel(
