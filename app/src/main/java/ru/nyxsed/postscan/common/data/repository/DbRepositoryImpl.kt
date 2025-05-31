@@ -16,6 +16,7 @@ import java.io.IOException
 
 class DbRepositoryImpl(
     private val dbDao: DbDao,
+    private val context: Context,
 ) : DbRepository {
 
     val scope = CoroutineScope(Dispatchers.Default)
@@ -71,7 +72,7 @@ class DbRepositoryImpl(
     }
 
     // export import
-    override fun exportDatabase(context: Context, uri: Uri): Boolean {
+    override fun exportDatabase(uri: Uri): Boolean {
         val dbFile = File(context.getDatabasePath("app_database").absolutePath)
 
         if (!dbFile.exists()) {
@@ -91,7 +92,7 @@ class DbRepositoryImpl(
         }
     }
 
-    override fun importDatabase(context: Context, uri: Uri) : Boolean {
+    override fun importDatabase(uri: Uri) : Boolean {
         val dbPath = context.getDatabasePath("app_database")
         context.deleteDatabase("app_database")
 

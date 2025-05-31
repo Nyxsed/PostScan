@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.preferences.domain.util
+package ru.nyxsed.postscan.common.domain.util
 
 import androidx.annotation.StringRes
 

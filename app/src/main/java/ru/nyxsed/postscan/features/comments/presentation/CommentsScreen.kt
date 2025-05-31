@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen
+package ru.nyxsed.postscan.features.comments.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,11 +29,11 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerArgs
 import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.common.util.Constants.mihonIntent
-import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
 
 val CommentsScreen by navDestination<PostEntity> {
     val args = navArgs()

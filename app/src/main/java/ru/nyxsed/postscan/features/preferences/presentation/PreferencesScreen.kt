@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen
+package ru.nyxsed.postscan.features.preferences.presentation
 
 import android.content.Context
 import android.widget.Toast
@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
 
 val PreferencesScreen by navDestination<Unit> {
     val preferencesViewModel = koinViewModel<PreferencesScreenViewModel>()

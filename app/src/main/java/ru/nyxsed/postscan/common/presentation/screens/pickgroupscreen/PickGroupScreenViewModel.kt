@@ -17,7 +17,7 @@ import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupState.*
 import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
+import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 
 class PickGroupScreenViewModel(
     private val dbRepository: DbRepository,

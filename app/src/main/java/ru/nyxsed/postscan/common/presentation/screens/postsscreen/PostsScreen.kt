@@ -55,7 +55,7 @@ import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.DELETE_AFTE
 import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_POSTS
 import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.USE_MIHON
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreen
+import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)

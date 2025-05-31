@@ -21,7 +21,7 @@ import ru.nyxsed.postscan.common.util.Constants.toDateLong
 import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
+import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 
 class GroupsScreenViewModel(
     private val dbRepository: DbRepository,

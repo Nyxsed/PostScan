@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.preferences.domain.model
+package ru.nyxsed.postscan.common.domain.models
 
 enum class SettingKey {
     NOT_LOAD_LIKED_POSTS,
