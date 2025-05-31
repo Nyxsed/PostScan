@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_PHOTO_URL
-import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 
@@ -21,7 +22,7 @@ class ImagePagerViewModel(
     private val vkRepository: VkRepository,
     private val connectionChecker: ConnectionChecker,
     private val resources: Resources,
-    private val dataStoreInteraction: DataStoreInteraction,
+    private val dataStoreRepository: DataStoreRepository,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
@@ -69,13 +70,13 @@ class ImagePagerViewModel(
         return true
     }
 
-    suspend fun getSettingBoolean(key: String): Boolean {
-        return dataStoreInteraction.getSettingBooleanFromDataStore(key)
+    suspend fun getSettingBoolean(key: SettingKey): Boolean {
+        return dataStoreRepository.getBoolean(key)
     }
 
-    fun setSettingBoolean(key: String, value: Boolean) {
+    fun setSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            dataStoreInteraction.saveSettingBooleanToDataStore(key, value)
+            dataStoreRepository.setBoolean(key, value)
         }
     }
 }

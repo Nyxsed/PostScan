@@ -38,12 +38,12 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.presentation.elements.AddModalDialog
 import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.common.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.common.presentation.elements.DownloadModalDialog
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_GROUPS
 import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
@@ -133,7 +133,7 @@ fun GroupScreenContent(
         showIntroShowCase = !showedTutorial.value,
         dismissOnClickOutside = true,
         onShowCaseCompleted = {
-            groupScreenViewModel.setSettingBoolean(SHOWED_TUTORIAL_GROUPS, true)
+            groupScreenViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_GROUPS, true)
         }
     ) {
         Scaffold(
