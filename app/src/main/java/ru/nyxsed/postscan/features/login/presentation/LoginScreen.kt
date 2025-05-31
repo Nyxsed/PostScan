@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.login.presentation.screens.loginscreen
+package ru.nyxsed.postscan.features.login.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.Image

@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen
+package ru.nyxsed.postscan.features.comments.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

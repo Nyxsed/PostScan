@@ -31,8 +31,8 @@ import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.updateProgress
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen.CommentsScreen
-import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
+import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
+import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 
 class PostsScreenViewModel(
     private val dbRepository: DbRepository,

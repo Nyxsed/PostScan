@@ -1,12 +1,12 @@
-package ru.nyxsed.postscan.features.preferences.data.repository
+package ru.nyxsed.postscan.common.data.repository
 
+import ru.nyxsed.postscan.common.domain.models.SettingKey
+import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.util.DataStoreInteraction
-import ru.nyxsed.postscan.features.preferences.domain.model.SettingKey
-import ru.nyxsed.postscan.features.preferences.domain.repository.UserSettingsRepository
 
-class UserSettingsRepositoryImpl(
+class DataStoreRepositoryImpl(
     private val dataStoreInteraction: DataStoreInteraction
-) : UserSettingsRepository {
+) : DataStoreRepository {
     override suspend fun getBoolean(key: SettingKey): Boolean =
         dataStoreInteraction.getSettingBooleanFromDataStore(key.name)
 

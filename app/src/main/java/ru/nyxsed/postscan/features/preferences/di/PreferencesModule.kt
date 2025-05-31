@@ -1,19 +1,12 @@
 package ru.nyxsed.postscan.features.preferences.di
 
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import ru.nyxsed.postscan.features.preferences.data.repository.DatabaseRepositoryImpl
-import ru.nyxsed.postscan.features.preferences.domain.repository.DatabaseRepository
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
-import ru.nyxsed.postscan.features.preferences.domain.usecase.SetSettingUseCase
-import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreenViewModel
+import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreenViewModel
 
 val preferencesModule = module {
-    single<DatabaseRepository> { DatabaseRepositoryImpl(get(), androidContext()) }
-
-    factory { SetSettingUseCase(get()) }
     factory { ExportDbUseCase(get()) }
     factory { ImportDbUseCase(get()) }
 

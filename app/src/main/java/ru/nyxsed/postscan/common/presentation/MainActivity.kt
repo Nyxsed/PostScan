@@ -31,9 +31,9 @@ import ru.nyxsed.postscan.common.presentation.screens.postsscreen.PostsScreen
 import ru.nyxsed.postscan.common.presentation.ui.theme.PostScanTheme
 import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.NOTIFICATION_PERMISSION_REQUESTED
-import ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen.CommentsScreen
-import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
-import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreen
+import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
+import ru.nyxsed.postscan.features.login.presentation.LoginScreen
+import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

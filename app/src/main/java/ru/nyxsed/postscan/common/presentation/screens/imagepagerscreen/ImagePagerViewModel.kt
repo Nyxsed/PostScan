@@ -15,7 +15,7 @@ import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_PHOTO_URL
 import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.common.util.UiEvent
-import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
+import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 
 class ImagePagerViewModel(
     private val vkRepository: VkRepository,

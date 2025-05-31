@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.features.login.presentation.screens.loginscreen
+package ru.nyxsed.postscan.features.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

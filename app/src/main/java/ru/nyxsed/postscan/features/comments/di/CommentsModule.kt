@@ -4,7 +4,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.features.comments.domain.usecase.GetCommentsUseCase
-import ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen.CommentsScreenViewModel
+import ru.nyxsed.postscan.features.comments.presentation.CommentsScreenViewModel
 
 val commentsModule = module {
     factory { GetCommentsUseCase(get()) }

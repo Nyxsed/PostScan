@@ -1,16 +1,18 @@
 package ru.nyxsed.postscan.common.di
 
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import ru.nyxsed.postscan.common.data.repository.DataStoreRepositoryImpl
 import ru.nyxsed.postscan.common.data.repository.DbRepositoryImpl
 import ru.nyxsed.postscan.common.data.repository.VkRepositoryImpl
+import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.features.preferences.data.repository.UserSettingsRepositoryImpl
-import ru.nyxsed.postscan.features.preferences.domain.repository.UserSettingsRepository
-import ru.nyxsed.postscan.features.preferences.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
 
 val commonModule = module {
-    single<UserSettingsRepository> { UserSettingsRepositoryImpl(get()) }
+    single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
 
     single<VkRepository> {
         VkRepositoryImpl(
@@ -19,12 +21,14 @@ val commonModule = module {
             dataStoreInteraction = get()
         )
     }
-    
+
     single<DbRepository> {
         DbRepositoryImpl(
-            dbDao = get()
+            dbDao = get(),
+            context = androidContext()
         )
     }
 
     factory { GetSettingUseCase(get()) }
+    factory { SetSettingUseCase(get()) }
 }

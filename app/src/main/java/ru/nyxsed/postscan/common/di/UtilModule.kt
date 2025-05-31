@@ -8,9 +8,9 @@ import androidx.core.app.NotificationCompat
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.data.util.CustomResourcesProviderImpl
+import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.util.ConnectionChecker
-import ru.nyxsed.postscan.features.preferences.data.util.AndroidCustomResourcesProvider
-import ru.nyxsed.postscan.features.preferences.domain.util.CustomResourcesProvider
 
 val utilModule = module {
     single<NotificationManager> { (context: Context, channelId: String, channelName: String) ->
@@ -46,7 +46,7 @@ val utilModule = module {
         androidContext().resources
     }
 
-    single< CustomResourcesProvider> {
-        AndroidCustomResourcesProvider(androidContext())
+    single<CustomResourcesProvider> {
+        CustomResourcesProviderImpl(androidContext())
     }
 }

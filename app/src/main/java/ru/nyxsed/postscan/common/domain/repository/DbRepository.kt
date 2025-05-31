@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.common.domain.repository
 
-import android.content.Context
 import android.net.Uri
 import kotlinx.coroutines.flow.StateFlow
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
@@ -17,6 +16,6 @@ interface DbRepository {
     suspend fun deleteGroup(group: GroupEntity)
     suspend fun updateGroup(group: GroupEntity)
     suspend fun deleteAllPosts()
-    fun exportDatabase(context: Context, uri: Uri): Boolean
-    fun importDatabase(context: Context, uri: Uri) : Boolean
+    fun exportDatabase(uri: Uri): Boolean
+    fun importDatabase(uri: Uri) : Boolean
 }
