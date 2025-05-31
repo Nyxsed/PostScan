@@ -1,15 +1,35 @@
 package ru.nyxsed.postscan.common.data.repository
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.first
 import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
-import ru.nyxsed.postscan.common.util.DataStoreInteraction
 
 class DataStoreRepositoryImpl(
-    private val dataStoreInteraction: DataStoreInteraction
+    private val dataStore: DataStore<Preferences>,
 ) : DataStoreRepository {
-    override suspend fun getBoolean(key: SettingKey): Boolean =
-        dataStoreInteraction.getSettingBooleanFromDataStore(key.name)
+    override suspend fun setBoolean(key: SettingKey, value: Boolean) {
+        val stringValue = if (value) "1" else "0"
+        setString(key, stringValue)
+    }
 
-    override suspend fun setBoolean(key: SettingKey, value: Boolean) =
-        dataStoreInteraction.saveSettingBooleanToDataStore(key.name, value)
+    override suspend fun getBoolean(key: SettingKey): Boolean {
+        val setting = getString(key)
+        return setting == "1"
+    }
+
+
+    override suspend fun getString(key: SettingKey): String {
+        val preferences = dataStore.data.first()
+        return preferences[stringPreferencesKey(key.toString())] ?: "default_value"
+    }
+
+    override suspend fun setString(key: SettingKey, value: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(key.toString())] = value
+        }
+    }
 }

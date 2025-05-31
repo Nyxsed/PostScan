@@ -5,4 +5,6 @@ import ru.nyxsed.postscan.common.domain.models.SettingKey
 interface DataStoreRepository {
     suspend fun getBoolean(key: SettingKey): Boolean
     suspend fun setBoolean(key: SettingKey, value: Boolean)
+    suspend fun getString(key: SettingKey): String
+    suspend fun setString(key: SettingKey, value: String)
 }

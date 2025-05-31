@@ -10,17 +10,17 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.nyxsed.postscan.common.data.mapper.VkMapper
 import ru.nyxsed.postscan.common.data.network.ApiService
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.common.util.DataStoreInteraction
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.NOT_LOAD_LIKED_POSTS
 
 class VkRepositoryImpl(
     private val apiService: ApiService,
     private val mapper: VkMapper,
-    private val dataStoreInteraction: DataStoreInteraction,
+    private val dataStoreRepository: DataStoreRepository,
 ) : VkRepository {
 
     val scope = CoroutineScope(Dispatchers.Default)
@@ -75,7 +75,7 @@ class VkRepositoryImpl(
         var offset: Int = 0
         val posts = mutableListOf<PostEntity>()
         val lastFetchDate = groupEntity.lastFetchDate
-        val notLoadLikedPosts = dataStoreInteraction.getSettingBooleanFromDataStore(NOT_LOAD_LIKED_POSTS)
+        val notLoadLikedPosts = dataStoreRepository.getBoolean(SettingKey.NOT_LOAD_LIKED_POSTS)
 
         while (true) {
             val response = apiService.wallGet(
@@ -118,7 +118,7 @@ class VkRepositoryImpl(
     override suspend fun getPostsForGroupDateInterval(groupEntity: GroupEntity, startDate: Long, endDate: Long): List<PostEntity> {
         var offset: Int = 0
         val posts = mutableListOf<PostEntity>()
-        val notLoadLikedPosts = dataStoreInteraction.getSettingBooleanFromDataStore(NOT_LOAD_LIKED_POSTS)
+        val notLoadLikedPosts = dataStoreRepository.getBoolean(SettingKey.NOT_LOAD_LIKED_POSTS)
 
         while (true) {
             val response = apiService.wallGet(

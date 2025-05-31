@@ -15,7 +15,7 @@ val appModule = module {
         PostsScreenViewModel(
             dbRepository = get(),
             vkRepository = get(),
-            dataStoreInteraction = get(),
+            dataStoreRepository = get(),
             connectionChecker = get(),
             resources = get()
         )
@@ -27,7 +27,7 @@ val appModule = module {
             connectionChecker = get(),
             resources = get(),
             vkRepository = get(),
-            dataStoreInteraction = get()
+            dataStoreRepository = get()
         )
     }
 
@@ -54,7 +54,7 @@ val appModule = module {
             vkRepository = get(),
             connectionChecker = get(),
             resources = get(),
-            dataStoreInteraction = get(),
+            dataStoreRepository = get(),
         )
     }
 }

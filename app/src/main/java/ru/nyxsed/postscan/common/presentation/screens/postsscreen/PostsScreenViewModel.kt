@@ -16,16 +16,16 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_URL
 import ru.nyxsed.postscan.common.util.Constants.VK_WALL_URL
-import ru.nyxsed.postscan.common.util.DataStoreInteraction
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.SORT_OPTION
 import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
@@ -37,7 +37,7 @@ import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 class PostsScreenViewModel(
     private val dbRepository: DbRepository,
     private val vkRepository: VkRepository,
-    private val dataStoreInteraction: DataStoreInteraction,
+    private val dataStoreRepository: DataStoreRepository,
     private val connectionChecker: ConnectionChecker,
     private val resources: Resources,
 ) : ViewModel() {
@@ -55,7 +55,7 @@ class PostsScreenViewModel(
 
     init {
         viewModelScope.launch {
-            val setting = getSetting(SORT_OPTION)
+            val setting = getSetting(SettingKey.SORT_OPTION)
             _sortOption.value = if (setting == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
         }
     }
@@ -159,23 +159,23 @@ class PostsScreenViewModel(
         uriHandler.openUri("${VK_URL}${group.screenName}")
     }
 
-    suspend fun getSettingBoolean(key: String): Boolean {
-        return dataStoreInteraction.getSettingBooleanFromDataStore(key)
+    suspend fun getSettingBoolean(key: SettingKey): Boolean {
+        return dataStoreRepository.getBoolean(key)
     }
 
-    fun setSettingBoolean(key: String, value: Boolean) {
+    fun setSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            dataStoreInteraction.saveSettingBooleanToDataStore(key, value)
+            dataStoreRepository.setBoolean(key, value)
         }
     }
 
-    suspend fun getSetting(key: String): String {
-        return dataStoreInteraction.getSettingFromDataStore(key)
+    suspend fun getSetting(key: SettingKey): String {
+        return dataStoreRepository.getString(key)
     }
 
-    fun setSetting(key: String, value: String) {
+    fun setSetting(key: SettingKey, value: String) {
         viewModelScope.launch {
-            dataStoreInteraction.saveSettingToDataStore(key, value)
+            dataStoreRepository.setString(key, value)
         }
     }
 
@@ -223,6 +223,6 @@ class PostsScreenViewModel(
 
     fun changeSorting(sortOption: SortOption) {
         _sortOption.value = sortOption
-        setSetting(SORT_OPTION, sortOption.toString())
+        setSetting(SettingKey.SORT_OPTION, sortOption.toString())
     }
 }

@@ -1,5 +1,9 @@
 package ru.nyxsed.postscan.common.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import ru.nyxsed.postscan.common.data.repository.DataStoreRepositoryImpl
@@ -11,14 +15,19 @@ import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
 import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 val commonModule = module {
-    single<DataStoreRepository> { DataStoreRepositoryImpl(get()) }
+    single<DataStore<Preferences>> { get<Context>().dataStore }
+    single<DataStoreRepository> {
+        DataStoreRepositoryImpl(dataStore = get())
+    }
 
     single<VkRepository> {
         VkRepositoryImpl(
             apiService = get(),
             mapper = get(),
-            dataStoreInteraction = get()
+            dataStoreRepository = get()
         )
     }
 

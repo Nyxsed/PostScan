@@ -44,6 +44,7 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreen
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
@@ -51,9 +52,6 @@ import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePage
 import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.common.util.Constants.findOrFirst
 import ru.nyxsed.postscan.common.util.Constants.mihonIntent
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.DELETE_AFTER_LIKE
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.SHOWED_TUTORIAL_POSTS
-import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.USE_MIHON
 import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import kotlin.math.absoluteValue
@@ -88,9 +86,9 @@ val PostsScreen by navDestination<Unit> {
 
 
     LaunchedEffect(Unit) {
-        settingUseMihon = postsScreenViewModel.getSettingBoolean(USE_MIHON)
-        settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(DELETE_AFTER_LIKE)
-        showedTutorial = postsScreenViewModel.getSettingBoolean(SHOWED_TUTORIAL_POSTS)
+        settingUseMihon = postsScreenViewModel.getSettingBoolean(SettingKey.USE_MIHON)
+        settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(SettingKey.DELETE_AFTER_LIKE)
+        showedTutorial = postsScreenViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS)
 
         postsScreenViewModel.uiEventFlow.collect { event ->
             when (event) {
@@ -130,7 +128,7 @@ val PostsScreen by navDestination<Unit> {
                     showShowcase = !showedTutorial,
                     onShowcaseShowed = {
                         showedTutorial = true
-                        postsScreenViewModel.setSettingBoolean(SHOWED_TUTORIAL_POSTS, true)
+                        postsScreenViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS, true)
                     },
                     onSortClicked = {
                         if (sortOption == SortOption.ASCENDING) {
