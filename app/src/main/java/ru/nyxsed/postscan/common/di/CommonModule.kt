@@ -5,8 +5,13 @@ import ru.nyxsed.postscan.common.data.repository.DbRepositoryImpl
 import ru.nyxsed.postscan.common.data.repository.VkRepositoryImpl
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
+import ru.nyxsed.postscan.features.preferences.data.repository.UserSettingsRepositoryImpl
+import ru.nyxsed.postscan.features.preferences.domain.repository.UserSettingsRepository
+import ru.nyxsed.postscan.features.preferences.domain.usecase.GetSettingUseCase
 
 val commonModule = module {
+    single<UserSettingsRepository> { UserSettingsRepositoryImpl(get()) }
+
     single<VkRepository> {
         VkRepositoryImpl(
             apiService = get(),
@@ -20,4 +25,6 @@ val commonModule = module {
             dbDao = get()
         )
     }
+
+    factory { GetSettingUseCase(get()) }
 }

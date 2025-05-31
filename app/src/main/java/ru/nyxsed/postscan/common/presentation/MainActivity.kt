@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
-import ru.nyxsed.postscan.common.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreen
 import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupScreen
@@ -32,6 +31,7 @@ import ru.nyxsed.postscan.common.presentation.screens.postsscreen.PostsScreen
 import ru.nyxsed.postscan.common.presentation.ui.theme.PostScanTheme
 import ru.nyxsed.postscan.common.util.DataStoreInteraction
 import ru.nyxsed.postscan.common.util.DataStoreInteraction.Companion.NOTIFICATION_PERMISSION_REQUESTED
+import ru.nyxsed.postscan.features.comments.presentation.screens.commentsscreen.CommentsScreen
 import ru.nyxsed.postscan.features.login.presentation.screens.loginscreen.LoginScreen
 import ru.nyxsed.postscan.features.preferences.presentation.screens.preferencesscreen.PreferencesScreen
 

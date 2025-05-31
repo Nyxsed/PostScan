@@ -3,9 +3,7 @@ package ru.nyxsed.postscan.common.di
 
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreenViewModel
-import ru.nyxsed.postscan.common.presentation.screens.commentsscreen.CommentsScreenViewModel
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreenViewModel
 import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerViewModel
 import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupScreenViewModel
@@ -57,14 +55,6 @@ val appModule = module {
             connectionChecker = get(),
             resources = get(),
             dataStoreInteraction = get(),
-        )
-    }
-
-    viewModel<CommentsScreenViewModel> { (post: PostEntity) ->
-        CommentsScreenViewModel(
-            vkRepository = get(),
-            post = post,
-            dataStoreInteraction = get()
         )
     }
 }
