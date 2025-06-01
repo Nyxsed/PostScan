@@ -1,14 +1,15 @@
-package ru.nyxsed.postscan.common.util
+package ru.nyxsed.postscan.common.data.util
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.vk.id.VKID
+import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 
-class ConnectionChecker(
+class ConnectionCheckerImpl(
     private val context: Context,
-) {
-    fun isInternetAvailable(): Boolean {
+): ConnectionChecker {
+    override fun isInternetAvailable(): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
@@ -21,7 +22,7 @@ class ConnectionChecker(
         }
     }
 
-    fun isTokenValid(): Boolean {
+    override fun isTokenValid(): Boolean {
         val currentToken = VKID.Companion.instance.accessToken
         return currentToken?.token != null && currentToken.expireTime > System.currentTimeMillis()
     }

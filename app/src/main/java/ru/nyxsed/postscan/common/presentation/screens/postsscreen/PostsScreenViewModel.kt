@@ -22,8 +22,8 @@ import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
+import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
-import ru.nyxsed.postscan.common.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_URL
 import ru.nyxsed.postscan.common.util.Constants.VK_WALL_URL
 import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification

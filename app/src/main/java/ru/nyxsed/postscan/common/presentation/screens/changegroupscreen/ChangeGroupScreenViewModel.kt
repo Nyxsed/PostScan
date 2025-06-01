@@ -14,7 +14,7 @@ import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.common.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_URL
 import ru.nyxsed.postscan.common.util.Constants.toDateLong
 import ru.nyxsed.postscan.common.util.UiEvent
