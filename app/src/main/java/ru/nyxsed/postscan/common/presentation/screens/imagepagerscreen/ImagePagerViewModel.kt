@@ -13,7 +13,7 @@ import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.common.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.util.Constants.VK_PHOTO_URL
 import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
