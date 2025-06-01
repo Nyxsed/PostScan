@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.common.presentation.screens.groupsscreen
 
-import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +16,7 @@ import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupScreen
 import ru.nyxsed.postscan.common.util.Constants.toDateLong
@@ -26,7 +26,7 @@ import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 class GroupsScreenViewModel(
     private val dbRepository: DbRepository,
     private val connectionChecker: ConnectionChecker,
-    private val resources: Resources,
+    private val resources: CustomResourcesProvider,
     private val vkRepository: VkRepository,
     private val dataStoreRepository: DataStoreRepository,
 ) : ViewModel() {

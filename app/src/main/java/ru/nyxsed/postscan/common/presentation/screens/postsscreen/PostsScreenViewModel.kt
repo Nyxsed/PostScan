@@ -1,7 +1,6 @@
 package ru.nyxsed.postscan.common.presentation.screens.postsscreen
 
 import android.content.Context
-import android.content.res.Resources
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -23,6 +22,7 @@ import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
 import ru.nyxsed.postscan.common.util.Constants.VK_URL
 import ru.nyxsed.postscan.common.util.Constants.VK_WALL_URL
@@ -39,7 +39,7 @@ class PostsScreenViewModel(
     private val vkRepository: VkRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val connectionChecker: ConnectionChecker,
-    private val resources: Resources,
+    private val resources: CustomResourcesProvider,
 ) : ViewModel() {
     val posts = dbRepository.getAllPosts()
     val groups = dbRepository.getAllGroups()

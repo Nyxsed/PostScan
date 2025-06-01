@@ -3,7 +3,6 @@ package ru.nyxsed.postscan.common.di
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -35,10 +34,6 @@ val utilModule = module {
             .setContentTitle(context.getString(R.string.loading_posts))
             .setContentText(context.getString(R.string.loading_progress))
             .setProgress(100, 0, false)
-    }
-
-    single<Resources> {
-        androidContext().resources
     }
 
     single<CustomResourcesProvider> {
