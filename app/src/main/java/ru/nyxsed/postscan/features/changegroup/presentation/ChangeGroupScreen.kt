@@ -35,7 +35,7 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -44,7 +44,7 @@ import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 
 
-val ChangeGroupScreen by navDestination<GroupEntity> {
+val ChangeGroupScreen by navDestination<Group> {
     val group = navArgs()
     val changeGroupScreenViewModel = koinViewModel<ChangeGroupScreenViewModel>()
     val navController = navController()
@@ -102,7 +102,7 @@ val ChangeGroupScreen by navDestination<GroupEntity> {
 
 @Composable
 fun ChangeGroupScreenContent(
-    group: GroupEntity,
+    group: Group,
     changeGroupScreenViewModel: ChangeGroupScreenViewModel,
     groupId: State<Long>,
     groupName: State<String>,

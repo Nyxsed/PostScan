@@ -30,12 +30,12 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.util.Constants.mihonIntent
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 
-val CommentsScreen by navDestination<PostEntity> {
+val CommentsScreen by navDestination<Post> {
     val args = navArgs()
     val commentsScreenViewModel = koinViewModel<CommentsScreenViewModel>(
         key = args.postId.toString(),

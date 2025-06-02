@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
@@ -66,7 +66,7 @@ class GroupsScreenViewModel(
     private val _showCircularIndicator = MutableStateFlow(false)
     val showCircularIndicator: StateFlow<Boolean> = _showCircularIndicator.asStateFlow()
 
-    private var groupToDelete: GroupEntity? = null
+    private var groupToDelete: Group? = null
 
     fun deleteGroupWithPosts() {
         viewModelScope.launch {
@@ -93,7 +93,7 @@ class GroupsScreenViewModel(
         }
     }
 
-    fun navigateToChangeGroupScreen(param: GroupEntity) {
+    fun navigateToChangeGroupScreen(param: Group) {
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.NavigateToChangeGroup(ChangeGroupScreen, param))
         }
@@ -103,7 +103,7 @@ class GroupsScreenViewModel(
         _showAddDialog.value = !_showAddDialog.value
     }
 
-    fun toggleDeleteDialog(group: GroupEntity? = null) {
+    fun toggleDeleteDialog(group: Group? = null) {
         _showDeleteDialog.value = !_showDeleteDialog.value
         groupToDelete = group
     }
@@ -133,7 +133,7 @@ class GroupsScreenViewModel(
             try {
                 dbGroups.value.forEachIndexed { index, group ->
                     val postEntities = getPostsForGroupDateIntervalUseCase(
-                        groupEntity = group,
+                        group = group,
                         startDate = startDateUnix,
                         endDate = endDateUnix + 86399000
                     )

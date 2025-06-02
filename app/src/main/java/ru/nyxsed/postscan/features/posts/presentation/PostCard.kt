@@ -35,8 +35,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.uikit.components.MultipleImages
 import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
@@ -45,16 +45,16 @@ import ru.nyxsed.postscan.uikit.ui.theme.VkBlue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
-    post: PostEntity,
+    post: Post,
     settingUseMihon: Boolean,
-    onPostDeleteClicked: (PostEntity) -> Unit,
-    onLikeClicked: (PostEntity) -> Unit,
-    onToVkClicked: (PostEntity) -> Unit,
+    onPostDeleteClicked: (Post) -> Unit,
+    onLikeClicked: (Post) -> Unit,
+    onToVkClicked: (Post) -> Unit,
     onToMihonClicked: (String) -> Unit,
-    onTextLongClick: (PostEntity) -> Unit,
-    onImageClicked: (List<ContentEntity>, Int) -> Unit,
-    onCommentsClicked: (PostEntity) -> Unit,
-    onGroupClicked: (PostEntity) -> Unit,
+    onTextLongClick: (Post) -> Unit,
+    onImageClicked: (List<Content>, Int) -> Unit,
+    onCommentsClicked: (Post) -> Unit,
+    onGroupClicked: (Post) -> Unit,
 ) {
     Card {
         Column(
@@ -248,8 +248,8 @@ fun PostCard(
 
 @Composable
 fun PostHeader(
-    post: PostEntity,
-    onGroupClicked: (PostEntity) -> Unit,
+    post: Post,
+    onGroupClicked: (Post) -> Unit,
 ) {
     Row(
         modifier = Modifier

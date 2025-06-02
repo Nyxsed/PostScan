@@ -27,8 +27,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.CommentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Comment
+import ru.nyxsed.postscan.core.domain.models.entity.Content
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.uikit.components.MultipleImages
 import ru.nyxsed.postscan.uikit.ui.theme.VkBlue
@@ -36,12 +36,12 @@ import ru.nyxsed.postscan.uikit.ui.theme.VkBlue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CommentCard(
-    comment: CommentEntity,
-    replays: List<CommentEntity>,
+    comment: Comment,
+    replays: List<Comment>,
     settingUseMihon: Boolean,
-    onToMihonClicked: (CommentEntity) -> Unit,
+    onToMihonClicked: (Comment) -> Unit,
     onTextLongClick: (String) -> Unit,
-    onImageClicked: (List<ContentEntity>, Int) -> Unit,
+    onImageClicked: (List<Content>, Int) -> Unit,
 ) {
     Card {
         Column(

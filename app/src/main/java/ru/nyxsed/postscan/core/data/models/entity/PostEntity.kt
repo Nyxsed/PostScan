@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.core.domain.models.entity
+package ru.nyxsed.postscan.core.data.models.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

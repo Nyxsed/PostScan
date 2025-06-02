@@ -75,7 +75,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.SAUCENAO_SEARCH_URL
@@ -94,7 +94,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
     val navController = navController()
     val scope = CoroutineScope(Dispatchers.Main)
 
-    var content by remember { mutableStateOf<List<ContentEntity>>(imagePagerArgs.listContent) }
+    var content by remember { mutableStateOf<List<Content>>(imagePagerArgs.listContent) }
 
     val uriHandler = LocalUriHandler.current
     val pagerState = rememberPagerState(
@@ -380,7 +380,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                                 onClick = {
                                     imagePagerViewModel.openPostUri(
                                         uriHandler = uriHandler,
-                                        contentEntity = content[index]
+                                        content = content[index]
                                     )
                                 }
                             ) {
@@ -433,7 +433,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
 
 
 data class ImagePagerArgs(
-    val listContent: List<ContentEntity>,
+    val listContent: List<Content>,
     val index: Int,
 )
 

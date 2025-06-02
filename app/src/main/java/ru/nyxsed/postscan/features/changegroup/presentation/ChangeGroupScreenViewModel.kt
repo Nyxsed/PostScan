@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
@@ -98,7 +98,7 @@ class ChangeGroupScreenViewModel(
         viewModelScope.launch {
             val fetchDate = lastFetchDate.toDateLong()
 
-            val group = GroupEntity(
+            val group = Group(
                 groupId = groupId,
                 name = groupName,
                 screenName = screenName,
@@ -111,7 +111,7 @@ class ChangeGroupScreenViewModel(
         }
     }
 
-    fun openGroupUri(group: GroupEntity) {
+    fun openGroupUri(group: Group) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
@@ -122,7 +122,7 @@ class ChangeGroupScreenViewModel(
         }
     }
 
-    fun loadPosts(group: GroupEntity, startDate: String, endDate: String) {
+    fun loadPosts(group: Group, startDate: String, endDate: String) {
         val startDateUnix = startDate.toDateLong()
         val endDateUnix = endDate.toDateLong()
 
@@ -131,7 +131,7 @@ class ChangeGroupScreenViewModel(
             _showCircularIndicator.value = true
             try {
                 val postEntities = getPostsForGroupDateIntervalUseCase(
-                    groupEntity = group,
+                    group = group,
                     startDate = startDateUnix,
                     endDate = endDateUnix + 86399000
                 )
@@ -149,7 +149,7 @@ class ChangeGroupScreenViewModel(
         toggleDownloadDialog()
     }
 
-    fun deleteGroupWithPosts(group: GroupEntity) {
+    fun deleteGroupWithPosts(group: Group) {
         viewModelScope.launch {
             deleteGroupPostsUseCase(group)
         }

@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
 
 @Composable
 fun MultipleImages(
-    listContent: List<ContentEntity>,
+    listContent: List<Content>,
     onImageClicked: (Int) -> Unit,
 ) {
 
@@ -469,7 +469,7 @@ fun MultipleImages(
 @Composable
 fun ImageItem(
     modifier: Modifier,
-    content: ContentEntity,
+    content: Content,
     onImageClicked: () -> Unit,
 ) {
     Box(

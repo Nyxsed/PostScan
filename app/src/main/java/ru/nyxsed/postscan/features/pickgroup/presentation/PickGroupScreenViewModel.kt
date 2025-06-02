@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
@@ -40,9 +40,9 @@ class PickGroupScreenViewModel(
     private val _screenStateFlow = MutableStateFlow<PickGroupState>(PickGroupState.User())
     val screenStateFlow: StateFlow<PickGroupState> = _screenStateFlow.asStateFlow()
 
-    private val fetchedGroupsState = MutableStateFlow<List<GroupEntity>>(emptyList())
+    private val fetchedGroupsState = MutableStateFlow<List<Group>>(emptyList())
 
-    private val existingGroupsSate: StateFlow<List<GroupEntity>> = getAllGroupsUseCase()
+    private val existingGroupsSate: StateFlow<List<Group>> = getAllGroupsUseCase()
 
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -93,7 +93,7 @@ class PickGroupScreenViewModel(
         }
     }
 
-    fun addGroup(group: GroupEntity) {
+    fun addGroup(group: Group) {
         viewModelScope.launch {
             addGroupUseCase(group)
             getAllGroupsUseCase().collect {
@@ -121,12 +121,12 @@ class PickGroupScreenViewModel(
         }
     }
 
-    private var groupToDelete: GroupEntity? = null
+    private var groupToDelete: Group? = null
 
     private val _showDeleteDialog = MutableStateFlow(false)
     val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
 
-    fun toggleDeleteDialog(group: GroupEntity? = null) {
+    fun toggleDeleteDialog(group: Group? = null) {
         _showDeleteDialog.value = !_showDeleteDialog.value
         groupToDelete = group
     }
