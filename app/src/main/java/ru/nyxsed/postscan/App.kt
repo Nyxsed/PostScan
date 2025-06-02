@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import ru.nyxsed.postscan.core.di.coreModule
 import ru.nyxsed.postscan.core.di.dataStoreModule
 import ru.nyxsed.postscan.core.di.databaseModule
+import ru.nyxsed.postscan.core.di.mapperModule
 import ru.nyxsed.postscan.core.di.networkModule
 import ru.nyxsed.postscan.core.di.notificationModule
 import ru.nyxsed.postscan.core.di.repositoryModule
@@ -34,6 +35,7 @@ class App : Application() {
                 notificationModule,
                 dataStoreModule,
                 repositoryModule,
+                mapperModule,
                 coreModule,
                 postsModule,
                 preferencesModule,
