@@ -9,11 +9,12 @@ import ru.nyxsed.postscan.common.di.commonModule
 import ru.nyxsed.postscan.common.di.dbModule
 import ru.nyxsed.postscan.common.di.networkModule
 import ru.nyxsed.postscan.common.di.utilModule
+import ru.nyxsed.postscan.features.changegroup.di.changeGroupModule
 import ru.nyxsed.postscan.features.comments.di.commentsModule
 import ru.nyxsed.postscan.features.groups.di.groupsModule
-import ru.nyxsed.postscan.features.imagepager.di.imagepagerModule
+import ru.nyxsed.postscan.features.imagepager.di.imagePagerModule
 import ru.nyxsed.postscan.features.login.di.loginModule
-import ru.nyxsed.postscan.features.pickgroup.di.pickgroupModule
+import ru.nyxsed.postscan.features.pickgroup.di.pickGroupModule
 import ru.nyxsed.postscan.features.preferences.di.preferencesModule
 import java.util.Locale
 
@@ -34,9 +35,10 @@ class App : Application() {
                 preferencesModule,
                 loginModule,
                 commentsModule,
-                imagepagerModule,
-                pickgroupModule,
-                groupsModule
+                imagePagerModule,
+                pickGroupModule,
+                groupsModule,
+                changeGroupModule
             )
         }
     }

@@ -7,7 +7,7 @@ import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.SearchGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreenViewModel
 
-val pickgroupModule = module {
+val pickGroupModule = module {
     factory { GetGroupsUseCase(get()) }
     factory { SearchGroupsUseCase(get()) }
     factory { AddGroupUseCase(get()) }

@@ -23,6 +23,7 @@ import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.UpdateGroupUseCase
 import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 
@@ -68,4 +69,5 @@ val commonModule = module {
     factory { DeleteGroupPostsUseCase(get()) }
     factory { AddPostUseCase(get()) }
     factory { GetPostsForGroupDateIntervalUseCase(get()) }
+    factory { UpdateGroupUseCase(get()) }
 }

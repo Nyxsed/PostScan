@@ -6,7 +6,7 @@ import ru.nyxsed.postscan.features.imagepager.domain.usecase.ChangeLikeStatusUse
 import ru.nyxsed.postscan.features.imagepager.domain.usecase.CheckLikeStatusUseCase
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerViewModel
 
-val imagepagerModule = module {
+val imagePagerModule = module {
     factory { CheckLikeStatusUseCase(get()) }
     factory { ChangeLikeStatusUseCase(get()) }
 
