@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.groupsscreen
+package ru.nyxsed.postscan.features.groups.presentation
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons

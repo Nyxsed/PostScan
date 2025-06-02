@@ -4,7 +4,6 @@ package ru.nyxsed.postscan.common.di
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreenViewModel
-import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreenViewModel
 import ru.nyxsed.postscan.common.presentation.screens.postsscreen.PostsScreenViewModel
 
 val appModule = module {
@@ -16,16 +15,6 @@ val appModule = module {
             dataStoreRepository = get(),
             connectionChecker = get(),
             resources = get()
-        )
-    }
-
-    viewModel<GroupsScreenViewModel> {
-        GroupsScreenViewModel(
-            dbRepository = get(),
-            connectionChecker = get(),
-            resources = get(),
-            vkRepository = get(),
-            dataStoreRepository = get()
         )
     }
 

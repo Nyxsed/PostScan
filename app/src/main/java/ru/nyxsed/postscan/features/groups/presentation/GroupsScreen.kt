@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.groupsscreen
+package ru.nyxsed.postscan.features.groups.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +44,7 @@ import ru.nyxsed.postscan.common.presentation.elements.AddModalDialog
 import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.common.presentation.elements.DeleteModalDialog
 import ru.nyxsed.postscan.common.presentation.elements.DownloadModalDialog
+import ru.nyxsed.postscan.common.presentation.elements.GroupCard
 import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
 import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification

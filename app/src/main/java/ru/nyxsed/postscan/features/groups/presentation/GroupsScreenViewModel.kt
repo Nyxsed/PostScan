@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.groupsscreen
+package ru.nyxsed.postscan.features.groups.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,25 +12,37 @@ import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
-import ru.nyxsed.postscan.common.domain.repository.DbRepository
-import ru.nyxsed.postscan.common.domain.repository.VkRepository
-import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.usecase.AddPostUseCase
+import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupPostsUseCase
+import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetAllGroupsUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetPostsForGroupDateIntervalUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
+import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.common.util.Constants.toDateLong
 import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.features.groups.domain.usecase.DeleteAllPostsUseCase
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreen
 
 class GroupsScreenViewModel(
-    private val dbRepository: DbRepository,
-    private val connectionChecker: ConnectionChecker,
-    private val resources: CustomResourcesProvider,
-    private val vkRepository: VkRepository,
-    private val dataStoreRepository: DataStoreRepository,
+    private val customResourceProvider: CustomResourcesProvider,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
+    private val isTokenValidUseCase: IsTokenValidUseCase,
+    private val getSettingUseCase: GetSettingUseCase,
+    private val setSettingUseCase: SetSettingUseCase,
+    private val getAllGroupsUseCase: GetAllGroupsUseCase,
+    private val deleteGroupUseCase: DeleteGroupUseCase,
+    private val deleteGroupPostsUseCase: DeleteGroupPostsUseCase,
+    private val deleteAllPostsUseCase: DeleteAllPostsUseCase,
+    private val addPostUseCase: AddPostUseCase,
+    private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,
 ) : ViewModel() {
-    val dbGroups = dbRepository.getAllGroups()
+    val dbGroups = getAllGroupsUseCase()
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
@@ -56,20 +68,20 @@ class GroupsScreenViewModel(
 
     fun deleteGroupWithPosts() {
         viewModelScope.launch {
-            dbRepository.deleteGroup(groupToDelete!!)
-            dbRepository.deleteAllPostsForGroup(groupToDelete!!)
+            deleteGroupUseCase(groupToDelete!!)
+            deleteGroupPostsUseCase(groupToDelete!!)
             toggleDeleteDialog()
         }
     }
 
     fun navigateToPickScreen(param: String) {
         viewModelScope.launch {
-            if (!connectionChecker.isInternetAvailable()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(resources.getString(R.string.no_internet_connection)))
+            if (!isInternetAvailableUseCase()) {
+                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
                 return@launch
             }
 
-            if (!connectionChecker.isTokenValid()) {
+            if (!isTokenValidUseCase()) {
                 _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
                 return@launch
             }
@@ -100,7 +112,7 @@ class GroupsScreenViewModel(
 
     fun deleteAllPosts() {
         viewModelScope.launch {
-            dbRepository.deleteAllPosts()
+            deleteAllPostsUseCase()
             toggleDeleteAllDialog()
         }
     }
@@ -118,13 +130,13 @@ class GroupsScreenViewModel(
             _showCircularIndicator.value = true
             try {
                 dbGroups.value.forEachIndexed { index, group ->
-                    val postEntities = vkRepository.getPostsForGroupDateInterval(
+                    val postEntities = getPostsForGroupDateIntervalUseCase(
                         groupEntity = group,
                         startDate = startDateUnix,
                         endDate = endDateUnix + 86399000
                     )
                     postEntities.forEach { post ->
-                        dbRepository.addPost(post)
+                        addPostUseCase(post)
                     }
 
                     val percentage = (index + 1) * 100 / dbGroups.value.size
@@ -150,12 +162,12 @@ class GroupsScreenViewModel(
     }
 
     suspend fun getSettingBoolean(key: SettingKey): Boolean {
-        return dataStoreRepository.getBoolean(key)
+        return getSettingUseCase(key)
     }
 
     fun setSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            dataStoreRepository.setBoolean(key, value)
+            setSettingUseCase(key, value)
         }
     }
 }

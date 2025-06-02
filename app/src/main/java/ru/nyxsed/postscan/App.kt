@@ -10,6 +10,7 @@ import ru.nyxsed.postscan.common.di.dbModule
 import ru.nyxsed.postscan.common.di.networkModule
 import ru.nyxsed.postscan.common.di.utilModule
 import ru.nyxsed.postscan.features.comments.di.commentsModule
+import ru.nyxsed.postscan.features.groups.di.groupsModule
 import ru.nyxsed.postscan.features.imagepager.di.imagepagerModule
 import ru.nyxsed.postscan.features.login.di.loginModule
 import ru.nyxsed.postscan.features.pickgroup.di.pickgroupModule
@@ -34,7 +35,8 @@ class App : Application() {
                 loginModule,
                 commentsModule,
                 imagepagerModule,
-                pickgroupModule
+                pickgroupModule,
+                groupsModule
             )
         }
     }
