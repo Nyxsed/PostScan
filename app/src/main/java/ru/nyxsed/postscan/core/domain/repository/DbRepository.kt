@@ -2,19 +2,19 @@ package ru.nyxsed.postscan.core.domain.repository
 
 import android.net.Uri
 import kotlinx.coroutines.flow.StateFlow
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 
 interface DbRepository {
-    fun getAllPosts(): StateFlow<List<PostEntity>>
-    suspend fun addPost(post: PostEntity)
-    suspend fun deletePost(post: PostEntity)
-    suspend fun deleteAllPostsForGroup(group: GroupEntity)
-    suspend fun updatePost(post: PostEntity)
-    fun getAllGroups(): StateFlow<List<GroupEntity>>
-    suspend fun addGroup(group: GroupEntity)
-    suspend fun deleteGroup(group: GroupEntity)
-    suspend fun updateGroup(group: GroupEntity)
+    fun getAllPosts(): StateFlow<List<Post>>
+    suspend fun addPost(post: Post)
+    suspend fun deletePost(post: Post)
+    suspend fun deleteAllPostsForGroup(group: Group)
+    suspend fun updatePost(post: Post)
+    fun getAllGroups(): StateFlow<List<Group>>
+    suspend fun addGroup(group: Group)
+    suspend fun deleteGroup(group: Group)
+    suspend fun updateGroup(group: Group)
     suspend fun deleteAllPosts()
     fun exportDatabase(uri: Uri): Boolean
     fun importDatabase(uri: Uri) : Boolean

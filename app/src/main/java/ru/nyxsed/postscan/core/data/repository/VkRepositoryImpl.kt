@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.stateIn
 import ru.nyxsed.postscan.core.data.mapper.VkMapper
 import ru.nyxsed.postscan.core.data.network.ApiService
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
+import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.core.domain.repository.VkRepository
 
@@ -44,8 +44,8 @@ class VkRepositoryImpl(
                 initialValue = listOf()
             )
 
-    override suspend fun searchGroups(searchQuery: String): List<GroupEntity> {
-        val result = mutableListOf<GroupEntity>()
+    override suspend fun searchGroups(searchQuery: String): List<Group> {
+        val result = mutableListOf<Group>()
 
 
         val responseById = apiService.groupsGetById(
@@ -71,16 +71,16 @@ class VkRepositoryImpl(
     }
 
     // post
-    override suspend fun getPostsForGroup(groupEntity: GroupEntity): List<PostEntity> {
+    override suspend fun getPostsForGroup(group: Group): List<Post> {
         var offset: Int = 0
-        val posts = mutableListOf<PostEntity>()
-        val lastFetchDate = groupEntity.lastFetchDate
+        val posts = mutableListOf<Post>()
+        val lastFetchDate = group.lastFetchDate
         val notLoadLikedPosts = dataStoreRepository.getBoolean(SettingKey.NOT_LOAD_LIKED_POSTS)
 
         while (true) {
             val response = apiService.wallGet(
                 token = getAccessToken(),
-                ownerId = (groupEntity.groupId.times(-1)).toString(),
+                ownerId = (group.groupId.times(-1)).toString(),
                 offset = offset
             )
             val error = response.error?.errorMsg
@@ -115,15 +115,15 @@ class VkRepositoryImpl(
     }
 
     // post
-    override suspend fun getPostsForGroupDateInterval(groupEntity: GroupEntity, startDate: Long, endDate: Long): List<PostEntity> {
+    override suspend fun getPostsForGroupDateInterval(group: Group, startDate: Long, endDate: Long): List<Post> {
         var offset: Int = 0
-        val posts = mutableListOf<PostEntity>()
+        val posts = mutableListOf<Post>()
         val notLoadLikedPosts = dataStoreRepository.getBoolean(SettingKey.NOT_LOAD_LIKED_POSTS)
 
         while (true) {
             val response = apiService.wallGet(
                 token = getAccessToken(),
-                ownerId = (groupEntity.groupId.times(-1)).toString(),
+                ownerId = (group.groupId.times(-1)).toString(),
                 offset = offset
             )
             val error = response.error?.errorMsg
@@ -158,7 +158,7 @@ class VkRepositoryImpl(
         return posts.toList()
     }
 
-    override suspend fun changePostLikeStatus(post: PostEntity) {
+    override suspend fun changePostLikeStatus(post: Post) {
         val response = if (!post.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
@@ -181,20 +181,20 @@ class VkRepositoryImpl(
     }
 
     // content
-    override suspend fun changeContentLikeStatus(contentEntity: ContentEntity) {
-        val response = if (!contentEntity.isLiked) {
+    override suspend fun changeContentLikeStatus(content: Content) {
+        val response = if (!content.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
-                ownerId = contentEntity.ownerId,
-                itemId = contentEntity.contentId,
-                type = if (contentEntity.type == "album") "photo" else contentEntity.type
+                ownerId = content.ownerId,
+                itemId = content.contentId,
+                type = if (content.type == "album") "photo" else content.type
             )
         } else {
             apiService.deleteLike(
                 token = getAccessToken(),
-                ownerId = contentEntity.ownerId,
-                itemId = contentEntity.contentId,
-                type = if (contentEntity.type == "album") "photo" else contentEntity.type
+                ownerId = content.ownerId,
+                itemId = content.contentId,
+                type = if (content.type == "album") "photo" else content.type
             )
         }
         val error = response.error?.errorMsg
@@ -203,18 +203,18 @@ class VkRepositoryImpl(
         }
     }
 
-    override suspend fun checkContentLikeStatus(contentEntity: ContentEntity): Boolean {
+    override suspend fun checkContentLikeStatus(content: Content): Boolean {
         val response = apiService.isLiked(
             token = getAccessToken(),
-            ownerId = contentEntity.ownerId,
-            itemId = contentEntity.contentId,
-            type = if (contentEntity.type == "album") "photo" else contentEntity.type
+            ownerId = content.ownerId,
+            itemId = content.contentId,
+            type = if (content.type == "album") "photo" else content.type
         )
         return response.response?.liked == 1
     }
 
     // comments TODO обертку для состояния
-    override fun getCommentsStateFlow(post: PostEntity) =
+    override fun getCommentsStateFlow(post: Post) =
         flow {
             val response = apiService.wallGetComments(
                 token = getAccessToken(),

@@ -6,13 +6,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import ru.nyxsed.postscan.core.data.database.DbDao
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.data.mapper.ContentMapper.toDomain
+import ru.nyxsed.postscan.core.data.mapper.ContentMapper.toEntity
+import ru.nyxsed.postscan.core.data.mapper.GroupMapper.toDomain
+import ru.nyxsed.postscan.core.data.mapper.GroupMapper.toEntity
+import ru.nyxsed.postscan.core.data.mapper.PostMapper.toDomain
+import ru.nyxsed.postscan.core.data.mapper.PostMapper.toEntity
+import ru.nyxsed.postscan.core.data.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.data.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
+import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.domain.repository.DbRepository
 import java.io.File
 import java.io.IOException
+import kotlin.collections.map
 
 class DbRepositoryImpl(
     private val dbDao: DbDao,
@@ -22,49 +33,73 @@ class DbRepositoryImpl(
     val scope = CoroutineScope(Dispatchers.Default)
 
     // posts
-    override fun getAllPosts(): StateFlow<List<PostEntity>> =
+    override fun getAllPosts(): StateFlow<List<Post>> =
         dbDao.getAllPosts()
+            .map { entityList ->
+                entityList.map { postEntity ->
+                    val contentList: List<Content> = postEntity.content.map { it.toDomain() }
+                    postEntity.toDomain(contentList)
+                }
+            }
             .stateIn(
                 scope = scope,
                 started = SharingStarted.Eagerly,
                 initialValue = listOf()
             )
 
-    override suspend fun addPost(post: PostEntity) {
-        dbDao.insertPost(post)
+    override suspend fun addPost(post: Post) {
+        val contentList: List<ContentEntity> = post.content.map {
+            it.toEntity()
+        }
+        val postEntity: PostEntity = post.toEntity(contentList)
+        dbDao.insertPost(postEntity)
     }
 
-    override suspend fun deletePost(post: PostEntity) {
-        dbDao.deletePost(post)
+    override suspend fun deletePost(post: Post) {
+        val contentList: List<ContentEntity> = post.content.map {
+            it.toEntity()
+        }
+        val postEntity: PostEntity = post.toEntity(contentList)
+        dbDao.deletePost(postEntity)
     }
 
-    override suspend fun deleteAllPostsForGroup(group: GroupEntity) {
+    override suspend fun deleteAllPostsForGroup(group: Group) {
         dbDao.deleteAllPostsForGroup(group.groupId)
     }
 
-    override suspend fun updatePost(post: PostEntity) {
-        dbDao.updatePost(post)
+    override suspend fun updatePost(post: Post) {
+        val contentList: List<ContentEntity> = post.content.map {
+            it.toEntity()
+        }
+        val postEntity: PostEntity = post.toEntity(contentList)
+        dbDao.updatePost(postEntity)
     }
 
     // groups
-    override fun getAllGroups(): StateFlow<List<GroupEntity>> =
+    override fun getAllGroups(): StateFlow<List<Group>> =
         dbDao.getAllGroups()
+            .map { entityList ->
+                entityList.map {
+                    it.toDomain()
+                }
+            }
             .stateIn(
                 scope = scope,
                 started = SharingStarted.Eagerly,
                 initialValue = listOf()
             )
 
-    override suspend fun addGroup(group: GroupEntity) {
-        dbDao.insertGroup(group)
+    override suspend fun addGroup(group: Group) {
+
+        dbDao.insertGroup(group.toEntity())
     }
 
-    override suspend fun deleteGroup(group: GroupEntity) {
-        dbDao.deleteGroup(group)
+    override suspend fun deleteGroup(group: Group) {
+        dbDao.deleteGroup(group.toEntity())
     }
 
-    override suspend fun updateGroup(group: GroupEntity) {
-        dbDao.updateGroup(group)
+    override suspend fun updateGroup(group: Group) {
+        dbDao.updateGroup(group.toEntity())
     }
 
     override suspend fun deleteAllPosts() {
@@ -79,20 +114,20 @@ class DbRepositoryImpl(
             return false
         }
 
-         try {
-             context.contentResolver.openOutputStream(uri)?.use { output ->
-                 dbFile.inputStream().use { input ->
-                     input.copyTo(output)
-                 }
-             }
-             return true
+        try {
+            context.contentResolver.openOutputStream(uri)?.use { output ->
+                dbFile.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+            }
+            return true
         } catch (e: IOException) {
             e.printStackTrace()
-             return false
+            return false
         }
     }
 
-    override fun importDatabase(uri: Uri) : Boolean {
+    override fun importDatabase(uri: Uri): Boolean {
         val dbPath = context.getDatabasePath("app_database")
         context.deleteDatabase("app_database")
 

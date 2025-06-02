@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
@@ -106,13 +106,13 @@ class PostsScreenViewModel(
         }
     }
 
-    fun addPost(post: PostEntity) {
+    fun addPost(post: Post) {
         viewModelScope.launch {
             addPostUseCase(post)
         }
     }
 
-    fun deletePost(post: PostEntity, context: Context, snackbarHostState: SnackbarHostState) {
+    fun deletePost(post: Post, context: Context, snackbarHostState: SnackbarHostState) {
         viewModelScope.launch {
             if (posts.value.filter { it.ownerId == post.ownerId }.size == 1) {
                 selectGroup(0L)
@@ -132,7 +132,7 @@ class PostsScreenViewModel(
     }
 
     fun changeLikeStatus(
-        post: PostEntity,
+        post: Post,
         settingDeleteAfterLike: Boolean,
         context: Context,
         snackbarHostState: SnackbarHostState,
@@ -160,19 +160,19 @@ class PostsScreenViewModel(
         }
     }
 
-    suspend fun changeLikeStatusVK(post: PostEntity) {
+    suspend fun changeLikeStatusVK(post: Post) {
         changePostLikeStatusUseCase(post)
     }
 
-    suspend fun changeLikeStatusDb(post: PostEntity) {
+    suspend fun changeLikeStatusDb(post: Post) {
         updatePostUseCase(post.copy(isLiked = !post.isLiked))
     }
 
-    fun openPostUri(uriHandler: UriHandler, post: PostEntity) {
+    fun openPostUri(uriHandler: UriHandler, post: Post) {
         uriHandler.openUri("${VK_WALL_URL}${post.ownerId}_${post.postId}")
     }
 
-    fun openGroupUri(uriHandler: UriHandler, group: GroupEntity) {
+    fun openGroupUri(uriHandler: UriHandler, group: Group) {
         uriHandler.openUri("${VK_URL}${group.screenName}")
     }
 
@@ -218,7 +218,7 @@ class PostsScreenViewModel(
         }
     }
 
-    fun toComments(post: PostEntity) {
+    fun toComments(post: Post) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))

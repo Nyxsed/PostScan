@@ -39,7 +39,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -106,7 +106,7 @@ val GroupsScreen by navDestination<Unit> {
 fun GroupScreenContent(
     groupScreenViewModel: GroupsScreenViewModel,
     scrollBehavior: TopAppBarScrollBehavior,
-    groupsState: State<List<GroupEntity>>,
+    groupsState: State<List<Group>>,
     showAddDialog: State<Boolean>,
     showDeleteDialog: State<Boolean>,
     showDeleteAllDialog: State<Boolean>,

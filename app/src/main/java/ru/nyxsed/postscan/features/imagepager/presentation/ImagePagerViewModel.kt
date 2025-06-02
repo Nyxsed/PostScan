@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Content
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
@@ -34,10 +34,10 @@ class ImagePagerViewModel(
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    fun changeLikeStatus(contentEntity: ContentEntity) {
+    fun changeLikeStatus(content: Content) {
         viewModelScope.launch {
             try {
-                changeContentLikeStatusUseCase(contentEntity)
+                changeContentLikeStatusUseCase(content)
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
             }
@@ -51,12 +51,12 @@ class ImagePagerViewModel(
         }
     }
 
-    suspend fun checkLikeStatus(contentEntity: ContentEntity): Boolean {
-        return checkContentLikeStatusUseCase(contentEntity)
+    suspend fun checkLikeStatus(content: Content): Boolean {
+        return checkContentLikeStatusUseCase(content)
     }
 
-    fun openPostUri(uriHandler: UriHandler, contentEntity: ContentEntity) {
-        uriHandler.openUri("${VK_PHOTO_URL}${contentEntity.ownerId}_${contentEntity.contentId}")
+    fun openPostUri(uriHandler: UriHandler, content: Content) {
+        uriHandler.openUri("${VK_PHOTO_URL}${content.ownerId}_${content.contentId}")
     }
 
     fun findImage(uriHandler: UriHandler, link: String, source: String) {

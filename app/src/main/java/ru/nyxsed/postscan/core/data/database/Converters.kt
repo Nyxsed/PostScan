@@ -3,7 +3,7 @@ package ru.nyxsed.postscan.core.data.database
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.data.models.entity.ContentEntity
 
 class Converters {
     private val gson = Gson()

@@ -6,17 +6,17 @@ import ru.nyxsed.postscan.core.data.models.response.newsfeedget.WallGetResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.ItemResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.ProfilesResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.WallGetCommentsResponse
-import ru.nyxsed.postscan.core.domain.models.entity.CommentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.models.entity.Comment
+import ru.nyxsed.postscan.core.domain.models.entity.Content
+import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.util.Constants.findOrFirst
 import ru.nyxsed.postscan.core.util.Constants.findOrLast
 import kotlin.math.absoluteValue
 
 class VkMapper {
-    fun mapWallGetResponseToPosts(response: WallGetResponse): List<PostEntity> {
-        val result = mutableListOf<PostEntity>()
+    fun mapWallGetResponseToPosts(response: WallGetResponse): List<Post> {
+        val result = mutableListOf<Post>()
 
         val posts = response.content?.items
         val groups = response.content?.groups
@@ -25,29 +25,29 @@ class VkMapper {
             for (post in posts) {
                 val group = groups?.find { it.id == post.ownerId.absoluteValue } ?: continue
 
-                val listContentEntity: MutableList<ContentEntity> = mutableListOf()
+                val listContent: MutableList<Content> = mutableListOf()
 
                 post.attachments?.forEach { attachment ->
                     val content = getContentEntity(attachment)
                     if (content != null) {
-                        listContentEntity.add(content)
+                        listContent.add(content)
                     }
                 }
 
                 val copyHistory = post.copyHistory
                 copyHistory?.forEach { repost ->
-                    val listRepostContentEntity: MutableList<ContentEntity> = mutableListOf()
+                    val listRepostContent: MutableList<Content> = mutableListOf()
 
                     repost.attachments?.forEach { attachment ->
                         val content = getContentEntity(attachment)
                         if (content != null) {
-                            listRepostContentEntity.add(content)
+                            listRepostContent.add(content)
                         }
                     }
-                    listContentEntity.addAll(listRepostContentEntity)
+                    listContent.addAll(listRepostContent)
                 }
 
-                val postEnt = PostEntity(
+                val postEnt = Post(
                     postId = post.id,
                     ownerId = post.ownerId,
                     ownerName = group.name,
@@ -55,7 +55,7 @@ class VkMapper {
                     publicationDate = post.date * 1000,
                     contentText = post.text,
                     isLiked = post.likes.userLikes > 0,
-                    content = listContentEntity,
+                    content = listContent,
                     haveReposts = if (copyHistory.isNullOrEmpty()) false else true
                 )
 
@@ -66,39 +66,39 @@ class VkMapper {
         return result
     }
 
-    fun mapGroupsGetResponseToGroups(response: GroupsGetResponse): List<GroupEntity> {
-        val result = mutableListOf<GroupEntity>()
+    fun mapGroupsGetResponseToGroups(response: GroupsGetResponse): List<Group> {
+        val result = mutableListOf<Group>()
 
         val items = response.response?.items
         val groups = response.response?.groups
 
-        items?.forEach { group ->
-            val groupEntity = GroupEntity(
-                groupId = group.id,
-                name = group.name,
-                screenName = group.screenName,
-                avatarUrl = group.photo50,
+        items?.forEach { groupItem ->
+            val group = Group(
+                groupId = groupItem.id,
+                name = groupItem.name,
+                screenName = groupItem.screenName,
+                avatarUrl = groupItem.photo50,
                 lastFetchDate = System.currentTimeMillis()
             )
-            result.add(groupEntity)
+            result.add(group)
         }
 
-        groups?.forEach { group ->
-            val groupEntity = GroupEntity(
-                groupId = group.id,
-                name = group.name,
-                screenName = group.screenName,
-                avatarUrl = group.photo50,
+        groups?.forEach { groupItem ->
+            val group = Group(
+                groupId = groupItem.id,
+                name = groupItem.name,
+                screenName = groupItem.screenName,
+                avatarUrl = groupItem.photo50,
                 lastFetchDate = System.currentTimeMillis()
             )
-            result.add(groupEntity)
+            result.add(group)
         }
 
         return result
     }
 
-    fun mapWallGetCommentsResponseToComments(response: WallGetCommentsResponse): List<CommentEntity> {
-        val result = mutableListOf<CommentEntity>()
+    fun mapWallGetCommentsResponseToComments(response: WallGetCommentsResponse): List<Comment> {
+        val result = mutableListOf<Comment>()
 
         val comments = response.content?.items
         val profiles = response.content?.profiles
@@ -132,29 +132,29 @@ class VkMapper {
         return result
     }
 
-    private fun getCommentEntity(comment: ItemResponse, profile: ProfilesResponse): CommentEntity {
-        val listContentEntity: MutableList<ContentEntity> = mutableListOf()
+    private fun getCommentEntity(comment: ItemResponse, profile: ProfilesResponse): Comment {
+        val listContent: MutableList<Content> = mutableListOf()
 
         comment.attachments?.forEach { attachment ->
             val content = getContentEntity(attachment)
             if (content != null) {
-                listContentEntity.add(content)
+                listContent.add(content)
             }
         }
 
-        return CommentEntity(
+        return Comment(
             commentId = comment.commentId,
             ownerId = comment.ownerId,
             ownerName = "${profile.firstName} ${profile.lastName}",
             ownerImageUrl = profile.photo50,
             publicationDate = comment.date,
             contentText = comment.text,
-            content = listContentEntity,
+            content = listContent,
             parentStack = comment.parentsStack.firstOrNull()
         )
     }
 
-    private fun getContentEntity(attachment: AttachmentResponse): ContentEntity? {
+    private fun getContentEntity(attachment: AttachmentResponse): Content? {
         var contentId: Long = 0
         var ownerId: Long = 0
         var type: String = ""
@@ -222,7 +222,7 @@ class VkMapper {
         }
 
         return if (contentId != 0L) {
-            ContentEntity(
+            Content(
                 contentId = contentId,
                 ownerId = ownerId,
                 type = type,
