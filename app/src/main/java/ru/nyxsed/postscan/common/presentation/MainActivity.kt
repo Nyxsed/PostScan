@@ -25,9 +25,9 @@ import org.koin.android.ext.android.inject
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
-import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.common.presentation.screens.postsscreen.PostsScreen
 import ru.nyxsed.postscan.common.presentation.ui.theme.PostScanTheme
+import ru.nyxsed.postscan.features.changegroup.presentation.ChangeGroupScreen
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
 import ru.nyxsed.postscan.features.groups.presentation.GroupsScreen
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen

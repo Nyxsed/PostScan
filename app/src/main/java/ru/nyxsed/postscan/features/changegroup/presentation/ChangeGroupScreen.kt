@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.changegroupscreen
+package ru.nyxsed.postscan.features.changegroup.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
