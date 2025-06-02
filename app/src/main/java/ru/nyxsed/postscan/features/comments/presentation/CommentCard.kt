@@ -27,11 +27,11 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.entity.CommentEntity
-import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
-import ru.nyxsed.postscan.common.presentation.elements.MultipleImages
-import ru.nyxsed.postscan.common.presentation.ui.theme.VkBlue
-import ru.nyxsed.postscan.common.util.Constants.toStringDate
+import ru.nyxsed.postscan.core.domain.models.entity.CommentEntity
+import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.util.Constants.toStringDate
+import ru.nyxsed.postscan.uikit.components.MultipleImages
+import ru.nyxsed.postscan.uikit.ui.theme.VkBlue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

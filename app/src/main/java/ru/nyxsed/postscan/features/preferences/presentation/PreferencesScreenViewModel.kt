@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.domain.usecase.GetSettingBooleanUseCase
-import ru.nyxsed.postscan.common.domain.usecase.SetSettingBooleanUseCase
-import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
+import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 

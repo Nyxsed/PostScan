@@ -1,9 +1,9 @@
 package ru.nyxsed.postscan.features.comments.presentation
 
 import androidx.lifecycle.ViewModel
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
-import ru.nyxsed.postscan.common.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.features.comments.domain.usecase.GetCommentsUseCase
 
 class CommentsScreenViewModel(

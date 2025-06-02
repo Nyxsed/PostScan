@@ -1,0 +1,12 @@
+package ru.nyxsed.postscan.core.domain.models
+
+enum class SettingKey {
+    NOT_LOAD_LIKED_POSTS,
+    USE_MIHON,
+    DELETE_AFTER_LIKE,
+    SHOWED_TUTORIAL_POSTS,
+    SHOWED_TUTORIAL_GROUPS,
+    SHOWED_TUTORIAL_IMAGE,
+    NOTIFICATION_PERMISSION_REQUESTED,
+    SORT_OPTION,
+}

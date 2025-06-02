@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.util.UiEvent
 
 val PreferencesScreen by navDestination<Unit> {
     val preferencesViewModel = koinViewModel<PreferencesScreenViewModel>()
