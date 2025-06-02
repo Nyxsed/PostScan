@@ -13,9 +13,5 @@ sealed class UiEvent {
     class NavigateToPicker(val destination: NavDestination<String>, val navArgs: String) : UiEvent()
     class NavigateToChangeGroup(val destination: NavDestination<GroupEntity>, val navArgs: GroupEntity) : UiEvent()
     class Scroll() : UiEvent()
-    class InitNotification() : UiEvent()
-    class ErrorNotification(val message: String) : UiEvent()
-    class UpdateNotification(val percent: Int) : UiEvent()
-    class CompleteNotification() : UiEvent()
     class UpdateStatus(val status: Boolean) : UiEvent()
 }

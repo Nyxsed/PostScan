@@ -22,6 +22,7 @@ import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.changegroup.presentation.ChangeGroupScreen
@@ -41,6 +42,7 @@ class GroupsScreenViewModel(
     private val deleteAllPostsUseCase: DeleteAllPostsUseCase,
     private val addPostUseCase: AddPostUseCase,
     private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,
+    private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
     val dbGroups = getAllGroupsUseCase()
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
@@ -126,7 +128,7 @@ class GroupsScreenViewModel(
         val endDateUnix = endDate.toDateLong()
 
         viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.InitNotification())
+            notificationHelper.initNotification()
             _showCircularIndicator.value = true
             try {
                 dbGroups.value.forEachIndexed { index, group ->
@@ -140,14 +142,14 @@ class GroupsScreenViewModel(
                     }
 
                     val percentage = (index + 1) * 100 / dbGroups.value.size
-                    _uiEventFlow.emit(UiEvent.UpdateNotification(percentage))
+                    notificationHelper.updateProgressNotification(percentage)
 
                 }
-                _uiEventFlow.emit(UiEvent.CompleteNotification())
+                notificationHelper.completeNotification()
                 _showCircularIndicator.value = false
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
-                _uiEventFlow.emit(UiEvent.ErrorNotification(e.message!!))
+                notificationHelper.errorNotification(e.message!!)
                 _showCircularIndicator.value = false
             }
         }

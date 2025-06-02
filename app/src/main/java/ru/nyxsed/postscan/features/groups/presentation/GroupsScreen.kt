@@ -40,10 +40,6 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.errorNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.initNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.updateProgress
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -87,18 +83,6 @@ val GroupsScreen by navDestination<Unit> {
                 is UiEvent.NavigateToChangeGroup ->
                     navController.navigate(event.destination, event.navArgs)
 
-                is UiEvent.InitNotification ->
-                    initNotification(context)
-
-                is UiEvent.ErrorNotification ->
-                    errorNotification(context, event.message)
-
-                is UiEvent.UpdateNotification ->
-                    updateProgress(context, event.percent)
-
-                is UiEvent.CompleteNotification ->
-                    completeNotification(context)
-
                 else -> {}
             }
         }
@@ -128,7 +112,7 @@ fun GroupScreenContent(
     showDeleteAllDialog: State<Boolean>,
     showDownloadDialog: State<Boolean>,
     showedTutorial: State<Boolean>,
-    showCircularIndicator: State<Boolean>
+    showCircularIndicator: State<Boolean>,
 ) {
     IntroShowcase(
         showIntroShowCase = !showedTutorial.value,

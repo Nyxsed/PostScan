@@ -37,9 +37,6 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
-import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.errorNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.initNotification
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import ru.nyxsed.postscan.uikit.components.DatePickerTextField
@@ -80,15 +77,6 @@ val ChangeGroupScreen by navDestination<GroupEntity> {
 
                 is UiEvent.OpenUrl ->
                     uriHandler.openUri(event.url)
-
-                is UiEvent.InitNotification ->
-                    initNotification(context)
-
-                is UiEvent.ErrorNotification ->
-                    errorNotification(context, event.message)
-
-                is UiEvent.CompleteNotification ->
-                    completeNotification(context)
 
                 is UiEvent.NavigateBack ->
                     navController.back()
@@ -232,7 +220,7 @@ fun ChangeGroupScreenContent(
             title = stringResource(R.string.delete_posts),
             description = stringResource(R.string.do_you_want_to_delete_all_posts_for_this_group),
             showDialog = showDeleteDialog.value,
-            onDismiss ={
+            onDismiss = {
                 changeGroupScreenViewModel.toggleDeleteDialog()
             },
             onConfirmClicked = {

@@ -17,6 +17,7 @@ import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCas
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
+import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
 import ru.nyxsed.postscan.core.util.UiEvent
@@ -28,6 +29,7 @@ class ChangeGroupScreenViewModel(
     private val addPostUseCase: AddPostUseCase,
     private val deleteGroupPostsUseCase: DeleteGroupPostsUseCase,
     private val updateGroupUseCase: UpdateGroupUseCase,
+    private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
@@ -125,7 +127,7 @@ class ChangeGroupScreenViewModel(
         val endDateUnix = endDate.toDateLong()
 
         viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.InitNotification())
+            notificationHelper.initNotification()
             _showCircularIndicator.value = true
             try {
                 val postEntities = getPostsForGroupDateIntervalUseCase(
@@ -136,11 +138,11 @@ class ChangeGroupScreenViewModel(
                 postEntities.forEach { post ->
                     addPostUseCase(post)
                 }
-                _uiEventFlow.emit(UiEvent.CompleteNotification())
+                notificationHelper.completeNotification()
                 _showCircularIndicator.value = false
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
-                _uiEventFlow.emit(UiEvent.ErrorNotification(e.message!!))
+                notificationHelper.errorNotification(e.message!!)
                 _showCircularIndicator.value = false
             }
         }

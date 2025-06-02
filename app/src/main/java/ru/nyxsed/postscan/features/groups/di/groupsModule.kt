@@ -21,6 +21,7 @@ val groupsModule = module {
             deleteAllPostsUseCase = get(),
             addPostUseCase = get(),
             getPostsForGroupDateIntervalUseCase = get(),
+            notificationHelper = get(),
         )
     }
 }
