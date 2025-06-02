@@ -10,7 +10,7 @@ import ru.nyxsed.postscan.core.util.Constants.VK_BASE_URL
 
 val networkModule = module {
     // Retrofit dependencies
-    single {
+    single<OkHttpClient> {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
@@ -18,7 +18,7 @@ val networkModule = module {
             .build()
     }
 
-    single {
+    single<Retrofit> {
         Retrofit.Builder()
             .baseUrl(VK_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

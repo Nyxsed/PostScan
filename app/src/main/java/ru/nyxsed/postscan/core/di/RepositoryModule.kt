@@ -43,7 +43,7 @@ val repositoryModule = module {
 
     single<ConnectionChecker> {
         ConnectionCheckerImpl(
-            context = get(),
+            context = androidContext(),
         )
     }
 }

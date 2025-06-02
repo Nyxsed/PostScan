@@ -1,9 +1,5 @@
 package ru.nyxsed.postscan.core.di
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import org.koin.dsl.module
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
@@ -18,8 +14,6 @@ import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 val coreModule = module {
     factory { GetSettingBooleanUseCase(get()) }

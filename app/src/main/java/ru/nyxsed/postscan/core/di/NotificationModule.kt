@@ -8,7 +8,7 @@ import org.koin.dsl.module
 import ru.nyxsed.postscan.R
 
 val notificationModule = module {
-    single<NotificationManager> { (context: Context, channelId: String, channelName: String) ->
+    factory { (context: Context, channelId: String, channelName: String) ->
         val channel = NotificationChannel(
             channelId,
             channelName,
@@ -22,7 +22,7 @@ val notificationModule = module {
         notificationManager
     }
 
-    factory { (context: Context, channelId: String) ->
+    factory<NotificationCompat.Builder> { (context: Context, channelId: String) ->
         NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_download)
             .setPriority(NotificationCompat.PRIORITY_LOW)
