@@ -27,12 +27,12 @@ import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreen
-import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupScreen
 import ru.nyxsed.postscan.common.presentation.screens.postsscreen.PostsScreen
 import ru.nyxsed.postscan.common.presentation.ui.theme.PostScanTheme
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
+import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 
 class MainActivity : ComponentActivity() {

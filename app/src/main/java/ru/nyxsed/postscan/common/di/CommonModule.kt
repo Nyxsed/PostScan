@@ -14,6 +14,9 @@ import ru.nyxsed.postscan.common.data.util.CustomResourcesProviderImpl
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
+import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupPostsUseCase
+import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
@@ -58,4 +61,7 @@ val commonModule = module {
     factory { SetSettingUseCase(get()) }
     factory { IsInternetAvailableUseCase(get()) }
     factory { IsTokenValidUseCase(get()) }
+    factory { GetAllGroupsUseCase(get()) }
+    factory { DeleteGroupUseCase(get()) }
+    factory { DeleteGroupPostsUseCase(get()) }
 }

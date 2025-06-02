@@ -12,6 +12,7 @@ import ru.nyxsed.postscan.common.di.utilModule
 import ru.nyxsed.postscan.features.comments.di.commentsModule
 import ru.nyxsed.postscan.features.imagepager.di.imagepagerModule
 import ru.nyxsed.postscan.features.login.di.loginModule
+import ru.nyxsed.postscan.features.pickgroup.di.pickgroupModule
 import ru.nyxsed.postscan.features.preferences.di.preferencesModule
 import java.util.Locale
 
@@ -32,7 +33,8 @@ class App : Application() {
                 preferencesModule,
                 loginModule,
                 commentsModule,
-                imagepagerModule
+                imagepagerModule,
+                pickgroupModule
             )
         }
     }
