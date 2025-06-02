@@ -9,11 +9,17 @@ import org.koin.dsl.module
 import ru.nyxsed.postscan.common.data.repository.DataStoreRepositoryImpl
 import ru.nyxsed.postscan.common.data.repository.DbRepositoryImpl
 import ru.nyxsed.postscan.common.data.repository.VkRepositoryImpl
+import ru.nyxsed.postscan.common.data.util.ConnectionCheckerImpl
+import ru.nyxsed.postscan.common.data.util.CustomResourcesProviderImpl
 import ru.nyxsed.postscan.common.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.common.domain.repository.DbRepository
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
+import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
+import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
+import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -38,6 +44,18 @@ val commonModule = module {
         )
     }
 
+    single<CustomResourcesProvider> {
+        CustomResourcesProviderImpl(androidContext())
+    }
+
+    single<ConnectionChecker> {
+        ConnectionCheckerImpl(
+            context = get(),
+        )
+    }
+
     factory { GetSettingUseCase(get()) }
     factory { SetSettingUseCase(get()) }
+    factory { IsInternetAvailableUseCase(get()) }
+    factory { IsTokenValidUseCase(get()) }
 }

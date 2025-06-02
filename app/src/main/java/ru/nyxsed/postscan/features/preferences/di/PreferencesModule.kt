@@ -12,11 +12,11 @@ val preferencesModule = module {
 
     viewModel {
         PreferencesScreenViewModel(
-            getSetting = get(),
-            setSetting = get(),
-            exportDb = get(),
-            importDb = get(),
-            resourcesProvider = get(),
+            getSettingUseCase = get(),
+            setSettingUseCase = get(),
+            exportDbUseCase = get(),
+            importDbUseCase = get(),
+            customResourcesProvider = get(),
         )
     }
 }

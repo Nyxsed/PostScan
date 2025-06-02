@@ -48,11 +48,11 @@ import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupsScreen
 import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.SortOption
-import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerArgs
-import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.common.util.Constants.findOrFirst
 import ru.nyxsed.postscan.common.util.Constants.mihonIntent
 import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
+import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import kotlin.math.absoluteValue
 

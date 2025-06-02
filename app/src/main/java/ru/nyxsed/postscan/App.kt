@@ -10,6 +10,7 @@ import ru.nyxsed.postscan.common.di.dbModule
 import ru.nyxsed.postscan.common.di.networkModule
 import ru.nyxsed.postscan.common.di.utilModule
 import ru.nyxsed.postscan.features.comments.di.commentsModule
+import ru.nyxsed.postscan.features.imagepager.di.imagepagerModule
 import ru.nyxsed.postscan.features.login.di.loginModule
 import ru.nyxsed.postscan.features.preferences.di.preferencesModule
 import java.util.Locale
@@ -22,7 +23,17 @@ class App : Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(commonModule,appModule, dbModule, networkModule, utilModule, preferencesModule, loginModule, commentsModule)
+            modules(
+                commonModule,
+                appModule,
+                dbModule,
+                networkModule,
+                utilModule,
+                preferencesModule,
+                loginModule,
+                commentsModule,
+                imagepagerModule
+            )
         }
     }
 }

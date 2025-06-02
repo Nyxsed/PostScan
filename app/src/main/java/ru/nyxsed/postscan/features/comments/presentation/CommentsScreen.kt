@@ -31,9 +31,9 @@ import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.SettingKey
 import ru.nyxsed.postscan.common.domain.models.entity.PostEntity
-import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerArgs
-import ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen.ImagePagerScreen
 import ru.nyxsed.postscan.common.util.Constants.mihonIntent
+import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
+import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 
 val CommentsScreen by navDestination<PostEntity> {
     val args = navArgs()
