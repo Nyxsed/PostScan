@@ -35,7 +35,7 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator

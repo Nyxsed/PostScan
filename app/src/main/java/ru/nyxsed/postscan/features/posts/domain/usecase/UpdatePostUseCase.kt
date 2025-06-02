@@ -1,6 +1,6 @@
 package ru.nyxsed.postscan.features.posts.domain.usecase
 
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.repository.DbRepository
 
 class UpdatePostUseCase(private val dbRepository: DbRepository) {

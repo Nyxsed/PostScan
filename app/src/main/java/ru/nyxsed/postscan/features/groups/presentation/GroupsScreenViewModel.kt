@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.Group
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase

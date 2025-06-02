@@ -1,7 +1,7 @@
 package ru.nyxsed.postscan.core.data.mapper
 
 import ru.nyxsed.postscan.core.data.models.entity.GroupEntity
-import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.Group
 
 object GroupMapper {
     fun GroupEntity.toDomain(): Group {

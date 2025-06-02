@@ -2,8 +2,8 @@ package ru.nyxsed.postscan.core.domain.repository
 
 import android.net.Uri
 import kotlinx.coroutines.flow.StateFlow
-import ru.nyxsed.postscan.core.domain.models.entity.Group
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.Post
 
 interface DbRepository {
     fun getAllPosts(): StateFlow<List<Post>>

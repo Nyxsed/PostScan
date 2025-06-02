@@ -2,8 +2,8 @@ package ru.nyxsed.postscan.core.data.mapper
 
 import ru.nyxsed.postscan.core.data.models.entity.ContentEntity
 import ru.nyxsed.postscan.core.data.models.entity.PostEntity
-import ru.nyxsed.postscan.core.domain.models.entity.Content
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Content
+import ru.nyxsed.postscan.core.domain.models.Post
 
 object PostMapper {
     fun PostEntity.toDomain(contentList: List<Content>): Post {

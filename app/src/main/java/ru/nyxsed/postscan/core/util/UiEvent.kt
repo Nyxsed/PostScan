@@ -1,8 +1,8 @@
 package ru.nyxsed.postscan.core.util
 
 import com.composegears.tiamat.NavDestination
-import ru.nyxsed.postscan.core.domain.models.entity.Group
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.Post
 
 sealed class UiEvent {
     class ShowToast(val message: String) : UiEvent()

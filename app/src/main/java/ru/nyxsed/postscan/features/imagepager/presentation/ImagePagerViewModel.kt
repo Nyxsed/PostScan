@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.Content
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase

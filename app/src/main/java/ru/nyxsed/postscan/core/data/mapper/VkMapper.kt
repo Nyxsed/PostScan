@@ -6,10 +6,10 @@ import ru.nyxsed.postscan.core.data.models.response.newsfeedget.WallGetResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.ItemResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.ProfilesResponse
 import ru.nyxsed.postscan.core.data.models.response.wallgetcomments.WallGetCommentsResponse
-import ru.nyxsed.postscan.core.domain.models.entity.Comment
-import ru.nyxsed.postscan.core.domain.models.entity.Content
-import ru.nyxsed.postscan.core.domain.models.entity.Group
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Comment
+import ru.nyxsed.postscan.core.domain.models.Content
+import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.util.Constants.findOrFirst
 import ru.nyxsed.postscan.core.util.Constants.findOrLast
 import kotlin.math.absoluteValue

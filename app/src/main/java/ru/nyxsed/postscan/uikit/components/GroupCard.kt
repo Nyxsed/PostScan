@@ -26,7 +26,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.uikit.ui.theme.Green80
 import ru.nyxsed.postscan.uikit.ui.theme.SoftGreen80

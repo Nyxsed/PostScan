@@ -1,7 +1,7 @@
 package ru.nyxsed.postscan.core.data.mapper
 
 import ru.nyxsed.postscan.core.data.models.entity.ContentEntity
-import ru.nyxsed.postscan.core.domain.models.entity.Content
+import ru.nyxsed.postscan.core.domain.models.Content
 
 object ContentMapper {
     fun ContentEntity.toDomain(): Content {
