@@ -74,16 +74,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
-import ru.nyxsed.postscan.common.presentation.ui.theme.LikedHeart
-import ru.nyxsed.postscan.common.util.Constants.BING_SEARCH_URL
-import ru.nyxsed.postscan.common.util.Constants.IQDB_SEARCH_URL
-import ru.nyxsed.postscan.common.util.Constants.SAUCENAO_SEARCH_URL
-import ru.nyxsed.postscan.common.util.Constants.TINEYE_SEARCH_URL
-import ru.nyxsed.postscan.common.util.Constants.TRACE_SEARCH_URL
-import ru.nyxsed.postscan.common.util.Constants.YANDEX_SEARCH_URL
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
+import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
+import ru.nyxsed.postscan.core.util.Constants.SAUCENAO_SEARCH_URL
+import ru.nyxsed.postscan.core.util.Constants.TINEYE_SEARCH_URL
+import ru.nyxsed.postscan.core.util.Constants.TRACE_SEARCH_URL
+import ru.nyxsed.postscan.core.util.Constants.YANDEX_SEARCH_URL
+import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
 
 @OptIn(ExperimentalMaterial3Api::class)
 val ImagePagerScreen by navDestination<ImagePagerArgs> {

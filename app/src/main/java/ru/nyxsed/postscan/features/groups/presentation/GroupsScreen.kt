@@ -38,18 +38,18 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.common.presentation.elements.AddModalDialog
-import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
-import ru.nyxsed.postscan.common.presentation.elements.DeleteModalDialog
-import ru.nyxsed.postscan.common.presentation.elements.DownloadModalDialog
-import ru.nyxsed.postscan.common.presentation.elements.GroupCard
-import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification
-import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
-import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
-import ru.nyxsed.postscan.common.util.NotificationHelper.updateProgress
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
+import ru.nyxsed.postscan.core.util.NotificationHelper.errorNotification
+import ru.nyxsed.postscan.core.util.NotificationHelper.initNotification
+import ru.nyxsed.postscan.core.util.NotificationHelper.updateProgress
+import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.uikit.components.AddModalDialog
+import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
+import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
+import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
+import ru.nyxsed.postscan.uikit.components.GroupCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 val GroupsScreen by navDestination<Unit> {

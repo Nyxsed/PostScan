@@ -35,16 +35,16 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
-import ru.nyxsed.postscan.common.presentation.elements.DatePickerTextField
-import ru.nyxsed.postscan.common.presentation.elements.DeleteModalDialog
-import ru.nyxsed.postscan.common.presentation.elements.DownloadModalDialog
-import ru.nyxsed.postscan.common.util.Constants.toStringDate
-import ru.nyxsed.postscan.common.util.NotificationHelper.completeNotification
-import ru.nyxsed.postscan.common.util.NotificationHelper.errorNotification
-import ru.nyxsed.postscan.common.util.NotificationHelper.initNotification
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.util.Constants.toStringDate
+import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
+import ru.nyxsed.postscan.core.util.NotificationHelper.errorNotification
+import ru.nyxsed.postscan.core.util.NotificationHelper.initNotification
+import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
+import ru.nyxsed.postscan.uikit.components.DatePickerTextField
+import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
+import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 
 
 val ChangeGroupScreen by navDestination<GroupEntity> {

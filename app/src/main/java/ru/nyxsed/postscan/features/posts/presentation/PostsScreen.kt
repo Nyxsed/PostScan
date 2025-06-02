@@ -44,15 +44,15 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.presentation.elements.CenteredLoadingIndicator
-import ru.nyxsed.postscan.common.util.Constants.findOrFirst
-import ru.nyxsed.postscan.common.util.Constants.mihonIntent
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.util.Constants.findOrFirst
+import ru.nyxsed.postscan.core.util.Constants.mihonIntent
+import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.groups.presentation.GroupsScreen
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
+import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)

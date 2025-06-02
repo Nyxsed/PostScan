@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
-import ru.nyxsed.postscan.common.domain.usecase.AddPostUseCase
-import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupPostsUseCase
-import ru.nyxsed.postscan.common.domain.usecase.GetPostsForGroupDateIntervalUseCase
-import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
-import ru.nyxsed.postscan.common.domain.usecase.UpdateGroupUseCase
-import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
-import ru.nyxsed.postscan.common.util.Constants.VK_URL
-import ru.nyxsed.postscan.common.util.Constants.toDateLong
-import ru.nyxsed.postscan.common.util.UiEvent
+import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
+import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
+import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
+import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
+import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
+import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
+import ru.nyxsed.postscan.core.util.Constants.VK_URL
+import ru.nyxsed.postscan.core.util.Constants.toDateLong
+import ru.nyxsed.postscan.core.util.UiEvent
 
 class ChangeGroupScreenViewModel(
     private val customResourceProvider: CustomResourcesProvider,
