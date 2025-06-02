@@ -23,11 +23,11 @@ import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 
 class PreferencesScreenViewModel(
-    private val getSetting: GetSettingUseCase,
-    private val setSetting: SetSettingUseCase,
-    private val exportDb: ExportDbUseCase,
-    private val importDb: ImportDbUseCase,
-    private val resourcesProvider: CustomResourcesProvider,
+    private val getSettingUseCase: GetSettingUseCase,
+    private val setSettingUseCase: SetSettingUseCase,
+    private val exportDbUseCase: ExportDbUseCase,
+    private val importDbUseCase: ImportDbUseCase,
+    private val customResourcesProvider: CustomResourcesProvider,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
@@ -43,7 +43,7 @@ class PreferencesScreenViewModel(
 
     fun saveSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            setSetting(key, value)
+            setSettingUseCase(key, value)
             when (key) {
                 SettingKey.NOT_LOAD_LIKED_POSTS -> _settingNotLoadLikedPosts.value = !_settingNotLoadLikedPosts.value
                 SettingKey.USE_MIHON -> _settingUseMihon.value = !_settingUseMihon.value
@@ -55,9 +55,9 @@ class PreferencesScreenViewModel(
 
     fun loadSettings() {
         viewModelScope.launch {
-            _settingNotLoadLikedPosts.value = getSetting(SettingKey.NOT_LOAD_LIKED_POSTS)
-            _settingUseMihon.value = getSetting(SettingKey.USE_MIHON)
-            _settingDeleteAfterLike.value = getSetting(SettingKey.DELETE_AFTER_LIKE)
+            _settingNotLoadLikedPosts.value = getSettingUseCase(SettingKey.NOT_LOAD_LIKED_POSTS)
+            _settingUseMihon.value = getSettingUseCase(SettingKey.USE_MIHON)
+            _settingDeleteAfterLike.value = getSettingUseCase(SettingKey.DELETE_AFTER_LIKE)
         }
     }
 
@@ -72,24 +72,24 @@ class PreferencesScreenViewModel(
                     TODO("Not yet implemented")
                 }
             })
-            _uiEventFlow.emit(UiEvent.ShowToast(resourcesProvider.getString(R.string.log_out_message)))
+            _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.log_out_message)))
         }
     }
 
     fun exportDataBaseToFile(uri: Uri) {
         viewModelScope.launch {
-            val result = exportDb(uri)
+            val result = exportDbUseCase(uri)
             if (result) {
-                _uiEventFlow.emit(UiEvent.ShowToast(resourcesProvider.getString(R.string.export_db_message)))
+                _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.export_db_message)))
             }
         }
     }
 
     fun importDataBaseFromFile(uri: Uri) {
         viewModelScope.launch {
-            val result = importDb(uri)
+            val result = importDbUseCase(uri)
             if (result) {
-                _uiEventFlow.emit(UiEvent.ShowToast(resourcesProvider.getString(R.string.import_db_message)))
+                _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.import_db_message)))
             }
         }
     }

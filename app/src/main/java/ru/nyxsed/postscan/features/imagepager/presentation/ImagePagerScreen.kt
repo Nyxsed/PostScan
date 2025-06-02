@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.imagepagerscreen
+package ru.nyxsed.postscan.features.imagepager.presentation
 
 import android.util.Log
 import android.widget.Toast
