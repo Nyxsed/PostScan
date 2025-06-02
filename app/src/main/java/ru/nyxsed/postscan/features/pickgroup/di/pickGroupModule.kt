@@ -14,7 +14,7 @@ val pickGroupModule = module {
 
     viewModel {
         PickGroupScreenViewModel(
-            customResourceProvider = get(),
+            getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),
             getGroupsUseCase = get(),

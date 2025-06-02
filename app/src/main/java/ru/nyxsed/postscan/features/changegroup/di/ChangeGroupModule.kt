@@ -7,7 +7,7 @@ import ru.nyxsed.postscan.features.changegroup.presentation.ChangeGroupScreenVie
 val changeGroupModule = module {
     viewModel {
         ChangeGroupScreenViewModel(
-            customResourceProvider = get(),
+            getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             getPostsForGroupDateIntervalUseCase = get(),
             addPostUseCase = get(),

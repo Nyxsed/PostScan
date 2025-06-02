@@ -12,7 +12,7 @@ val imagePagerModule = module {
 
     viewModel {
         ImagePagerViewModel(
-            customResourceProvider = get(),
+            getResourceUseCase = get(),
             getSettingBooleanUseCase = get(),
             setSettingBooleanUseCase = get(),
             checkContentLikeStatusUseCase = get(),

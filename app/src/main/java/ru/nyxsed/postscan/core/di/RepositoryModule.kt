@@ -15,7 +15,9 @@ import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 
 val repositoryModule = module {
     single<DataStoreRepository> {
-        DataStoreRepositoryImpl(dataStore = get())
+        DataStoreRepositoryImpl(
+            dataStore = get(),
+        )
     }
 
     single<VkRepository> {
@@ -34,7 +36,9 @@ val repositoryModule = module {
     }
 
     single<CustomResourcesProvider> {
-        CustomResourcesProviderImpl(androidContext())
+        CustomResourcesProviderImpl(
+            context = androidContext(),
+        )
     }
 
     single<ConnectionChecker> {

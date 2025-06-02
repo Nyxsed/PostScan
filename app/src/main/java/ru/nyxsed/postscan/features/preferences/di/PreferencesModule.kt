@@ -16,7 +16,7 @@ val preferencesModule = module {
             setSettingBooleanUseCase = get(),
             exportDbUseCase = get(),
             importDbUseCase = get(),
-            customResourcesProvider = get(),
+            getResourceUseCase = get(),
         )
     }
 }

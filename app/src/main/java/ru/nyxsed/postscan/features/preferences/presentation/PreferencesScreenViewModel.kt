@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
-import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
@@ -27,7 +27,7 @@ class PreferencesScreenViewModel(
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val exportDbUseCase: ExportDbUseCase,
     private val importDbUseCase: ImportDbUseCase,
-    private val customResourcesProvider: CustomResourcesProvider,
+    private val getResourceUseCase: GetResourceUseCase,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
@@ -72,7 +72,7 @@ class PreferencesScreenViewModel(
                     TODO("Not yet implemented")
                 }
             })
-            _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.log_out_message)))
+            _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.log_out_message)))
         }
     }
 
@@ -80,7 +80,7 @@ class PreferencesScreenViewModel(
         viewModelScope.launch {
             val result = exportDbUseCase(uri)
             if (result) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.export_db_message)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.export_db_message)))
             }
         }
     }
@@ -89,7 +89,7 @@ class PreferencesScreenViewModel(
         viewModelScope.launch {
             val result = importDbUseCase(uri)
             if (result) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourcesProvider.getString(R.string.import_db_message)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.import_db_message)))
             }
         }
     }

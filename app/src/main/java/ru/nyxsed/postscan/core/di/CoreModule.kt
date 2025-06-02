@@ -10,6 +10,7 @@ import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
@@ -33,4 +34,5 @@ val coreModule = module {
     factory { AddPostUseCase(get()) }
     factory { GetPostsForGroupDateIntervalUseCase(get()) }
     factory { UpdateGroupUseCase(get()) }
+    factory { GetResourceUseCase(get()) }
 }

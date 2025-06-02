@@ -10,7 +10,7 @@ val groupsModule = module {
 
     viewModel {
         GroupsScreenViewModel(
-            customResourceProvider = get(),
+            getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),
             getSettingBooleanUseCase = get(),

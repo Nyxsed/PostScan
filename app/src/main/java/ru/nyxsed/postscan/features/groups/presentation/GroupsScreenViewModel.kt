@@ -17,11 +17,11 @@ import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
-import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.changegroup.presentation.ChangeGroupScreen
@@ -30,7 +30,7 @@ import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreen
 
 class GroupsScreenViewModel(
-    private val customResourceProvider: CustomResourcesProvider,
+    private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,
     private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
@@ -77,7 +77,7 @@ class GroupsScreenViewModel(
     fun navigateToPickScreen(param: String) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
