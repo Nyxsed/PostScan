@@ -214,7 +214,7 @@ val PostsScreen by navDestination<Unit> {
                             val sortedList = when (sortOption) {
                                 SortOption.ASCENDING -> postListState.value.sortedBy { it.postId }
                                 SortOption.DESCENDING -> postListState.value.sortedByDescending { it.postId }
-                                null -> postListState.value.sortedBy { it.postId }
+                                else -> postListState.value.sortedBy { it.postId }
                             }
                             items(
                                 items = sortedList.filter {

@@ -23,10 +23,6 @@ object Constants {
 
     const val DATE_MASK = "##.##.####"
 
-    const val PROGRESS_CHANNEL_ID = "progress_channel"
-    const val PROGRESS_CHANNEL_NAME = "Progress Notifications"
-    const val PROGRESS_NOTIFICATION_ID = 1
-
     fun mihonIntent(query: String): Intent {
         return Intent().apply {
             action = MANGA_SEARCH_ACTION
