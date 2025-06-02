@@ -2,21 +2,21 @@ package ru.nyxsed.postscan.features.imagepager.di
 
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import ru.nyxsed.postscan.features.imagepager.domain.usecase.ChangeLikeStatusUseCase
-import ru.nyxsed.postscan.features.imagepager.domain.usecase.CheckLikeStatusUseCase
+import ru.nyxsed.postscan.features.imagepager.domain.usecase.ChangeContentLikeStatusUseCase
+import ru.nyxsed.postscan.features.imagepager.domain.usecase.CheckContentLikeStatusUseCase
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerViewModel
 
 val imagePagerModule = module {
-    factory { CheckLikeStatusUseCase(get()) }
-    factory { ChangeLikeStatusUseCase(get()) }
+    factory { CheckContentLikeStatusUseCase(get()) }
+    factory { ChangeContentLikeStatusUseCase(get()) }
 
     viewModel {
         ImagePagerViewModel(
             customResourceProvider = get(),
-            getSettingUseCase = get(),
-            setSettingUseCase = get(),
-            checkLikeStatusUseCase = get(),
-            changeLikeStatusUseCase = get(),
+            getSettingBooleanUseCase = get(),
+            setSettingBooleanUseCase = get(),
+            checkContentLikeStatusUseCase = get(),
+            changeContentLikeStatusUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get()
         )

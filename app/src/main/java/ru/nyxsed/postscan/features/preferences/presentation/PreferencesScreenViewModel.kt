@@ -15,16 +15,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.SettingKey
-import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
-import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 
 class PreferencesScreenViewModel(
-    private val getSettingUseCase: GetSettingUseCase,
-    private val setSettingUseCase: SetSettingUseCase,
+    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val exportDbUseCase: ExportDbUseCase,
     private val importDbUseCase: ImportDbUseCase,
     private val customResourcesProvider: CustomResourcesProvider,
@@ -43,7 +43,7 @@ class PreferencesScreenViewModel(
 
     fun saveSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            setSettingUseCase(key, value)
+            setSettingBooleanUseCase(key, value)
             when (key) {
                 SettingKey.NOT_LOAD_LIKED_POSTS -> _settingNotLoadLikedPosts.value = !_settingNotLoadLikedPosts.value
                 SettingKey.USE_MIHON -> _settingUseMihon.value = !_settingUseMihon.value
@@ -55,9 +55,9 @@ class PreferencesScreenViewModel(
 
     fun loadSettings() {
         viewModelScope.launch {
-            _settingNotLoadLikedPosts.value = getSettingUseCase(SettingKey.NOT_LOAD_LIKED_POSTS)
-            _settingUseMihon.value = getSettingUseCase(SettingKey.USE_MIHON)
-            _settingDeleteAfterLike.value = getSettingUseCase(SettingKey.DELETE_AFTER_LIKE)
+            _settingNotLoadLikedPosts.value = getSettingBooleanUseCase(SettingKey.NOT_LOAD_LIKED_POSTS)
+            _settingUseMihon.value = getSettingBooleanUseCase(SettingKey.USE_MIHON)
+            _settingDeleteAfterLike.value = getSettingBooleanUseCase(SettingKey.DELETE_AFTER_LIKE)
         }
     }
 

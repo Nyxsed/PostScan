@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.postsscreen
+package ru.nyxsed.postscan.features.posts.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image

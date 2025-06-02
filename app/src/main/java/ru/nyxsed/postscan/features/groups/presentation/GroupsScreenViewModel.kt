@@ -17,10 +17,10 @@ import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.common.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.common.domain.usecase.GetPostsForGroupDateIntervalUseCase
-import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
-import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.util.Constants.toDateLong
 import ru.nyxsed.postscan.common.util.UiEvent
@@ -33,8 +33,8 @@ class GroupsScreenViewModel(
     private val customResourceProvider: CustomResourcesProvider,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,
-    private val getSettingUseCase: GetSettingUseCase,
-    private val setSettingUseCase: SetSettingUseCase,
+    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val getAllGroupsUseCase: GetAllGroupsUseCase,
     private val deleteGroupUseCase: DeleteGroupUseCase,
     private val deleteGroupPostsUseCase: DeleteGroupPostsUseCase,
@@ -162,12 +162,12 @@ class GroupsScreenViewModel(
     }
 
     suspend fun getSettingBoolean(key: SettingKey): Boolean {
-        return getSettingUseCase(key)
+        return getSettingBooleanUseCase(key)
     }
 
     fun setSettingBoolean(key: SettingKey, value: Boolean) {
         viewModelScope.launch {
-            setSettingUseCase(key, value)
+            setSettingBooleanUseCase(key, value)
         }
     }
 }

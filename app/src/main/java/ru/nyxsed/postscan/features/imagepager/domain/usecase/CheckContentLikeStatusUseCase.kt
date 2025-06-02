@@ -3,7 +3,6 @@ package ru.nyxsed.postscan.features.imagepager.domain.usecase
 import ru.nyxsed.postscan.common.domain.models.entity.ContentEntity
 import ru.nyxsed.postscan.common.domain.repository.VkRepository
 
-
-class ChangeLikeStatusUseCase(private val vkRepository: VkRepository) {
-    suspend operator fun invoke(contentEntity: ContentEntity) = vkRepository.changeLikeStatus(contentEntity)
+class CheckContentLikeStatusUseCase(private val vkRepository: VkRepository) {
+    suspend operator fun invoke(contentEntity: ContentEntity) = vkRepository.checkContentLikeStatus(contentEntity)
 }
