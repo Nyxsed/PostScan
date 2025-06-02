@@ -158,7 +158,7 @@ class VkRepositoryImpl(
         return posts.toList()
     }
 
-    override suspend fun changeLikeStatus(post: PostEntity) {
+    override suspend fun changePostLikeStatus(post: PostEntity) {
         val response = if (!post.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
@@ -181,7 +181,7 @@ class VkRepositoryImpl(
     }
 
     // content
-    override suspend fun changeLikeStatus(contentEntity: ContentEntity) {
+    override suspend fun changeContentLikeStatus(contentEntity: ContentEntity) {
         val response = if (!contentEntity.isLiked) {
             apiService.addLike(
                 token = getAccessToken(),
@@ -203,7 +203,7 @@ class VkRepositoryImpl(
         }
     }
 
-    override suspend fun checkLikeStatus(contentEntity: ContentEntity): Boolean {
+    override suspend fun checkContentLikeStatus(contentEntity: ContentEntity): Boolean {
         val response = apiService.isLiked(
             token = getAccessToken(),
             ownerId = contentEntity.ownerId,

@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.postsscreen
+package ru.nyxsed.postscan.features.posts.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

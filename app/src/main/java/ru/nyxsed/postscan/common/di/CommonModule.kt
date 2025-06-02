@@ -19,10 +19,12 @@ import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.common.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.common.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.common.domain.usecase.GetPostsForGroupDateIntervalUseCase
-import ru.nyxsed.postscan.common.domain.usecase.GetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.common.domain.usecase.GetSettingStringUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.common.domain.usecase.IsTokenValidUseCase
-import ru.nyxsed.postscan.common.domain.usecase.SetSettingUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingBooleanUseCase
+import ru.nyxsed.postscan.common.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.common.domain.usecase.UpdateGroupUseCase
 import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
@@ -60,8 +62,10 @@ val commonModule = module {
         )
     }
 
-    factory { GetSettingUseCase(get()) }
-    factory { SetSettingUseCase(get()) }
+    factory { GetSettingBooleanUseCase(get()) }
+    factory { SetSettingBooleanUseCase(get()) }
+    factory { GetSettingStringUseCase(get()) }
+    factory { SetSettingStringUseCase(get()) }
     factory { IsInternetAvailableUseCase(get()) }
     factory { IsTokenValidUseCase(get()) }
     factory { GetAllGroupsUseCase(get()) }

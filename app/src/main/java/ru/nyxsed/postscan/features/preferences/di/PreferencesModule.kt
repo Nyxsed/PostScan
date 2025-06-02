@@ -12,8 +12,8 @@ val preferencesModule = module {
 
     viewModel {
         PreferencesScreenViewModel(
-            getSettingUseCase = get(),
-            setSettingUseCase = get(),
+            getSettingBooleanUseCase = get(),
+            setSettingBooleanUseCase = get(),
             exportDbUseCase = get(),
             importDbUseCase = get(),
             customResourcesProvider = get(),
