@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.groupsscreen
+package ru.nyxsed.postscan.common.presentation.elements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

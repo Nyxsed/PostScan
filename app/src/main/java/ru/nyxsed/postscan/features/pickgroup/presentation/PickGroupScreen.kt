@@ -32,7 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.common.presentation.elements.DeleteModalDialog
-import ru.nyxsed.postscan.common.presentation.screens.groupsscreen.GroupCard
+import ru.nyxsed.postscan.common.presentation.elements.GroupCard
 import ru.nyxsed.postscan.common.util.UiEvent
 
 val PickGroupScreen by navDestination<String> {
