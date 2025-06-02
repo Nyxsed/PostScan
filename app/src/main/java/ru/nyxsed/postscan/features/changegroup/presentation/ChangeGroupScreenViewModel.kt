@@ -14,15 +14,15 @@ import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
-import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
 import ru.nyxsed.postscan.core.util.UiEvent
 
 class ChangeGroupScreenViewModel(
-    private val customResourceProvider: CustomResourcesProvider,
+    private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,
     private val addPostUseCase: AddPostUseCase,
@@ -33,19 +33,19 @@ class ChangeGroupScreenViewModel(
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private val _groupId = MutableStateFlow<Long>(0)
-    val groupId : StateFlow<Long> = _groupId.asStateFlow()
+    val groupId: StateFlow<Long> = _groupId.asStateFlow()
 
     private val _groupName = MutableStateFlow<String>("")
-    val groupName : StateFlow<String> = _groupName.asStateFlow()
+    val groupName: StateFlow<String> = _groupName.asStateFlow()
 
     private val _screenName = MutableStateFlow<String>("")
-    val screenName : StateFlow<String> = _screenName.asStateFlow()
+    val screenName: StateFlow<String> = _screenName.asStateFlow()
 
     private val _avatarUrl = MutableStateFlow<String>("")
-    val avatarUrl : StateFlow<String> = _avatarUrl.asStateFlow()
+    val avatarUrl: StateFlow<String> = _avatarUrl.asStateFlow()
 
     private val _lastFetchDate = MutableStateFlow<String>("")
-    val lastFetchDate : StateFlow<String> = _lastFetchDate.asStateFlow()
+    val lastFetchDate: StateFlow<String> = _lastFetchDate.asStateFlow()
 
     private val _showDeleteDialog = MutableStateFlow(false)
     val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
@@ -112,7 +112,7 @@ class ChangeGroupScreenViewModel(
     fun openGroupUri(group: GroupEntity) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 

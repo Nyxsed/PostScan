@@ -20,6 +20,7 @@ import ru.nyxsed.postscan.core.domain.models.entity.GroupEntity
 import ru.nyxsed.postscan.core.domain.models.entity.PostEntity
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
@@ -27,7 +28,6 @@ import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
-import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.VK_WALL_URL
 import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
@@ -44,7 +44,7 @@ import ru.nyxsed.postscan.features.posts.domain.usecase.GetPostsForGroupUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.UpdatePostUseCase
 
 class PostsScreenViewModel(
-    private val customResourceProvider: CustomResourcesProvider,
+    private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,
     private val getSettingStringUseCase: GetSettingStringUseCase,
@@ -141,7 +141,7 @@ class PostsScreenViewModel(
     ) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
@@ -201,7 +201,7 @@ class PostsScreenViewModel(
     fun refreshPosts(context: Context) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
@@ -211,7 +211,7 @@ class PostsScreenViewModel(
             }
 
             if (groups.value.isEmpty()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.groups_not_found)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.groups_not_found)))
                 return@launch
             }
 
@@ -223,7 +223,7 @@ class PostsScreenViewModel(
     fun toComments(post: PostEntity) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 

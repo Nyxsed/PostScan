@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.models.entity.ContentEntity
+import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
-import ru.nyxsed.postscan.core.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.core.util.Constants.VK_PHOTO_URL
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.imagepager.domain.usecase.ChangeContentLikeStatusUseCase
@@ -23,7 +23,7 @@ import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import java.net.URLEncoder
 
 class ImagePagerViewModel(
-    private val customResourceProvider: CustomResourcesProvider,
+    private val getResourceUseCase: GetResourceUseCase,
     private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val checkContentLikeStatusUseCase: CheckContentLikeStatusUseCase,
@@ -66,12 +66,12 @@ class ImagePagerViewModel(
 
     suspend fun checkConnect(): Boolean {
         if (!isInternetAvailableUseCase()) {
-            _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.no_internet_connection)))
+            _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
             return false
         }
 
         if (!isTokenValidUseCase()) {
-            _uiEventFlow.emit(UiEvent.ShowToast(customResourceProvider.getString(R.string.token_is_invalid)))
+            _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.token_is_invalid)))
             return false
         }
         return true

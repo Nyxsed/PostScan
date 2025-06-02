@@ -19,7 +19,7 @@ val postsModule = module {
 
     viewModel {
         PostsScreenViewModel(
-            customResourceProvider = get(),
+            getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),
             getSettingStringUseCase = get(),
