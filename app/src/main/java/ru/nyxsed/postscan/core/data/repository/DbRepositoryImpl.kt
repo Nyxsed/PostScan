@@ -17,9 +17,9 @@ import ru.nyxsed.postscan.core.data.mapper.PostMapper.toDomain
 import ru.nyxsed.postscan.core.data.mapper.PostMapper.toEntity
 import ru.nyxsed.postscan.core.data.models.entity.ContentEntity
 import ru.nyxsed.postscan.core.data.models.entity.PostEntity
-import ru.nyxsed.postscan.core.domain.models.entity.Content
-import ru.nyxsed.postscan.core.domain.models.entity.Group
-import ru.nyxsed.postscan.core.domain.models.entity.Post
+import ru.nyxsed.postscan.core.domain.models.Content
+import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.repository.DbRepository
 import java.io.File
 import java.io.IOException

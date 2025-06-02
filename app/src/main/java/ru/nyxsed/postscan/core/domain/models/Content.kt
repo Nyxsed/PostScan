@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.core.domain.models.entity
+package ru.nyxsed.postscan.core.domain.models
 
 data class Content(
     val contentId: Long,

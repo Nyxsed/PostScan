@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import ru.nyxsed.postscan.core.data.mapper.VkMapper
 import ru.nyxsed.postscan.core.data.network.ApiService
+import ru.nyxsed.postscan.core.domain.models.Content
+import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.Content
-import ru.nyxsed.postscan.core.domain.models.entity.Group
-import ru.nyxsed.postscan.core.domain.models.entity.Post
 import ru.nyxsed.postscan.core.domain.repository.DataStoreRepository
 import ru.nyxsed.postscan.core.domain.repository.VkRepository
 

@@ -1,6 +1,6 @@
 package ru.nyxsed.postscan.features.pickgroup.presentation
 
-import ru.nyxsed.postscan.core.domain.models.entity.Group
+import ru.nyxsed.postscan.core.domain.models.Group
 
 sealed class PickGroupState {
     data class Search(

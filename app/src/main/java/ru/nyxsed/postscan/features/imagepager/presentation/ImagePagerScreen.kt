@@ -74,8 +74,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.models.entity.Content
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.SAUCENAO_SEARCH_URL
