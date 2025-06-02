@@ -34,6 +34,7 @@ val postsModule = module {
             updatePostUseCase = get(),
             getPostsForGroupUseCase = get(),
             changePostLikeStatusUseCase = get(),
+            notificationHelper = get(),
         )
     }
 }

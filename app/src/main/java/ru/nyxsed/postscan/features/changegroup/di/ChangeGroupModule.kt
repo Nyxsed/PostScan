@@ -13,6 +13,7 @@ val changeGroupModule = module {
             addPostUseCase = get(),
             deleteGroupPostsUseCase = get(),
             updateGroupUseCase = get(),
+            notificationHelper = get(),
         )
     }
 }

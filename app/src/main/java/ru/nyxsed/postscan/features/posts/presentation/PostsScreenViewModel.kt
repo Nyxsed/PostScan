@@ -28,12 +28,9 @@ import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
+import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.VK_WALL_URL
-import ru.nyxsed.postscan.core.util.NotificationHelper.completeNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.errorNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.initNotification
-import ru.nyxsed.postscan.core.util.NotificationHelper.updateProgress
 import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
@@ -59,6 +56,7 @@ class PostsScreenViewModel(
     private val updatePostUseCase: UpdatePostUseCase,
     private val getPostsForGroupUseCase: GetPostsForGroupUseCase,
     private val changePostLikeStatusUseCase: ChangePostLikeStatusUseCase,
+    private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
     val posts = getAllPostsUseCase()
     val groups = getAllGroupsUseCase()
@@ -79,9 +77,9 @@ class PostsScreenViewModel(
         }
     }
 
-    fun loadPosts(context: Context) {
+    fun loadPosts() {
         viewModelScope.launch {
-            initNotification(context)
+            notificationHelper.initNotification()
             _uiEventFlow.emit(UiEvent.UpdateStatus(true))
             try {
                 groups.value.forEachIndexed { index, group ->
@@ -96,13 +94,13 @@ class PostsScreenViewModel(
                     updateGroupUseCase(updatedGroup)
 
                     val percentage = (index + 1) * 100 / groups.value.size
-                    updateProgress(context, percentage)
+                    notificationHelper.updateProgressNotification(percentage)
                 }
-                completeNotification(context)
+                notificationHelper.completeNotification()
                 _uiEventFlow.emit(UiEvent.UpdateStatus(false))
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
-                errorNotification(context, e.message!!)
+                notificationHelper.errorNotification(e.message!!)
                 _uiEventFlow.emit(UiEvent.UpdateStatus(false))
             }
         }
@@ -215,7 +213,7 @@ class PostsScreenViewModel(
                 return@launch
             }
 
-            loadPosts(context)
+            loadPosts()
             _uiEventFlow.emit(UiEvent.Scroll())
         }
     }
