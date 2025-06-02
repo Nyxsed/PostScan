@@ -9,7 +9,7 @@ import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreenViewMod
 
 val pickGroupModule = module {
     factory { GetGroupsUseCase(get()) }
-    factory { SearchGroupsUseCase(get()) }
+    factory { SearchGroupsUseCase(get(), get()) }
     factory { AddGroupUseCase(get()) }
 
     viewModel {

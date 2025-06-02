@@ -11,11 +11,11 @@ import ru.nyxsed.postscan.features.posts.domain.usecase.UpdatePostUseCase
 import ru.nyxsed.postscan.features.posts.presentation.PostsScreenViewModel
 
 val postsModule = module {
-    factory { GetAllPostsUseCase(get())}
-    factory { DeletePostUseCase(get())}
-    factory { UpdatePostUseCase(get())}
-    factory { GetPostsForGroupUseCase(get())}
-    factory { ChangePostLikeStatusUseCase(get())}
+    factory { GetAllPostsUseCase(get()) }
+    factory { DeletePostUseCase(get()) }
+    factory { UpdatePostUseCase(get()) }
+    factory { GetPostsForGroupUseCase(get(), get(), get()) }
+    factory { ChangePostLikeStatusUseCase(get()) }
 
     viewModel {
         PostsScreenViewModel(

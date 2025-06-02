@@ -158,7 +158,6 @@ class VkMapper {
         var contentId: Long = 0
         var ownerId: Long = 0
         var type: String = ""
-        var isLiked: Boolean = false
         var urlSmall: String = ""
         var urlMedium: String = ""
         var urlBig: String = ""

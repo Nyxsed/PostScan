@@ -26,7 +26,7 @@ val coreModule = module {
     factory { DeleteGroupUseCase(get()) }
     factory { DeleteGroupPostsUseCase(get()) }
     factory { AddPostUseCase(get()) }
-    factory { GetPostsForGroupDateIntervalUseCase(get()) }
+    factory { GetPostsForGroupDateIntervalUseCase(get(), get(), get()) }
     factory { UpdateGroupUseCase(get()) }
     factory { GetResourceUseCase(get()) }
 }

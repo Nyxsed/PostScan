@@ -24,7 +24,6 @@ val repositoryModule = module {
         VkRepositoryImpl(
             apiService = get(),
             mapper = get(),
-            dataStoreRepository = get()
         )
     }
 

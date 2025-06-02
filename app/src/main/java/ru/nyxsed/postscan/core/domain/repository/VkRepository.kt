@@ -1,18 +1,18 @@
 package ru.nyxsed.postscan.core.domain.repository
 
-import kotlinx.coroutines.flow.StateFlow
+import ru.nyxsed.postscan.core.data.models.response.groupsget.GroupsGetResponse
+import ru.nyxsed.postscan.core.data.models.response.newsfeedget.WallGetResponse
 import ru.nyxsed.postscan.core.domain.models.Comment
-import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.Group
-import ru.nyxsed.postscan.core.domain.models.Post
 
 interface VkRepository {
-    fun getGroupsStateFlow(): StateFlow<List<Group>>
-    suspend fun searchGroups(searchQuery: String): List<Group>
-    suspend fun getPostsForGroup(group: Group): List<Post>
-    suspend fun getPostsForGroupDateInterval(group: Group, startDate: Long, endDate: Long): List<Post>
-    suspend fun changePostLikeStatus(post: Post)
-    suspend fun changeContentLikeStatus(content: Content)
-    suspend fun checkContentLikeStatus(content: Content): Boolean
-    fun getCommentsStateFlow(post: Post): StateFlow<List<Comment>>
+    fun getAccessToken(): String
+    suspend fun isContentLiked(ownerId: Long, itemId: Long, type: String, token: String): Boolean
+    suspend fun getComments(ownerId: Long, postId: Long, token: String): List<Comment>
+    suspend fun addLike(ownerId: Long, itemId: Long, type: String, token: String)
+    suspend fun deleteLike(ownerId: Long, itemId: Long, type: String, token: String)
+    suspend fun wallGetPosts(ownerId: String, offset: Int, token: String): WallGetResponse
+    suspend fun groupsGetById(token: String, groupId: String): GroupsGetResponse
+    suspend fun groupsSearch(token: String, searchQuery: String): GroupsGetResponse
+    suspend fun groupsGet(token: String): List<Group>
 }
