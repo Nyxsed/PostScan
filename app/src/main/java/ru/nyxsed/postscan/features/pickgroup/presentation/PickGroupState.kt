@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen
+package ru.nyxsed.postscan.features.pickgroup.presentation
 
 import ru.nyxsed.postscan.common.domain.models.entity.GroupEntity
 

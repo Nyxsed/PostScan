@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen
+package ru.nyxsed.postscan.features.pickgroup.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

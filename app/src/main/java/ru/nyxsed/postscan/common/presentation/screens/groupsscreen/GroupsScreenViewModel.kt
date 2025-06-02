@@ -18,10 +18,10 @@ import ru.nyxsed.postscan.common.domain.repository.VkRepository
 import ru.nyxsed.postscan.common.domain.util.ConnectionChecker
 import ru.nyxsed.postscan.common.domain.util.CustomResourcesProvider
 import ru.nyxsed.postscan.common.presentation.screens.changegroupscreen.ChangeGroupScreen
-import ru.nyxsed.postscan.common.presentation.screens.pickgroupscreen.PickGroupScreen
 import ru.nyxsed.postscan.common.util.Constants.toDateLong
 import ru.nyxsed.postscan.common.util.UiEvent
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
+import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreen
 
 class GroupsScreenViewModel(
     private val dbRepository: DbRepository,
