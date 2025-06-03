@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
@@ -47,11 +49,14 @@ class PickGroupScreenViewModel(
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    val groupsState = getGroupsUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     fun setMode(mode: String) {
         when (mode) {
             "USER_GROUPS" -> {
                 viewModelScope.launch {
-                    getGroupsUseCase()
+                    groupsState
                         .collect {
                             fetchedGroupsState.value = it
                             _screenStateFlow.value = PickGroupState.User(
