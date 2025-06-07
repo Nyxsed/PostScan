@@ -144,7 +144,7 @@ class PostsScreenViewModel(
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
                 return@launch
             }
             try {
@@ -204,7 +204,7 @@ class PostsScreenViewModel(
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
                 return@launch
             }
 
@@ -226,11 +226,11 @@ class PostsScreenViewModel(
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
                 return@launch
             }
 
-            _uiEventFlow.emit(UiEvent.NavigateToPost(CommentsScreen, post))
+            _uiEventFlow.emit(UiEvent.NavigateTo(CommentsScreen, post))
         }
     }
 

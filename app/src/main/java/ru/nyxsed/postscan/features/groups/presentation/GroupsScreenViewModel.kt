@@ -84,18 +84,18 @@ class GroupsScreenViewModel(
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
                 return@launch
             }
 
-            _uiEventFlow.emit(UiEvent.NavigateToPicker(PickGroupScreen, param))
+            _uiEventFlow.emit(UiEvent.NavigateTo(PickGroupScreen, param))
             toggleAddDialog()
         }
     }
 
     fun navigateToChangeGroupScreen(param: Group) {
         viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.NavigateToChangeGroup(ChangeGroupScreen, param))
+            _uiEventFlow.emit(UiEvent.NavigateTo(ChangeGroupScreen, param))
         }
     }
 

@@ -47,7 +47,7 @@ class ImagePagerViewModel(
 
     fun navigateToLogin() {
         viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+            _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
         }
     }
 
