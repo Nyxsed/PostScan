@@ -23,8 +23,8 @@ import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.util.NotificationHelper
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
-import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.changegroup.presentation.ChangeGroupScreen
 import ru.nyxsed.postscan.features.groups.domain.usecase.DeleteAllPostsUseCase
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen

@@ -76,13 +76,13 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.SettingKey
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.SAUCENAO_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.TINEYE_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.TRACE_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.YANDEX_SEARCH_URL
-import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
 
 @OptIn(ExperimentalMaterial3Api::class)

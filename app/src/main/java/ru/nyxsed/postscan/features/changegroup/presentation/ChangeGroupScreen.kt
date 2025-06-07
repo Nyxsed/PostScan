@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,8 +35,9 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
-import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.uikit.components.BasicButton
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import ru.nyxsed.postscan.uikit.components.DatePickerTextField
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
@@ -158,10 +158,8 @@ fun ChangeGroupScreenContent(
                         changeGroupScreenViewModel.changeLastFetchDate(newDate)
                     }
                 )
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
+                BasicButton(
+                    label = stringResource(R.string.update_group),
                     onClick = {
                         changeGroupScreenViewModel.updateGroup(
                             groupId.value,
@@ -172,32 +170,18 @@ fun ChangeGroupScreenContent(
                         )
                     },
                     enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
-                ) {
-                    Text(text = stringResource(R.string.update_group))
-                }
+                )
                 Spacer(
                     modifier = Modifier.height(10.dp)
                 )
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    onClick = {
-                        changeGroupScreenViewModel.toggleDownloadDialog()
-                    },
-                ) {
-                    Text(text = stringResource(R.string.download_posts))
-                }
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    onClick = {
-                        changeGroupScreenViewModel.toggleDeleteDialog()
-                    },
-                ) {
-                    Text(text = stringResource(R.string.delete_posts))
-                }
+                BasicButton(
+                    label = stringResource(R.string.download_posts),
+                    onClick = { changeGroupScreenViewModel.toggleDownloadDialog() }
+                )
+                BasicButton(
+                    label = stringResource(R.string.delete_posts),
+                    onClick = { changeGroupScreenViewModel.toggleDeleteDialog() }
+                )
             }
             if (showCircularIndicator.value) {
                 CenteredLoadingIndicator()

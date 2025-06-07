@@ -1,4 +1,4 @@
-package ru.nyxsed.postscan.core.util
+package ru.nyxsed.postscan.core.event
 
 import com.composegears.tiamat.NavDestination
 import ru.nyxsed.postscan.core.domain.models.Group

@@ -15,8 +15,8 @@ import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.VK_PHOTO_URL
-import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.imagepager.domain.usecase.ChangeContentLikeStatusUseCase
 import ru.nyxsed.postscan.features.imagepager.domain.usecase.CheckContentLikeStatusUseCase
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen

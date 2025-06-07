@@ -40,7 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
