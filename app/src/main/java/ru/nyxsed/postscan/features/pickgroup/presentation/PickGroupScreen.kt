@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.features.pickgroup.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
-import ru.nyxsed.postscan.core.event.UiEvent
+import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.GroupCard
 
@@ -48,21 +47,12 @@ val PickGroupScreen by navDestination<String> {
 
     LaunchedEffect(mode) {
         pickGroupScreenViewModel.setMode(mode)
-        pickGroupScreenViewModel.uiEventFlow.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                is UiEvent.Navigate ->
-                    navController.navigate(event.destination)
-
-                is UiEvent.NavigateBack ->
-                    navController.back()
-
-                else -> {}
-            }
-        }
     }
+
+    CollectUiEvent(
+        uiEventFlow = pickGroupScreenViewModel.uiEventFlow,
+        navController = navController
+    )
 
     PickGroupContent(
         pickGroupScreenViewModel = pickGroupScreenViewModel,
@@ -211,7 +201,7 @@ fun SearchView(
 
 @Composable
 fun GroupsLazyColum(
-    groupState:  State<PickGroupState>,
+    groupState: State<PickGroupState>,
     onGroupCardClicked: (Group) -> Unit,
 ) {
     val existingGroups = when (val state = groupState.value) {

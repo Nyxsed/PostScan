@@ -1,7 +1,5 @@
 package ru.nyxsed.postscan.features.imagepager.presentation
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -76,7 +74,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.event.UiEvent
+import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.SAUCENAO_SEARCH_URL
@@ -108,17 +106,6 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
 
     LaunchedEffect(Unit) {
         showedTutorial = imagePagerViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_IMAGE)
-        imagePagerViewModel.uiEventFlow.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                is UiEvent.Navigate ->
-                    navController.navigate(event.destination)
-
-                else -> {}
-            }
-        }
     }
 
     LaunchedEffect(pagerState.currentPage) {
@@ -145,7 +132,10 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
 
     var notFullScreen by remember { mutableStateOf(true) }
 
-    Log.d("showedTutorial", "$showedTutorial")
+    CollectUiEvent(
+        uiEventFlow = imagePagerViewModel.uiEventFlow,
+        navController = navController,
+    )
 
     IntroShowcase(
         showIntroShowCase = !showedTutorial,

@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.features.changegroup.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,7 @@ import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
-import ru.nyxsed.postscan.core.event.UiEvent
+import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.uikit.components.BasicButton
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -49,7 +48,6 @@ val ChangeGroupScreen by navDestination<Group> {
     val changeGroupScreenViewModel = koinViewModel<ChangeGroupScreenViewModel>()
     val navController = navController()
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
 
     val groupId = changeGroupScreenViewModel.groupId.collectAsState()
     var groupName = changeGroupScreenViewModel.groupName.collectAsState()
@@ -70,21 +68,13 @@ val ChangeGroupScreen by navDestination<Group> {
             changeGroupScreenViewModel.changeAvatarUrl(it.avatarUrl)
             changeGroupScreenViewModel.changeLastFetchDate(it.lastFetchDate.toStringDate().replace(".", ""))
         }
-        changeGroupScreenViewModel.uiEventFlow.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                is UiEvent.OpenUrl ->
-                    uriHandler.openUri(event.url)
-
-                is UiEvent.NavigateBack ->
-                    navController.back()
-
-                else -> {}
-            }
-        }
     }
+
+    CollectUiEvent(
+        uiEventFlow = changeGroupScreenViewModel.uiEventFlow,
+        navController = navController,
+        uriHandler = uriHandler,
+    )
 
     ChangeGroupScreenContent(
         group = group,

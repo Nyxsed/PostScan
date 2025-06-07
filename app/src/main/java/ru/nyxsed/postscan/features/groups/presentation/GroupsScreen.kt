@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.features.groups.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.event.UiEvent
+import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
@@ -68,25 +67,12 @@ val GroupsScreen by navDestination<Unit> {
 
     LaunchedEffect(Unit) {
         groupScreenViewModel.showTutorial()
-
-        groupScreenViewModel.uiEventFlow.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                is UiEvent.Navigate ->
-                    navController.navigate(event.destination)
-
-                is UiEvent.NavigateToPicker ->
-                    navController.navigate(event.destination, event.navArgs)
-
-                is UiEvent.NavigateToChangeGroup ->
-                    navController.navigate(event.destination, event.navArgs)
-
-                else -> {}
-            }
-        }
     }
+
+    CollectUiEvent(
+        uiEventFlow = groupScreenViewModel.uiEventFlow,
+        navController = navController,
+    )
 
     GroupScreenContent(
         groupScreenViewModel = groupScreenViewModel,
