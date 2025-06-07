@@ -23,7 +23,7 @@ import ru.nyxsed.postscan.uikit.components.SettingRow
 
 
 val PreferencesScreen by navDestination<Unit> {
-    val preferencesViewModel = koinViewModel<PreferencesScreenViewModel>()
+    val preferencesViewModel = koinViewModel<PreferencesViewModel>()
     val state by preferencesViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {

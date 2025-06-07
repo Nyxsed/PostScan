@@ -30,7 +30,7 @@ import ru.nyxsed.postscan.features.groups.domain.usecase.DeleteAllPostsUseCase
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreen
 
-class GroupsScreenViewModel(
+class GroupsViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,

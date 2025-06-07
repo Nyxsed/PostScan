@@ -9,7 +9,7 @@ import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
 import ru.nyxsed.postscan.features.comments.domain.usecase.GetCommentsUseCase
 
-class CommentsScreenViewModel(
+class CommentsViewModel(
     private val post: Post,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getSettingBooleanUseCase: GetSettingBooleanUseCase,

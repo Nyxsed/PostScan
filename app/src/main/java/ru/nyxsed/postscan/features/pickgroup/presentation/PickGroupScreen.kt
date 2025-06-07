@@ -39,23 +39,23 @@ val PickGroupScreen by navDestination<String> {
     val context = LocalContext.current
     val navController = navController()
 
-    val pickGroupScreenViewModel = koinViewModel<PickGroupScreenViewModel>()
-    val screenState = pickGroupScreenViewModel.screenStateFlow.collectAsState()
+    val pickGroupViewModel = koinViewModel<PickGroupViewModel>()
+    val screenState = pickGroupViewModel.screenStateFlow.collectAsState()
 
-    var searchQuery = pickGroupScreenViewModel.searchQuery.collectAsState()
-    val showDeleteDialog = pickGroupScreenViewModel.showDeleteDialog.collectAsState()
+    var searchQuery = pickGroupViewModel.searchQuery.collectAsState()
+    val showDeleteDialog = pickGroupViewModel.showDeleteDialog.collectAsState()
 
     LaunchedEffect(mode) {
-        pickGroupScreenViewModel.setMode(mode)
+        pickGroupViewModel.setMode(mode)
     }
 
     CollectUiEvent(
-        uiEventFlow = pickGroupScreenViewModel.uiEventFlow,
+        uiEventFlow = pickGroupViewModel.uiEventFlow,
         navController = navController
     )
 
     PickGroupContent(
-        pickGroupScreenViewModel = pickGroupScreenViewModel,
+        pickGroupViewModel = pickGroupViewModel,
         screenState = screenState,
         searchQuery = searchQuery,
         showDeleteDialog = showDeleteDialog
@@ -64,7 +64,7 @@ val PickGroupScreen by navDestination<String> {
 
 @Composable
 fun PickGroupContent(
-    pickGroupScreenViewModel: PickGroupScreenViewModel,
+    pickGroupViewModel: PickGroupViewModel,
     screenState: State<PickGroupState>,
     searchQuery: State<String>,
     showDeleteDialog: State<Boolean>,
@@ -87,10 +87,10 @@ fun PickGroupContent(
                         SearchView(
                             searchQuery = searchQuery,
                             onSearchQueryChange = {
-                                pickGroupScreenViewModel.changeSearchQuery(it)
+                                pickGroupViewModel.changeSearchQuery(it)
                             },
                             onSearchClicked = {
-                                pickGroupScreenViewModel.fetchedGroups(it)
+                                pickGroupViewModel.fetchedGroups(it)
                             }
                         )
                         Box(
@@ -105,11 +105,11 @@ fun PickGroupContent(
                     is PickGroupState.Search -> {
                         SearchView(
                             onSearchClicked = {
-                                pickGroupScreenViewModel.fetchedGroups(it)
+                                pickGroupViewModel.fetchedGroups(it)
                             },
                             searchQuery = searchQuery,
                             onSearchQueryChange = {
-                                pickGroupScreenViewModel.changeSearchQuery(it)
+                                pickGroupViewModel.changeSearchQuery(it)
                             },
                         )
                         GroupsLazyColum(
@@ -119,9 +119,9 @@ fun PickGroupContent(
                                     existed.groupId == it.groupId
                                 }
                                 if (existingGroup) {
-                                    pickGroupScreenViewModel.toggleDeleteDialog(it)
+                                    pickGroupViewModel.toggleDeleteDialog(it)
                                 } else {
-                                    pickGroupScreenViewModel.addGroup(it)
+                                    pickGroupViewModel.addGroup(it)
                                 }
                             }
                         )
@@ -135,9 +135,9 @@ fun PickGroupContent(
                                     existed.groupId == it.groupId
                                 }
                                 if (existingGroup) {
-                                    pickGroupScreenViewModel.toggleDeleteDialog(it)
+                                    pickGroupViewModel.toggleDeleteDialog(it)
                                 } else {
-                                    pickGroupScreenViewModel.addGroup(it)
+                                    pickGroupViewModel.addGroup(it)
                                 }
                             }
                         )
@@ -149,7 +149,7 @@ fun PickGroupContent(
                     .fillMaxWidth()
                     .padding(4.dp),
                 onClick = {
-                    pickGroupScreenViewModel.navigateBack()
+                    pickGroupViewModel.navigateBack()
                 },
             ) {
                 Text(text = stringResource(R.string.back))
@@ -160,10 +160,10 @@ fun PickGroupContent(
             description = stringResource(R.string.group_delete_dialog_question),
             showDialog = showDeleteDialog.value,
             onDismiss = {
-                pickGroupScreenViewModel.toggleDeleteDialog()
+                pickGroupViewModel.toggleDeleteDialog()
             },
             onConfirmClicked = {
-                pickGroupScreenViewModel.deleteGroupWithPosts()
+                pickGroupViewModel.deleteGroupWithPosts()
             }
         )
     }

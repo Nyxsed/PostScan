@@ -22,7 +22,7 @@ import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
 
-class ChangeGroupScreenViewModel(
+class ChangeGroupViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,

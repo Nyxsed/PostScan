@@ -23,7 +23,7 @@ import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 
-class PreferencesScreenViewModel(
+class PreferencesViewModel(
     private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val exportDbUseCase: ExportDbUseCase,
@@ -36,12 +36,6 @@ class PreferencesScreenViewModel(
 
     private val _state = MutableStateFlow(PreferencesState())
     val state: StateFlow<PreferencesState> = _state.asStateFlow()
-
-    private fun emitEvent(event: UiEvent) {
-        viewModelScope.launch {
-            _uiEventFlow.emit(event)
-        }
-    }
 
     fun processIntent(intent: PreferencesIntent) {
         when (intent) {
@@ -78,13 +72,13 @@ class PreferencesScreenViewModel(
             VKID.instance.logout(object : VKIDLogoutCallback {
                 override fun onSuccess() {
                     viewModelScope.launch {
-                        emitEvent(UiEvent.ShowToast(getResourceUseCase(R.string.log_out_message)))
+                        _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.log_out_message)))
                     }
                 }
 
                 override fun onFail(fail: VKIDLogoutFail) {
                     viewModelScope.launch {
-                        emitEvent(UiEvent.ShowToast(fail.description))
+                        _uiEventFlow.emit(UiEvent.ShowToast(fail.description))
                     }
                 }
             })
@@ -95,14 +89,14 @@ class PreferencesScreenViewModel(
     private fun exportDataBaseToFile(uri: Uri) {
         viewModelScope.launch {
             val result = exportDbUseCase(uri)
-            if (result) emitEvent(UiEvent.ShowToast(getResourceUseCase(R.string.export_db_message)))
+            if (result) _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.export_db_message)))
         }
     }
 
     private fun importDataBaseFromFile(uri: Uri) {
         viewModelScope.launch {
             val result = importDbUseCase(uri)
-            if (result) emitEvent(UiEvent.ShowToast(getResourceUseCase(R.string.import_db_message)))
+            if (result) _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.import_db_message)))
         }
     }
 

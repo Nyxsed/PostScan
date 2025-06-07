@@ -56,9 +56,9 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 val PostsScreen by navDestination<Unit> {
-    val postsScreenViewModel = koinViewModel<PostsScreenViewModel>()
-    val postListState = postsScreenViewModel.posts.collectAsState()
-    val groupListState = postsScreenViewModel.groups.collectAsState()
+    val postsViewModel = koinViewModel<PostsViewModel>()
+    val postListState = postsViewModel.posts.collectAsState()
+    val groupListState = postsViewModel.groups.collectAsState()
 
     val navController = navController()
     val uriHandler = LocalUriHandler.current
@@ -67,7 +67,7 @@ val PostsScreen by navDestination<Unit> {
     val snackbarHostState = SnackbarHostState()
     val scope = rememberCoroutineScope()
 
-    var groupSelected = postsScreenViewModel.groupSelected.collectAsState()
+    var groupSelected = postsViewModel.groupSelected.collectAsState()
     val scrollState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
@@ -80,17 +80,17 @@ val PostsScreen by navDestination<Unit> {
 
     var circularIndicatorState = remember { mutableStateOf(false) }
 
-    val sortOption by postsScreenViewModel.sortOption.collectAsState()
+    val sortOption by postsViewModel.sortOption.collectAsState()
 
 
     LaunchedEffect(Unit) {
-        settingUseMihon = postsScreenViewModel.getSettingBoolean(SettingKey.USE_MIHON)
-        settingDeleteAfterLike = postsScreenViewModel.getSettingBoolean(SettingKey.DELETE_AFTER_LIKE)
-        showedTutorial = postsScreenViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS)
+        settingUseMihon = postsViewModel.getSettingBoolean(SettingKey.USE_MIHON)
+        settingDeleteAfterLike = postsViewModel.getSettingBoolean(SettingKey.DELETE_AFTER_LIKE)
+        showedTutorial = postsViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS)
     }
 
     CollectUiEvent(
-        uiEventFlow = postsScreenViewModel.uiEventFlow,
+        uiEventFlow = postsViewModel.uiEventFlow,
         navController = navController,
         scrollState = scrollState,
         circularIndicatorState = circularIndicatorState
@@ -101,7 +101,7 @@ val PostsScreen by navDestination<Unit> {
             topBar = {
                 PostsScreenBar(
                     onRefreshClicked = {
-                        postsScreenViewModel.refreshPosts(context)
+                        postsViewModel.refreshPosts(context)
                     },
                     onNavToGroupsClicked = {
                         navController.navigate(GroupsScreen)
@@ -113,13 +113,13 @@ val PostsScreen by navDestination<Unit> {
                     showShowcase = !showedTutorial,
                     onShowcaseShowed = {
                         showedTutorial = true
-                        postsScreenViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS, true)
+                        postsViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS, true)
                     },
                     onSortClicked = {
                         if (sortOption == SortOption.ASCENDING) {
-                            postsScreenViewModel.changeSorting(SortOption.DESCENDING)
+                            postsViewModel.changeSorting(SortOption.DESCENDING)
                         } else {
-                            postsScreenViewModel.changeSorting(SortOption.ASCENDING)
+                            postsViewModel.changeSorting(SortOption.ASCENDING)
                         }
                     }
                 )
@@ -157,9 +157,9 @@ val PostsScreen by navDestination<Unit> {
                                         postCount = postCount,
                                         onChipClicked = {
                                             if (groupSelected.value != group.groupId) {
-                                                postsScreenViewModel.selectGroup(group.groupId)
+                                                postsViewModel.selectGroup(group.groupId)
                                             } else {
-                                                postsScreenViewModel.selectGroup(0L)
+                                                postsViewModel.selectGroup(0L)
                                             }
                                             scope.launch {
                                                 scrollState.scrollToItem(0)
@@ -216,14 +216,14 @@ val PostsScreen by navDestination<Unit> {
                                         post = it,
                                         settingUseMihon = settingUseMihon,
                                         onPostDeleteClicked = {
-                                            postsScreenViewModel.deletePost(
+                                            postsViewModel.deletePost(
                                                 post = it,
                                                 context = context,
                                                 snackbarHostState = snackbarHostState
                                             )
                                         },
                                         onLikeClicked = {
-                                            postsScreenViewModel.changeLikeStatus(
+                                            postsViewModel.changeLikeStatus(
                                                 post = it,
                                                 settingDeleteAfterLike = settingDeleteAfterLike,
                                                 context = context,
@@ -231,7 +231,7 @@ val PostsScreen by navDestination<Unit> {
                                             )
                                         },
                                         onToVkClicked = {
-                                            postsScreenViewModel.openPostUri(
+                                            postsViewModel.openPostUri(
                                                 uriHandler = uriHandler,
                                                 post = it
                                             )
@@ -252,12 +252,12 @@ val PostsScreen by navDestination<Unit> {
                                             navController.navigate(ImagePagerScreen, imagePagerArgs)
                                         },
                                         onCommentsClicked = {
-                                            postsScreenViewModel.toComments(it)
+                                            postsViewModel.toComments(it)
                                         },
                                         onGroupClicked = { post ->
                                             val group =
                                                 groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
-                                            postsScreenViewModel.openGroupUri(
+                                            postsViewModel.openGroupUri(
                                                 uriHandler = uriHandler,
                                                 group = group
                                             )

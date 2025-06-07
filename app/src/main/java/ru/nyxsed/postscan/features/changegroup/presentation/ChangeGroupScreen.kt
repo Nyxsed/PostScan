@@ -45,40 +45,40 @@ import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 
 val ChangeGroupScreen by navDestination<Group> {
     val group = navArgs()
-    val changeGroupScreenViewModel = koinViewModel<ChangeGroupScreenViewModel>()
+    val changeGroupViewModel = koinViewModel<ChangeGroupViewModel>()
     val navController = navController()
     val uriHandler = LocalUriHandler.current
 
-    val groupId = changeGroupScreenViewModel.groupId.collectAsState()
-    var groupName = changeGroupScreenViewModel.groupName.collectAsState()
-    var screenName = changeGroupScreenViewModel.screenName.collectAsState()
-    var avatarUrl = changeGroupScreenViewModel.avatarUrl.collectAsState()
-    var lastFetchDate = changeGroupScreenViewModel.lastFetchDate.collectAsState()
+    val groupId = changeGroupViewModel.groupId.collectAsState()
+    var groupName = changeGroupViewModel.groupName.collectAsState()
+    var screenName = changeGroupViewModel.screenName.collectAsState()
+    var avatarUrl = changeGroupViewModel.avatarUrl.collectAsState()
+    var lastFetchDate = changeGroupViewModel.lastFetchDate.collectAsState()
 
-    val showDeleteDialog = changeGroupScreenViewModel.showDeleteDialog.collectAsState()
-    val showDownloadDialog = changeGroupScreenViewModel.showDownloadDialog.collectAsState()
+    val showDeleteDialog = changeGroupViewModel.showDeleteDialog.collectAsState()
+    val showDownloadDialog = changeGroupViewModel.showDownloadDialog.collectAsState()
 
-    var showCircularIndicator = changeGroupScreenViewModel.showCircularIndicator.collectAsState()
+    var showCircularIndicator = changeGroupViewModel.showCircularIndicator.collectAsState()
 
     LaunchedEffect(Unit) {
         group.let {
-            changeGroupScreenViewModel.changeGroupId(it.groupId)
-            changeGroupScreenViewModel.changeGroupName(it.name)
-            changeGroupScreenViewModel.changeScreenName(it.screenName)
-            changeGroupScreenViewModel.changeAvatarUrl(it.avatarUrl)
-            changeGroupScreenViewModel.changeLastFetchDate(it.lastFetchDate.toStringDate().replace(".", ""))
+            changeGroupViewModel.changeGroupId(it.groupId)
+            changeGroupViewModel.changeGroupName(it.name)
+            changeGroupViewModel.changeScreenName(it.screenName)
+            changeGroupViewModel.changeAvatarUrl(it.avatarUrl)
+            changeGroupViewModel.changeLastFetchDate(it.lastFetchDate.toStringDate().replace(".", ""))
         }
     }
 
     CollectUiEvent(
-        uiEventFlow = changeGroupScreenViewModel.uiEventFlow,
+        uiEventFlow = changeGroupViewModel.uiEventFlow,
         navController = navController,
         uriHandler = uriHandler,
     )
 
     ChangeGroupScreenContent(
         group = group,
-        changeGroupScreenViewModel = changeGroupScreenViewModel,
+        changeGroupViewModel = changeGroupViewModel,
         groupId = groupId,
         groupName = groupName,
         screenName = screenName,
@@ -93,7 +93,7 @@ val ChangeGroupScreen by navDestination<Group> {
 @Composable
 fun ChangeGroupScreenContent(
     group: Group,
-    changeGroupScreenViewModel: ChangeGroupScreenViewModel,
+    changeGroupViewModel: ChangeGroupViewModel,
     groupId: State<Long>,
     groupName: State<String>,
     screenName: State<String>,
@@ -120,7 +120,7 @@ fun ChangeGroupScreenContent(
                         .size(50.dp)
                         .clickable(
                             onClick = {
-                                changeGroupScreenViewModel.openGroupUri(group)
+                                changeGroupViewModel.openGroupUri(group)
                             }
                         ),
                     model = ImageRequest.Builder(LocalContext.current)
@@ -135,7 +135,7 @@ fun ChangeGroupScreenContent(
                         .padding(top = 30.dp),
                     value = groupName.value,
                     onValueChange = {
-                        changeGroupScreenViewModel.changeGroupName(it)
+                        changeGroupViewModel.changeGroupName(it)
                     },
                     label = {
                         Text(stringResource(R.string.group_name))
@@ -145,13 +145,13 @@ fun ChangeGroupScreenContent(
                     label = stringResource(R.string.last_fetch_date),
                     selectedDate = lastFetchDate.value,
                     onDateSelected = { newDate ->
-                        changeGroupScreenViewModel.changeLastFetchDate(newDate)
+                        changeGroupViewModel.changeLastFetchDate(newDate)
                     }
                 )
                 BasicButton(
                     label = stringResource(R.string.update_group),
                     onClick = {
-                        changeGroupScreenViewModel.updateGroup(
+                        changeGroupViewModel.updateGroup(
                             groupId.value,
                             groupName.value,
                             screenName.value,
@@ -159,18 +159,18 @@ fun ChangeGroupScreenContent(
                             lastFetchDate.value
                         )
                     },
-                    enabled = changeGroupScreenViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
+                    enabled = changeGroupViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
                 )
                 Spacer(
                     modifier = Modifier.height(10.dp)
                 )
                 BasicButton(
                     label = stringResource(R.string.download_posts),
-                    onClick = { changeGroupScreenViewModel.toggleDownloadDialog() }
+                    onClick = { changeGroupViewModel.toggleDownloadDialog() }
                 )
                 BasicButton(
                     label = stringResource(R.string.delete_posts),
-                    onClick = { changeGroupScreenViewModel.toggleDeleteDialog() }
+                    onClick = { changeGroupViewModel.toggleDeleteDialog() }
                 )
             }
             if (showCircularIndicator.value) {
@@ -180,10 +180,10 @@ fun ChangeGroupScreenContent(
         DownloadModalDialog(
             showDialog = showDownloadDialog.value,
             onDismiss = {
-                changeGroupScreenViewModel.toggleDownloadDialog()
+                changeGroupViewModel.toggleDownloadDialog()
             },
             onDownloadClicked = { startDate, endDate ->
-                changeGroupScreenViewModel.loadPosts(
+                changeGroupViewModel.loadPosts(
                     group = group,
                     startDate = startDate,
                     endDate = endDate
@@ -195,10 +195,10 @@ fun ChangeGroupScreenContent(
             description = stringResource(R.string.do_you_want_to_delete_all_posts_for_this_group),
             showDialog = showDeleteDialog.value,
             onDismiss = {
-                changeGroupScreenViewModel.toggleDeleteDialog()
+                changeGroupViewModel.toggleDeleteDialog()
             },
             onConfirmClicked = {
-                changeGroupScreenViewModel.deleteGroupWithPosts(group)
+                changeGroupViewModel.deleteGroupWithPosts(group)
             }
         )
     }

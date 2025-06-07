@@ -8,7 +8,7 @@ import ru.nyxsed.postscan.features.posts.domain.usecase.DeletePostUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.GetAllPostsUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.GetPostsForGroupUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.UpdatePostUseCase
-import ru.nyxsed.postscan.features.posts.presentation.PostsScreenViewModel
+import ru.nyxsed.postscan.features.posts.presentation.PostsViewModel
 
 val postsModule = module {
     factory { GetAllPostsUseCase(get()) }
@@ -18,7 +18,7 @@ val postsModule = module {
     factory { ChangePostLikeStatusUseCase(get()) }
 
     viewModel {
-        PostsScreenViewModel(
+        PostsViewModel(
             getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),
