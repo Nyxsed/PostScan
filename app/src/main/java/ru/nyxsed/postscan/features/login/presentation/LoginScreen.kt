@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,8 +26,22 @@ val LoginScreen by navDestination<Unit> {
     val navController = navController()
     val loginViewModel = koinViewModel<LoginViewModel>()
 
-    CollectUiEvent(loginViewModel.uiEventFlow)
+    CollectUiEvent(
+        uiEventFlow = loginViewModel.uiEventFlow,
+        navController = navController,
+    )
 
+    LoginScreenContent(
+        processIntent = {
+            loginViewModel.processIntent(it)
+        }
+    )
+}
+
+@Composable
+fun LoginScreenContent(
+    processIntent: (LoginIntent) -> Unit,
+) {
     Scaffold { paddings ->
         Column(
             modifier = Modifier
@@ -47,10 +62,10 @@ val LoginScreen by navDestination<Unit> {
                 modifier = Modifier
                     .width(250.dp),
                 onAuth = { oAuth, token ->
-                    navController.back()
+                    processIntent(LoginIntent.NavigateBack)
                 },
                 onFail = { oAuth, fail ->
-                    loginViewModel.showLoginError(fail.description)
+                    processIntent(LoginIntent.ShowError(fail.description))
                 },
                 authParams = VKIDAuthUiParams {
                     scopes = setOf("wall", "offline", "groups")

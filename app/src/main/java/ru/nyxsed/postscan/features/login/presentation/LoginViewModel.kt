@@ -12,7 +12,25 @@ class LoginViewModel() : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    fun showLoginError(failDescription: String) {
+    fun processIntent(intent: LoginIntent) {
+        when(intent) {
+            LoginIntent.NavigateBack -> {
+                navigateBack()
+            }
+
+            is LoginIntent.ShowError -> {
+                showLoginError(intent.errorDesc)
+            }
+        }
+    }
+
+    private fun navigateBack() {
+        viewModelScope.launch {
+            _uiEventFlow.emit(UiEvent.NavigateBack())
+        }
+    }
+
+    private fun showLoginError(failDescription: String) {
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.ShowToast(failDescription))
         }
