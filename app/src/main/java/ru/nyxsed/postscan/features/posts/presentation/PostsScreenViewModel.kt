@@ -29,9 +29,9 @@ import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
 import ru.nyxsed.postscan.core.domain.util.NotificationHelper
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.VK_WALL_URL
-import ru.nyxsed.postscan.core.util.UiEvent
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.posts.domain.usecase.ChangePostLikeStatusUseCase

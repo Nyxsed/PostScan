@@ -18,9 +18,9 @@ import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
 import ru.nyxsed.postscan.core.domain.util.NotificationHelper
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
-import ru.nyxsed.postscan.core.util.UiEvent
 
 class ChangeGroupScreenViewModel(
     private val getResourceUseCase: GetResourceUseCase,

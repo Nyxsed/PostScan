@@ -22,7 +22,7 @@ import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.core.event.UiEvent
 
 val LoginScreen by navDestination<Unit> {
 

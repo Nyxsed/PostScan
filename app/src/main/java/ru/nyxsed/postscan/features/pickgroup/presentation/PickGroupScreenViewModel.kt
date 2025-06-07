@@ -19,7 +19,7 @@ import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
-import ru.nyxsed.postscan.core.util.UiEvent
+import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.AddGroupUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
