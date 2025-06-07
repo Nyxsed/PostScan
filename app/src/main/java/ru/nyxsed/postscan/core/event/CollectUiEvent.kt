@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.UriHandler
 import com.composegears.tiamat.NavController
+import com.composegears.tiamat.NavDestination
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -16,7 +17,7 @@ fun CollectUiEvent(
     navController: NavController? = null,
     scrollState: LazyListState? = null,
     circularIndicatorState: MutableState<Boolean>? = null,
-    uriHandler: UriHandler? = null
+    uriHandler: UriHandler? = null,
 ) {
     val context = LocalContext.current
 
@@ -24,12 +25,6 @@ fun CollectUiEvent(
         uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                is UiEvent.Navigate ->
-                    navController?.navigate(event.destination)
-
-                is UiEvent.NavigateToPost ->
-                    navController?.navigate(event.destination, event.navArgs)
 
                 is UiEvent.Scroll ->
                     scrollState?.scrollToItem(0)
@@ -40,11 +35,10 @@ fun CollectUiEvent(
                 is UiEvent.NavigateBack ->
                     navController?.back()
 
-                is UiEvent.NavigateToChangeGroup ->
-                    navController?.navigate(event.destination, event.navArgs)
-
-                is UiEvent.NavigateToPicker ->
-                    navController?.navigate(event.destination, event.navArgs)
+                is UiEvent.NavigateTo<*> -> {
+                    val destination = event.destination as NavDestination<Any?>
+                    navController?.navigate(destination, event.navArgs)
+                }
 
                 is UiEvent.OpenUrl ->
                     uriHandler?.openUri(event.url)

@@ -81,7 +81,7 @@ class PickGroupScreenViewModel(
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.Navigate(LoginScreen))
+                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
                 return@launch
             }
 
