@@ -4,14 +4,14 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
-import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreenViewModel
+import ru.nyxsed.postscan.features.preferences.presentation.PreferencesViewModel
 
 val preferencesModule = module {
     factory { ExportDbUseCase(get()) }
     factory { ImportDbUseCase(get()) }
 
     viewModel {
-        PreferencesScreenViewModel(
+        PreferencesViewModel(
             getSettingBooleanUseCase = get(),
             setSettingBooleanUseCase = get(),
             exportDbUseCase = get(),

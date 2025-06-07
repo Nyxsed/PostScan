@@ -5,7 +5,7 @@ import org.koin.dsl.module
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.AddGroupUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.SearchGroupsUseCase
-import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupScreenViewModel
+import ru.nyxsed.postscan.features.pickgroup.presentation.PickGroupViewModel
 
 val pickGroupModule = module {
     factory { GetGroupsUseCase(get()) }
@@ -13,7 +13,7 @@ val pickGroupModule = module {
     factory { AddGroupUseCase(get()) }
 
     viewModel {
-        PickGroupScreenViewModel(
+        PickGroupViewModel(
             getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),

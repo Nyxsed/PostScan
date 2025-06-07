@@ -51,31 +51,31 @@ val GroupsScreen by navDestination<Unit> {
     val navController = navController()
     val context = LocalContext.current
 
-    val groupScreenViewModel = koinViewModel<GroupsScreenViewModel>()
+    val groupsViewModel = koinViewModel<GroupsViewModel>()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val groupsState = groupScreenViewModel.dbGroups.collectAsState()
-    val showAddDialog = groupScreenViewModel.showAddDialog.collectAsState()
-    val showDeleteDialog = groupScreenViewModel.showDeleteDialog.collectAsState()
-    val showDeleteAllDialog = groupScreenViewModel.showDeleteAllDialog.collectAsState()
-    val showDownloadDialog = groupScreenViewModel.showDownloadDialog.collectAsState()
+    val groupsState = groupsViewModel.dbGroups.collectAsState()
+    val showAddDialog = groupsViewModel.showAddDialog.collectAsState()
+    val showDeleteDialog = groupsViewModel.showDeleteDialog.collectAsState()
+    val showDeleteAllDialog = groupsViewModel.showDeleteAllDialog.collectAsState()
+    val showDownloadDialog = groupsViewModel.showDownloadDialog.collectAsState()
 
-    var showedTutorial = groupScreenViewModel.showTutorial.collectAsState()
+    var showedTutorial = groupsViewModel.showTutorial.collectAsState()
 
-    var showCircularIndicator = groupScreenViewModel.showCircularIndicator.collectAsState()
+    var showCircularIndicator = groupsViewModel.showCircularIndicator.collectAsState()
 
     LaunchedEffect(Unit) {
-        groupScreenViewModel.showTutorial()
+        groupsViewModel.showTutorial()
     }
 
     CollectUiEvent(
-        uiEventFlow = groupScreenViewModel.uiEventFlow,
+        uiEventFlow = groupsViewModel.uiEventFlow,
         navController = navController,
     )
 
     GroupScreenContent(
-        groupScreenViewModel = groupScreenViewModel,
+        groupScreenViewModel = groupsViewModel,
         scrollBehavior = scrollBehavior,
         groupsState = groupsState,
         showAddDialog = showAddDialog,
@@ -90,7 +90,7 @@ val GroupsScreen by navDestination<Unit> {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreenContent(
-    groupScreenViewModel: GroupsScreenViewModel,
+    groupScreenViewModel: GroupsViewModel,
     scrollBehavior: TopAppBarScrollBehavior,
     groupsState: State<List<Group>>,
     showAddDialog: State<Boolean>,

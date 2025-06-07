@@ -37,7 +37,7 @@ import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 
 val CommentsScreen by navDestination<Post> {
     val args = navArgs()
-    val commentsScreenViewModel = koinViewModel<CommentsScreenViewModel>(
+    val commentsViewModel = koinViewModel<CommentsViewModel>(
         key = args.postId.toString(),
         parameters = { parametersOf(args) }
     )
@@ -45,12 +45,12 @@ val CommentsScreen by navDestination<Post> {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
 
-    val comments by commentsScreenViewModel.comments.collectAsState()
+    val comments by commentsViewModel.comments.collectAsState()
 
     var settingUseMihon by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        settingUseMihon = commentsScreenViewModel.getSettingBoolean(SettingKey.USE_MIHON)
+        settingUseMihon = commentsViewModel.getSettingBoolean(SettingKey.USE_MIHON)
     }
 
     Scaffold { paddings ->

@@ -40,7 +40,7 @@ import ru.nyxsed.postscan.features.posts.domain.usecase.GetAllPostsUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.GetPostsForGroupUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.UpdatePostUseCase
 
-class PostsScreenViewModel(
+class PostsViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,

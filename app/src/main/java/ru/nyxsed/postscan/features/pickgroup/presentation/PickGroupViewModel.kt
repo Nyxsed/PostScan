@@ -25,7 +25,7 @@ import ru.nyxsed.postscan.features.pickgroup.domain.usecase.AddGroupUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.SearchGroupsUseCase
 
-class PickGroupScreenViewModel(
+class PickGroupViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,

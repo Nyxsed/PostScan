@@ -3,13 +3,13 @@ package ru.nyxsed.postscan.features.groups.di
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import ru.nyxsed.postscan.features.groups.domain.usecase.DeleteAllPostsUseCase
-import ru.nyxsed.postscan.features.groups.presentation.GroupsScreenViewModel
+import ru.nyxsed.postscan.features.groups.presentation.GroupsViewModel
 
 val groupsModule = module {
     factory { DeleteAllPostsUseCase(get()) }
 
     viewModel {
-        GroupsScreenViewModel(
+        GroupsViewModel(
             getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
             isTokenValidUseCase = get(),
