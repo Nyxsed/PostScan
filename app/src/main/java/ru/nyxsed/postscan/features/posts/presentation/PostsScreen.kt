@@ -43,12 +43,12 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.findOrFirst
 import ru.nyxsed.postscan.core.util.Constants.mihonIntent
 import ru.nyxsed.postscan.features.groups.presentation.GroupsScreen
-import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator

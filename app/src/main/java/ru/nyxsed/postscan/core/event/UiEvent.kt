@@ -9,4 +9,6 @@ sealed class UiEvent {
     class NavigateTo<T>(val destination: NavDestination<T>, val navArgs: T? = null) : UiEvent()
     class Scroll() : UiEvent()
     class UpdateStatus(val status: Boolean) : UiEvent()
+    class OpenMihon(val query: String) : UiEvent()
+    class CopyToClipboard(val text: String) : UiEvent()
 }

@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Content
+import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
@@ -420,12 +421,6 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
         }
     }
 }
-
-
-data class ImagePagerArgs(
-    val listContent: List<Content>,
-    val index: Int,
-)
 
 @Composable
 fun ScalableCoilImage(
