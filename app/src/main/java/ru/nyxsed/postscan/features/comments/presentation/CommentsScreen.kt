@@ -9,18 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composegears.tiamat.navArgs
@@ -30,10 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Post
-import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.util.Constants.mihonIntent
-import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerArgs
-import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
+import ru.nyxsed.postscan.core.event.CollectUiEvent
 
 val CommentsScreen by navDestination<Post> {
     val args = navArgs()
@@ -41,20 +32,29 @@ val CommentsScreen by navDestination<Post> {
         key = args.postId.toString(),
         parameters = { parametersOf(args) }
     )
+    val state by commentsViewModel.state.collectAsState()
     val navController = navController()
-    val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
 
-    val comments by commentsViewModel.comments.collectAsState()
+    CollectUiEvent(
+        uiEventFlow = commentsViewModel.uiEventFlow,
+        navController = navController,
+    )
 
-    var settingUseMihon by remember { mutableStateOf(true) }
+    CommentsScreenContent(
+        state = state,
+        processIntent = {
+            commentsViewModel.processIntent(it)
+        }
+    )
+}
 
-    LaunchedEffect(Unit) {
-        settingUseMihon = commentsViewModel.getSettingBoolean(SettingKey.USE_MIHON)
-    }
-
+@Composable
+fun CommentsScreenContent(
+    state: CommentsState,
+    processIntent: (CommentsIntent) -> Unit,
+) {
     Scaffold { paddings ->
-        if (comments.isEmpty()) {
+        if (state.comments.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -72,31 +72,25 @@ val CommentsScreen by navDestination<Post> {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(
-                    items = comments
+                    items = state.comments
                         .filter { it.parentStack == null }
                         .filter { it.contentText.isNotEmpty() || it.content.isNotEmpty() },
                     key = { it.commentId }
                 ) { originalComment ->
                     CommentCard(
                         comment = originalComment,
-                        replays = comments
+                        replays = state.comments
                             .filter { it.parentStack == originalComment.commentId }
                             .filter { it.contentText.isNotEmpty() || it.content.isNotEmpty() },
-                        settingUseMihon = settingUseMihon,
+                        settingUseMihon = state.settingMihon,
                         onToMihonClicked = {
-                            val intent = mihonIntent(
-                                query = it.contentText
-                            )
-                            context.startActivity(intent)
+                            processIntent(CommentsIntent.OnMihonClicked(it.contentText))
                         },
                         onTextLongClick = {
-                            clipboardManager.setText(
-                                annotatedString = AnnotatedString(it)
-                            )
+                            processIntent(CommentsIntent.OnTextLongClick(it))
                         },
                         onImageClicked = { content, index ->
-                            val imagePagerArgs = ImagePagerArgs(content, index)
-                            navController.navigate(ImagePagerScreen, imagePagerArgs)
+                            processIntent(CommentsIntent.OnImageClicked(content, index))
                         }
                     )
                 }

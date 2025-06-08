@@ -5,11 +5,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.text.AnnotatedString
 import com.composegears.tiamat.NavController
 import com.composegears.tiamat.NavDestination
 import kotlinx.coroutines.flow.Flow
+import ru.nyxsed.postscan.core.util.Constants.mihonIntent
 
 @Composable
 fun CollectUiEvent(
@@ -20,6 +23,7 @@ fun CollectUiEvent(
     uriHandler: UriHandler? = null,
 ) {
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
 
     LaunchedEffect(uiEventFlow) {
         uiEventFlow.collect { event ->
@@ -42,6 +46,19 @@ fun CollectUiEvent(
 
                 is UiEvent.OpenUrl ->
                     uriHandler?.openUri(event.url)
+
+                is UiEvent.OpenMihon -> {
+                    val intent = mihonIntent(
+                        query = event.query
+                    )
+                    context.startActivity(intent)
+                }
+
+                is UiEvent.CopyToClipboard -> {
+                    clipboardManager.setText(
+                        annotatedString = AnnotatedString(event.text)
+                    )
+                }
             }
         }
     }
