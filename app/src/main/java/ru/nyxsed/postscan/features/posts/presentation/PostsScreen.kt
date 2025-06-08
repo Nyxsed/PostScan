@@ -47,7 +47,6 @@ import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.findOrFirst
-import ru.nyxsed.postscan.core.util.Constants.mihonIntent
 import ru.nyxsed.postscan.features.groups.presentation.GroupsScreen
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
@@ -237,10 +236,7 @@ val PostsScreen by navDestination<Unit> {
                                             )
                                         },
                                         onToMihonClicked = {
-                                            val intent = mihonIntent(
-                                                query = it
-                                            )
-                                            context.startActivity(intent)
+                                            postsViewModel.openMihon(it)
                                         },
                                         onTextLongClick = {
                                             clipboardManager.setText(

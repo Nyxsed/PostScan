@@ -1,5 +1,6 @@
 package ru.nyxsed.postscan.core.event
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -12,7 +13,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.composegears.tiamat.NavController
 import com.composegears.tiamat.NavDestination
 import kotlinx.coroutines.flow.Flow
-import ru.nyxsed.postscan.core.util.Constants.mihonIntent
+import ru.nyxsed.postscan.core.util.Constants.MANGA_SEARCH_ACTION
 
 @Composable
 fun CollectUiEvent(
@@ -48,9 +49,14 @@ fun CollectUiEvent(
                     uriHandler?.openUri(event.url)
 
                 is UiEvent.OpenMihon -> {
-                    val intent = mihonIntent(
-                        query = event.query
-                    )
+                    val intent = Intent().apply {
+                        action = MANGA_SEARCH_ACTION
+                        val cleanedText = event.query
+                            .replace(Regex("\\r?\\n"), " ")
+                            .replace(Regex("[\\p{So}\\p{Cn}]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]"), "")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        putExtra("query", cleanedText)
+                    }
                     context.startActivity(intent)
                 }
 

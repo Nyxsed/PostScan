@@ -1,6 +1,5 @@
 package ru.nyxsed.postscan.core.util
 
-import android.content.Intent
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -22,16 +21,6 @@ object Constants {
     const val TRACE_SEARCH_URL = "https://trace.moe/?url="
 
     const val DATE_MASK = "##.##.####"
-
-    fun mihonIntent(query: String): Intent {
-        return Intent().apply {
-            action = MANGA_SEARCH_ACTION
-            val cleanedText = query
-                .replace(Regex("\\r?\\n"), " ")
-                .replace(Regex("[\\p{So}\\p{Cn}]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]"), "")
-            putExtra("query", cleanedText)
-        }
-    }
 
     fun <T> List<T>.findOrFirst(predicate: (T) -> Boolean): T =
         find(predicate) ?: first()
