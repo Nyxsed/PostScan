@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
@@ -21,8 +21,10 @@ import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.util.Constants.VK_URL
 import ru.nyxsed.postscan.core.util.Constants.toDateLong
+import ru.nyxsed.postscan.core.util.Constants.toStringDate
 
 class ChangeGroupViewModel(
+    private val group: Group,
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,
@@ -31,87 +33,57 @@ class ChangeGroupViewModel(
     private val updateGroupUseCase: UpdateGroupUseCase,
     private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
+
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    private val _groupId = MutableStateFlow<Long>(0)
-    val groupId: StateFlow<Long> = _groupId.asStateFlow()
+    private val _state = MutableStateFlow(ChangeGroupState())
+    val state = _state.asStateFlow()
 
-    private val _groupName = MutableStateFlow<String>("")
-    val groupName: StateFlow<String> = _groupName.asStateFlow()
-
-    private val _screenName = MutableStateFlow<String>("")
-    val screenName: StateFlow<String> = _screenName.asStateFlow()
-
-    private val _avatarUrl = MutableStateFlow<String>("")
-    val avatarUrl: StateFlow<String> = _avatarUrl.asStateFlow()
-
-    private val _lastFetchDate = MutableStateFlow<String>("")
-    val lastFetchDate: StateFlow<String> = _lastFetchDate.asStateFlow()
-
-    private val _showDeleteDialog = MutableStateFlow(false)
-    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
-
-    private val _showDownloadDialog = MutableStateFlow(false)
-    val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog.asStateFlow()
-
-    private val _showCircularIndicator = MutableStateFlow(false)
-    val showCircularIndicator: StateFlow<Boolean> = _showCircularIndicator.asStateFlow()
-
-    fun toggleDeleteDialog() {
-        _showDeleteDialog.value = !_showDeleteDialog.value
-    }
-
-    fun toggleDownloadDialog() {
-        _showDownloadDialog.value = !_showDownloadDialog.value
-    }
-
-    fun changeGroupId(value: Long) {
-        _groupId.value = value
-    }
-
-    fun changeGroupName(value: String) {
-        _groupName.value = value
-    }
-
-    fun changeScreenName(value: String) {
-        _screenName.value = value
-    }
-
-    fun changeAvatarUrl(value: String) {
-        _avatarUrl.value = value
-    }
-
-    fun changeLastFetchDate(value: String) {
-        _lastFetchDate.value = value
-    }
-
-    val regex = Regex("^([0-2][0-9]|3[01])(0[1-9]|1[0-2])[0-9]{4}$")
-
-    fun updateGroup(
-        groupId: Long,
-        groupName: String,
-        screenName: String,
-        avatarUrl: String,
-        lastFetchDate: String,
-    ) {
+    init {
         viewModelScope.launch {
-            val fetchDate = lastFetchDate.toDateLong()
+            _state.update {
+                it.copy(
+                    groupId = group.groupId,
+                    groupName = group.name,
+                    screenName = group.screenName,
+                    avatarUrl = group.avatarUrl,
+                    lastFetchDate = group.lastFetchDate.toStringDate().replace(".", ""),
+                )
+            }
+        }
+    }
 
-            val group = Group(
-                groupId = groupId,
-                name = groupName,
-                screenName = screenName,
-                avatarUrl = avatarUrl,
-                lastFetchDate = fetchDate
-            )
+    fun processIntent(changeGroupIntent: ChangeGroupIntent) {
+        when (changeGroupIntent) {
+            ChangeGroupIntent.ToggleDeleteDialog -> _state.update { it.copy(showDeleteDialog = !it.showDeleteDialog) }
+            ChangeGroupIntent.ToggleDownloadDialog -> _state.update { it.copy(showDownloadDialog = !it.showDownloadDialog) }
+            is ChangeGroupIntent.ChangeGroupName -> _state.update { it.copy(groupName = changeGroupIntent.value) }
+            is ChangeGroupIntent.ChangeLastFetchDate -> _state.update { it.copy(lastFetchDate = changeGroupIntent.value) }
+            ChangeGroupIntent.UpdateGroup -> updateGroup()
+            ChangeGroupIntent.OpenGroupUri -> openGroupUri()
+            is ChangeGroupIntent.LoadPosts -> loadPosts(changeGroupIntent.startDate, changeGroupIntent.endDate)
+            ChangeGroupIntent.DeleteGroupPosts -> deleteGroupPosts()
+        }
+    }
 
+    private fun updateGroup() {
+        viewModelScope.launch {
+            _state.value.let {
+                val group = Group(
+                    groupId = it.groupId,
+                    name = it.groupName,
+                    screenName = it.screenName,
+                    avatarUrl = it.avatarUrl,
+                    lastFetchDate = it.lastFetchDate.toDateLong()
+                )
+            }
             updateGroupUseCase(group)
             _uiEventFlow.emit(UiEvent.NavigateBack())
         }
     }
 
-    fun openGroupUri(group: Group) {
+    private fun openGroupUri() {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
@@ -122,13 +94,13 @@ class ChangeGroupViewModel(
         }
     }
 
-    fun loadPosts(group: Group, startDate: String, endDate: String) {
+    private fun loadPosts(startDate: String, endDate: String) {
         val startDateUnix = startDate.toDateLong()
         val endDateUnix = endDate.toDateLong()
 
         viewModelScope.launch {
             notificationHelper.initNotification()
-            _showCircularIndicator.value = true
+            _state.update { it.copy(showCircularIndicator = true) }
             try {
                 val postEntities = getPostsForGroupDateIntervalUseCase(
                     group = group,
@@ -139,20 +111,20 @@ class ChangeGroupViewModel(
                     addPostUseCase(post)
                 }
                 notificationHelper.completeNotification()
-                _showCircularIndicator.value = false
+                _state.update { it.copy(showCircularIndicator = false) }
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
                 notificationHelper.errorNotification(e.message!!)
-                _showCircularIndicator.value = false
+                _state.update { it.copy(showCircularIndicator = false) }
             }
         }
-        toggleDownloadDialog()
+        _state.update { it.copy(showDownloadDialog = !it.showDownloadDialog) }
     }
 
-    fun deleteGroupWithPosts(group: Group) {
+    private fun deleteGroupPosts() {
         viewModelScope.launch {
             deleteGroupPostsUseCase(group)
         }
-        toggleDeleteDialog()
+        _state.update { it.copy(showDeleteDialog = !it.showDeleteDialog) }
     }
 }
