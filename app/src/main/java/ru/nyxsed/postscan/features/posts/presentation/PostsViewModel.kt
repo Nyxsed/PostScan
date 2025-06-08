@@ -242,4 +242,10 @@ class PostsViewModel(
         _sortOption.value = sortOption
         setSetting(SettingKey.SORT_OPTION, sortOption.toString())
     }
+
+    fun openMihon(query: String) {
+        viewModelScope.launch {
+            _uiEventFlow.emit(UiEvent.OpenMihon(query))
+        }
+    }
 }
