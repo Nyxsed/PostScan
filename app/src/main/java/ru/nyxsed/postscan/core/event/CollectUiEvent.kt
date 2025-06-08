@@ -8,7 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import com.composegears.tiamat.NavController
 import com.composegears.tiamat.NavDestination
@@ -21,10 +21,10 @@ fun CollectUiEvent(
     navController: NavController? = null,
     scrollState: LazyListState? = null,
     circularIndicatorState: MutableState<Boolean>? = null,
-    uriHandler: UriHandler? = null,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(uiEventFlow) {
         uiEventFlow.collect { event ->

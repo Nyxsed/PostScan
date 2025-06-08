@@ -15,14 +15,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -32,10 +30,10 @@ import com.composegears.tiamat.navArgs
 import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.event.CollectUiEvent
-import ru.nyxsed.postscan.core.util.Constants.toStringDate
 import ru.nyxsed.postscan.uikit.components.BasicButton
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import ru.nyxsed.postscan.uikit.components.DatePickerTextField
@@ -45,63 +43,29 @@ import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 
 val ChangeGroupScreen by navDestination<Group> {
     val group = navArgs()
-    val changeGroupViewModel = koinViewModel<ChangeGroupViewModel>()
+    val changeGroupViewModel: ChangeGroupViewModel = koinViewModel(
+        parameters = { parametersOf(group) }
+    )
     val navController = navController()
-    val uriHandler = LocalUriHandler.current
-
-    val groupId = changeGroupViewModel.groupId.collectAsState()
-    var groupName = changeGroupViewModel.groupName.collectAsState()
-    var screenName = changeGroupViewModel.screenName.collectAsState()
-    var avatarUrl = changeGroupViewModel.avatarUrl.collectAsState()
-    var lastFetchDate = changeGroupViewModel.lastFetchDate.collectAsState()
-
-    val showDeleteDialog = changeGroupViewModel.showDeleteDialog.collectAsState()
-    val showDownloadDialog = changeGroupViewModel.showDownloadDialog.collectAsState()
-
-    var showCircularIndicator = changeGroupViewModel.showCircularIndicator.collectAsState()
-
-    LaunchedEffect(Unit) {
-        group.let {
-            changeGroupViewModel.changeGroupId(it.groupId)
-            changeGroupViewModel.changeGroupName(it.name)
-            changeGroupViewModel.changeScreenName(it.screenName)
-            changeGroupViewModel.changeAvatarUrl(it.avatarUrl)
-            changeGroupViewModel.changeLastFetchDate(it.lastFetchDate.toStringDate().replace(".", ""))
-        }
-    }
+    val state by changeGroupViewModel.state.collectAsState()
 
     CollectUiEvent(
         uiEventFlow = changeGroupViewModel.uiEventFlow,
         navController = navController,
-        uriHandler = uriHandler,
     )
 
     ChangeGroupScreenContent(
-        group = group,
-        changeGroupViewModel = changeGroupViewModel,
-        groupId = groupId,
-        groupName = groupName,
-        screenName = screenName,
-        avatarUrl = avatarUrl,
-        lastFetchDate = lastFetchDate,
-        showDownloadDialog = showDownloadDialog,
-        showDeleteDialog = showDeleteDialog,
-        showCircularIndicator = showCircularIndicator,
+        state = state,
+        processIntent = {
+            changeGroupViewModel.processIntent(it)
+        }
     )
 }
 
 @Composable
 fun ChangeGroupScreenContent(
-    group: Group,
-    changeGroupViewModel: ChangeGroupViewModel,
-    groupId: State<Long>,
-    groupName: State<String>,
-    screenName: State<String>,
-    avatarUrl: State<String>,
-    lastFetchDate: State<String>,
-    showDeleteDialog: State<Boolean>,
-    showDownloadDialog: State<Boolean>,
-    showCircularIndicator: State<Boolean>,
+    state: ChangeGroupState,
+    processIntent: (ChangeGroupIntent) -> Unit,
 ) {
     Scaffold { paddings ->
         Box(
@@ -120,11 +84,11 @@ fun ChangeGroupScreenContent(
                         .size(50.dp)
                         .clickable(
                             onClick = {
-                                changeGroupViewModel.openGroupUri(group)
+                                processIntent(ChangeGroupIntent.OpenGroupUri)
                             }
                         ),
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(avatarUrl.value)
+                        .data(state.avatarUrl)
                         .crossfade(true)
                         .build(),
                     contentDescription = null,
@@ -133,9 +97,9 @@ fun ChangeGroupScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 30.dp),
-                    value = groupName.value,
+                    value = state.groupName,
                     onValueChange = {
-                        changeGroupViewModel.changeGroupName(it)
+                        processIntent(ChangeGroupIntent.ChangeGroupName(it))
                     },
                     label = {
                         Text(stringResource(R.string.group_name))
@@ -143,63 +107,43 @@ fun ChangeGroupScreenContent(
                 )
                 DatePickerTextField(
                     label = stringResource(R.string.last_fetch_date),
-                    selectedDate = lastFetchDate.value,
-                    onDateSelected = { newDate ->
-                        changeGroupViewModel.changeLastFetchDate(newDate)
-                    }
+                    selectedDate = state.lastFetchDate,
+                    onDateSelected = { newDate -> processIntent(ChangeGroupIntent.ChangeLastFetchDate(newDate)) }
                 )
                 BasicButton(
                     label = stringResource(R.string.update_group),
                     onClick = {
-                        changeGroupViewModel.updateGroup(
-                            groupId.value,
-                            groupName.value,
-                            screenName.value,
-                            avatarUrl.value,
-                            lastFetchDate.value
-                        )
+                        processIntent(ChangeGroupIntent.UpdateGroup)
                     },
-                    enabled = changeGroupViewModel.regex.matches(lastFetchDate.value) && groupName.value.isNotEmpty()
+                    enabled = Regex("^([0-2][0-9]|3[01])(0[1-9]|1[0-2])[0-9]{4}$").matches(state.lastFetchDate) && state.groupName.isNotEmpty()
                 )
                 Spacer(
                     modifier = Modifier.height(10.dp)
                 )
                 BasicButton(
                     label = stringResource(R.string.download_posts),
-                    onClick = { changeGroupViewModel.toggleDownloadDialog() }
+                    onClick = { processIntent(ChangeGroupIntent.ToggleDownloadDialog) }
                 )
                 BasicButton(
                     label = stringResource(R.string.delete_posts),
-                    onClick = { changeGroupViewModel.toggleDeleteDialog() }
+                    onClick = { processIntent(ChangeGroupIntent.ToggleDeleteDialog) }
                 )
             }
-            if (showCircularIndicator.value) {
+            if (state.showCircularIndicator) {
                 CenteredLoadingIndicator()
             }
         }
         DownloadModalDialog(
-            showDialog = showDownloadDialog.value,
-            onDismiss = {
-                changeGroupViewModel.toggleDownloadDialog()
-            },
-            onDownloadClicked = { startDate, endDate ->
-                changeGroupViewModel.loadPosts(
-                    group = group,
-                    startDate = startDate,
-                    endDate = endDate
-                )
-            }
+            showDialog = state.showDownloadDialog,
+            onDismiss = { processIntent(ChangeGroupIntent.ToggleDownloadDialog) },
+            onDownloadClicked = { startDate, endDate -> processIntent(ChangeGroupIntent.LoadPosts(startDate, endDate)) }
         )
         DeleteModalDialog(
             title = stringResource(R.string.delete_posts),
             description = stringResource(R.string.do_you_want_to_delete_all_posts_for_this_group),
-            showDialog = showDeleteDialog.value,
-            onDismiss = {
-                changeGroupViewModel.toggleDeleteDialog()
-            },
-            onConfirmClicked = {
-                changeGroupViewModel.deleteGroupWithPosts(group)
-            }
+            showDialog = state.showDeleteDialog,
+            onDismiss = { processIntent(ChangeGroupIntent.ToggleDeleteDialog) },
+            onConfirmClicked = { processIntent(ChangeGroupIntent.DeleteGroupPosts) }
         )
     }
 }
