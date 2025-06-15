@@ -5,9 +5,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
@@ -44,39 +45,49 @@ class GroupsViewModel(
     private val getPostsForGroupDateIntervalUseCase: GetPostsForGroupDateIntervalUseCase,
     private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
-    val dbGroups = getAllGroupsUseCase()
+
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    private val _showAddDialog = MutableStateFlow(false)
-    val showAddDialog: StateFlow<Boolean> = _showAddDialog.asStateFlow()
+    private val _state = MutableStateFlow(GroupsState())
+    val state = _state.asStateFlow()
 
-    private val _showDeleteDialog = MutableStateFlow(false)
-    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
-
-    private val _showDeleteAllDialog = MutableStateFlow(false)
-    val showDeleteAllDialog: StateFlow<Boolean> = _showDeleteAllDialog.asStateFlow()
-
-    private val _showDownloadDialog = MutableStateFlow(false)
-    val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog.asStateFlow()
-
-    private val _showTutorial = MutableStateFlow(false)
-    val showTutorial: StateFlow<Boolean> = _showTutorial.asStateFlow()
-
-    private val _showCircularIndicator = MutableStateFlow(false)
-    val showCircularIndicator: StateFlow<Boolean> = _showCircularIndicator.asStateFlow()
-
-    private var groupToDelete: Group? = null
-
-    fun deleteGroupWithPosts() {
+    init {
         viewModelScope.launch {
-            deleteGroupUseCase(groupToDelete!!)
-            deleteGroupPostsUseCase(groupToDelete!!)
+            val setting = getSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_GROUPS)
+
+            getAllGroupsUseCase().collectLatest { groups ->
+                _state.update { it.copy(showTutorial = setting, groups = groups) }
+            }
+        }
+    }
+
+    fun processIntent(intent: GroupsIntent) {
+        viewModelScope.launch {
+            when (intent) {
+                GroupsIntent.DeleteGroupWithPosts -> deleteGroupWithPosts()
+                GroupsIntent.GroupsTutorialCompleted -> setSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_GROUPS, true)
+                GroupsIntent.ToggleAddDialog -> toggleAddDialog()
+                GroupsIntent.ToggleDownloadDialog -> toggleDownloadDialog()
+                GroupsIntent.ToggleDeleteAllDialog -> toggleDeleteAllDialog()
+                is GroupsIntent.ToggleDeleteDialog -> toggleDeleteDialog(intent.group)
+                is GroupsIntent.NavigateToChangeGroupScreen -> navigateToChangeGroupScreen(intent.group)
+                is GroupsIntent.NavigateToPickScreen -> navigateToPickScreen(intent.dest)
+                GroupsIntent.DeleteAllPosts -> deleteAllPosts()
+                is GroupsIntent.LoadPosts -> loadPosts(intent.startDate, intent.endDate)
+            }
+        }
+    }
+
+    private fun deleteGroupWithPosts() {
+        viewModelScope.launch {
+            deleteGroupUseCase(_state.value.groupToDelete!!)
+            deleteGroupPostsUseCase(_state.value.groupToDelete!!)
             toggleDeleteDialog()
         }
     }
 
-    fun navigateToPickScreen(param: String) {
+    private fun navigateToPickScreen(param: String) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
@@ -93,45 +104,49 @@ class GroupsViewModel(
         }
     }
 
-    fun navigateToChangeGroupScreen(param: Group) {
+    private fun navigateToChangeGroupScreen(param: Group) {
         viewModelScope.launch {
             _uiEventFlow.emit(UiEvent.NavigateTo(ChangeGroupScreen, param))
         }
     }
 
-    fun toggleAddDialog() {
-        _showAddDialog.value = !_showAddDialog.value
+    private fun toggleAddDialog() {
+        _state.update { it.copy(showAddDialog = !it.showAddDialog) }
     }
 
-    fun toggleDeleteDialog(group: Group? = null) {
-        _showDeleteDialog.value = !_showDeleteDialog.value
-        groupToDelete = group
+    private fun toggleDeleteDialog(group: Group? = null) {
+        _state.update {
+            it.copy(
+                showDeleteDialog = !it.showDeleteDialog,
+                groupToDelete = group,
+            )
+        }
     }
 
-    fun toggleDeleteAllDialog() {
-        _showDeleteAllDialog.value = !_showDeleteAllDialog.value
+    private fun toggleDownloadDialog() {
+        _state.update { it.copy(showDownloadDialog = !it.showDownloadDialog) }
     }
 
-    fun deleteAllPosts() {
+    private fun toggleDeleteAllDialog() {
+        _state.update { it.copy(showDeleteAllDialog = !it.showDeleteAllDialog) }
+    }
+
+    private fun deleteAllPosts() {
         viewModelScope.launch {
             deleteAllPostsUseCase()
             toggleDeleteAllDialog()
         }
     }
 
-    fun toggleDownloadDialog() {
-        _showDownloadDialog.value = !_showDownloadDialog.value
-    }
-
-    fun loadPosts(startDate: String, endDate: String) {
+    private fun loadPosts(startDate: String, endDate: String) {
         val startDateUnix = startDate.toDateLong()
         val endDateUnix = endDate.toDateLong()
 
         viewModelScope.launch {
             notificationHelper.initNotification()
-            _showCircularIndicator.value = true
+            _state.update { it.copy(showCircularIndication = true) }
             try {
-                dbGroups.value.forEachIndexed { index, group ->
+                state.value.groups.forEachIndexed { index, group ->
                     val postEntities = getPostsForGroupDateIntervalUseCase(
                         group = group,
                         startDate = startDateUnix,
@@ -141,35 +156,18 @@ class GroupsViewModel(
                         addPostUseCase(post)
                     }
 
-                    val percentage = (index + 1) * 100 / dbGroups.value.size
+                    val percentage = (index + 1) * 100 / state.value.groups.size
                     notificationHelper.updateProgressNotification(percentage)
 
                 }
                 notificationHelper.completeNotification()
-                _showCircularIndicator.value = false
+                _state.update { it.copy(showCircularIndication = false) }
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
                 notificationHelper.errorNotification(e.message!!)
-                _showCircularIndicator.value = false
+                _state.update { it.copy(showCircularIndication = false) }
             }
         }
         toggleDownloadDialog()
-    }
-
-    fun showTutorial() {
-        viewModelScope.launch {
-            val setting = getSettingBoolean(SettingKey.SHOWED_TUTORIAL_GROUPS)
-            _showTutorial.value = setting
-        }
-    }
-
-    suspend fun getSettingBoolean(key: SettingKey): Boolean {
-        return getSettingBooleanUseCase(key)
-    }
-
-    fun setSettingBoolean(key: SettingKey, value: Boolean) {
-        viewModelScope.launch {
-            setSettingBooleanUseCase(key, value)
-        }
     }
 }

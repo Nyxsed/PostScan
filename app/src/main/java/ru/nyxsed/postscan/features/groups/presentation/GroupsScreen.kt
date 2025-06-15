@@ -17,16 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,8 +34,6 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.Group
-import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -49,25 +44,9 @@ import ru.nyxsed.postscan.uikit.components.GroupCard
 @OptIn(ExperimentalMaterial3Api::class)
 val GroupsScreen by navDestination<Unit> {
     val navController = navController()
-    val context = LocalContext.current
-
     val groupsViewModel = koinViewModel<GroupsViewModel>()
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    val groupsState = groupsViewModel.dbGroups.collectAsState()
-    val showAddDialog = groupsViewModel.showAddDialog.collectAsState()
-    val showDeleteDialog = groupsViewModel.showDeleteDialog.collectAsState()
-    val showDeleteAllDialog = groupsViewModel.showDeleteAllDialog.collectAsState()
-    val showDownloadDialog = groupsViewModel.showDownloadDialog.collectAsState()
-
-    var showedTutorial = groupsViewModel.showTutorial.collectAsState()
-
-    var showCircularIndicator = groupsViewModel.showCircularIndicator.collectAsState()
-
-    LaunchedEffect(Unit) {
-        groupsViewModel.showTutorial()
-    }
+    val state by groupsViewModel.state.collectAsState()
 
     CollectUiEvent(
         uiEventFlow = groupsViewModel.uiEventFlow,
@@ -75,36 +54,25 @@ val GroupsScreen by navDestination<Unit> {
     )
 
     GroupScreenContent(
-        groupScreenViewModel = groupsViewModel,
-        scrollBehavior = scrollBehavior,
-        groupsState = groupsState,
-        showAddDialog = showAddDialog,
-        showDeleteDialog = showDeleteDialog,
-        showDeleteAllDialog = showDeleteAllDialog,
-        showDownloadDialog = showDownloadDialog,
-        showedTutorial = showedTutorial,
-        showCircularIndicator = showCircularIndicator,
+        state = state,
+        processIntent = {
+            groupsViewModel.processIntent(it)
+        }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreenContent(
-    groupScreenViewModel: GroupsViewModel,
-    scrollBehavior: TopAppBarScrollBehavior,
-    groupsState: State<List<Group>>,
-    showAddDialog: State<Boolean>,
-    showDeleteDialog: State<Boolean>,
-    showDeleteAllDialog: State<Boolean>,
-    showDownloadDialog: State<Boolean>,
-    showedTutorial: State<Boolean>,
-    showCircularIndicator: State<Boolean>,
+    state: GroupsState,
+    processIntent: (GroupsIntent) -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     IntroShowcase(
-        showIntroShowCase = !showedTutorial.value,
+        showIntroShowCase = !state.showTutorial,
         dismissOnClickOutside = true,
         onShowCaseCompleted = {
-            groupScreenViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_GROUPS, true)
+            processIntent(GroupsIntent.GroupsTutorialCompleted)
         }
     ) {
         Scaffold(
@@ -112,7 +80,7 @@ fun GroupScreenContent(
 
                 FloatingActionButton(
                     onClick = {
-                        groupScreenViewModel.toggleAddDialog()
+                        processIntent(GroupsIntent.ToggleAddDialog)
                     },
                     modifier = Modifier.introShowCaseTarget(
                         index = 0,
@@ -147,10 +115,10 @@ fun GroupScreenContent(
             topBar = {
                 GroupsScreenBar(
                     onDownloadClicked = {
-                        groupScreenViewModel.toggleDownloadDialog()
+                        processIntent(GroupsIntent.ToggleDownloadDialog)
                     },
                     onDeleteClicked = {
-                        groupScreenViewModel.toggleDeleteAllDialog()
+                        processIntent(GroupsIntent.ToggleDeleteAllDialog)
                     },
                     scrollBehavior = scrollBehavior
                 )
@@ -161,7 +129,7 @@ fun GroupScreenContent(
                     .padding(paddings)
                     .fillMaxSize()
             ) {
-                if (groupsState.value.isEmpty()) {
+                if (state.groups.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -180,7 +148,7 @@ fun GroupScreenContent(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         items(
-                            items = groupsState.value,
+                            items = state.groups,
                             key = { it.groupId }
                         ) {
                             Box(
@@ -190,10 +158,10 @@ fun GroupScreenContent(
                                 GroupCard(
                                     group = it,
                                     onGroupDeleteClicked = {
-                                        groupScreenViewModel.toggleDeleteDialog(it)
+                                        processIntent(GroupsIntent.ToggleDeleteDialog(it))
                                     },
                                     onGroupClicked = {
-                                        groupScreenViewModel.navigateToChangeGroupScreen(it)
+                                        processIntent(GroupsIntent.NavigateToChangeGroupScreen(it))
                                     },
                                     deleteEnabled = true
                                 )
@@ -201,54 +169,51 @@ fun GroupScreenContent(
                         }
                     }
                 }
-                if (showCircularIndicator.value) {
+                if (state.showCircularIndication) {
                     CenteredLoadingIndicator()
                 }
             }
             AddModalDialog(
-                showDialog = showAddDialog.value,
+                showDialog = state.showAddDialog,
                 onDismiss = {
-                    groupScreenViewModel.toggleAddDialog()
+                    processIntent(GroupsIntent.ToggleAddDialog)
                 },
                 onSearchClicked = {
-                    groupScreenViewModel.navigateToPickScreen("SEARCH")
+                    processIntent(GroupsIntent.NavigateToPickScreen("SEARCH"))
                 },
                 onPickClicked = {
-                    groupScreenViewModel.navigateToPickScreen("USER_GROUPS")
+                    processIntent(GroupsIntent.NavigateToPickScreen("USER_GROUPS"))
                 }
             )
             DeleteModalDialog(
                 title = stringResource(R.string.delete_group),
                 description = stringResource(R.string.group_delete_dialog_question),
-                showDialog = showDeleteDialog.value,
+                showDialog = state.showDeleteDialog,
                 onDismiss = {
-                    groupScreenViewModel.toggleDeleteDialog()
+                    processIntent(GroupsIntent.ToggleDeleteDialog(null))
                 },
                 onConfirmClicked = {
-                    groupScreenViewModel.deleteGroupWithPosts()
+                    processIntent(GroupsIntent.DeleteGroupWithPosts)
                 }
             )
             DeleteModalDialog(
                 title = stringResource(R.string.delete_all_posts),
                 description = stringResource(R.string.delete_all_posts_dialog_question),
-                showDialog = showDeleteAllDialog.value,
+                showDialog = state.showDeleteAllDialog,
                 onDismiss = {
-                    groupScreenViewModel.toggleDeleteAllDialog()
+                    processIntent(GroupsIntent.ToggleDeleteAllDialog)
                 },
                 onConfirmClicked = {
-                    groupScreenViewModel.deleteAllPosts()
+                    processIntent(GroupsIntent.DeleteAllPosts)
                 }
             )
             DownloadModalDialog(
-                showDialog = showDownloadDialog.value,
+                showDialog = state.showDownloadDialog,
                 onDismiss = {
-                    groupScreenViewModel.toggleDownloadDialog()
+                    processIntent(GroupsIntent.ToggleDownloadDialog)
                 },
                 onDownloadClicked = { startDate, endDate ->
-                    groupScreenViewModel.loadPosts(
-                        startDate = startDate,
-                        endDate = endDate
-                    )
+                    processIntent(GroupsIntent.LoadPosts(startDate, endDate))
                 }
             )
         }
