@@ -44,7 +44,8 @@ import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 val ChangeGroupScreen by navDestination<Group> {
     val group = navArgs()
     val changeGroupViewModel: ChangeGroupViewModel = koinViewModel(
-        parameters = { parametersOf(group) }
+        parameters = { parametersOf(group) },
+        key = group.groupId.toString()
     )
     val navController = navController()
     val state by changeGroupViewModel.state.collectAsState()

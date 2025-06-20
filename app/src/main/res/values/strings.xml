@@ -61,4 +61,10 @@
     <string name="tutorial_sort">Sort</string>
     <string name="tutorial_sort_desc">Sort post by date</string>
     <string name="back">Back</string>
+    <string name="image_search_source_tracemoe" translatable="false">TraceMoe</string>
+    <string name="image_search_source_yandex" translatable="false">Yandex</string>
+    <string name="image_search_source_saucenao" translatable="false">SauceNAO</string>
+    <string name="image_search_source_iqdb" translatable="false">IQDB</string>
+    <string name="image_search_source_tineye" translatable="false">Tineye</string>
+    <string name="image_search_source_bing" translatable="false">Bing</string>
 </resources>

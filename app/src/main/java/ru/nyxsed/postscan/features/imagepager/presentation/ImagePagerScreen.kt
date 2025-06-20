@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,6 +39,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +53,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,10 +72,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
-import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.core.util.Constants.BING_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.IQDB_SEARCH_URL
@@ -87,70 +87,55 @@ import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
 @OptIn(ExperimentalMaterial3Api::class)
 val ImagePagerScreen by navDestination<ImagePagerArgs> {
     val imagePagerArgs = navArgs()
-    val index = imagePagerArgs.index
-    val imagePagerViewModel = koinViewModel<ImagePagerViewModel>()
-    val context = LocalContext.current
+    val imagePagerViewModel: ImagePagerViewModel = koinViewModel(
+        parameters = { parametersOf(imagePagerArgs.listContent, imagePagerArgs.index) },
+        key = "${imagePagerArgs.hashCode()}"
+    )
+    val state by imagePagerViewModel.state.collectAsState()
     val navController = navController()
-    val scope = CoroutineScope(Dispatchers.Main)
 
-    var content by remember { mutableStateOf<List<Content>>(imagePagerArgs.listContent) }
-
-    val uriHandler = LocalUriHandler.current
     val pagerState = rememberPagerState(
-        initialPage = index,
-        pageCount = { content.size }
+        initialPage = state.pageIndex,
+        pageCount = { state.contentList.size }
     )
 
-    var pageData by remember { mutableStateOf<Map<Int, Boolean>>(emptyMap()) }
-
-    var showedTutorial by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        showedTutorial = imagePagerViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_IMAGE)
-    }
-
     LaunchedEffect(pagerState.currentPage) {
-        val connect = imagePagerViewModel.checkConnect()
-        if (!connect) return@LaunchedEffect
-
-        val currentPage = pagerState.currentPage
-        if (!pageData.containsKey(currentPage)) {
-
-            val data = imagePagerViewModel.checkLikeStatus(content[currentPage])
-
-            val updatedContent = content.mapIndexed { index, entity ->
-                if (index == currentPage) {
-                    entity.copy(isLiked = data)
-                } else {
-                    entity
-                }
-            }
-            content = updatedContent
-
-            pageData = pageData + (currentPage to data)
-        }
+            imagePagerViewModel.processIntent(ImagePagerIntent.PageChanged(pagerState.currentPage))
     }
-
-    var notFullScreen by remember { mutableStateOf(true) }
 
     CollectUiEvent(
         uiEventFlow = imagePagerViewModel.uiEventFlow,
         navController = navController,
     )
 
+    ImagePagerContent(
+        state = state,
+        pagerState = pagerState,
+        processIntent = {
+            imagePagerViewModel.processIntent(it)
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ImagePagerContent(
+    state: ImagePagerState,
+    pagerState: PagerState,
+    processIntent: (ImagePagerIntent) -> Unit,
+) {
     IntroShowcase(
-        showIntroShowCase = !showedTutorial,
+        showIntroShowCase = !state.showTutorial,
         dismissOnClickOutside = true,
         onShowCaseCompleted = {
-            imagePagerViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_IMAGE, true)
+            processIntent(ImagePagerIntent.ImageTutorialCompleted)
         }
     ) {
         Scaffold(
             topBar = {
             }
         ) { paddings ->
-
-            var menuExpanded by remember { mutableStateOf(false) }
+            val scope = CoroutineScope(Dispatchers.Main)
 
             Box(
                 modifier = Modifier
@@ -162,7 +147,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                     modifier = Modifier
                         .fillMaxWidth()
                         .zIndex(1f),
-                    visible = notFullScreen,
+                    visible = !state.fullScreen,
                     enter = fadeIn() + slideInVertically(),
                     exit = fadeOut() + slideOutVertically(),
                 ) {
@@ -172,14 +157,14 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                         ),
                         title = {
                             Text(
-                                text = "${pagerState.currentPage + 1} из ${content.size}",
+                                text = "${pagerState.currentPage + 1} из ${state.contentList.size}",
                                 color = Color.White
                             )
                         },
                         navigationIcon = {
                             IconButton(
                                 onClick = {
-                                    navController.back()
+                                    processIntent(ImagePagerIntent.NavigateBack)
                                 }
                             ) {
                                 Icon(
@@ -215,7 +200,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                                     }
                                 ),
                                 onClick = {
-                                    menuExpanded = true
+                                    processIntent(ImagePagerIntent.ToggleMenu)
                                 },
                             ) {
                                 Icon(
@@ -225,87 +210,93 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                                 )
                             }
                             DropdownMenu(
-                                expanded = menuExpanded,
+                                expanded = state.expendedMenu,
                                 onDismissRequest = {
-                                    menuExpanded = false
+                                    processIntent(ImagePagerIntent.ToggleMenu)
                                 }
                             ) {
                                 DropdownMenuItem(
                                     text = {
-                                        Text("SauceNAO")
+                                        Text(stringResource(R.string.image_search_source_saucenao))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            SAUCENAO_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = SAUCENAO_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                                 DropdownMenuItem(
                                     text = {
-                                        Text("Yandex")
+                                        Text(stringResource(R.string.image_search_source_yandex))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            YANDEX_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = YANDEX_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                                 DropdownMenuItem(
                                     text = {
-                                        Text("TraceMoe")
+                                        Text(stringResource(R.string.image_search_source_tracemoe))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            TRACE_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = TRACE_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                                 DropdownMenuItem(
                                     text = {
-                                        Text("IQDB")
+                                        Text(stringResource(R.string.image_search_source_iqdb))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            IQDB_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = IQDB_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                                 DropdownMenuItem(
                                     text = {
-                                        Text("Tineye")
+                                        Text(stringResource(R.string.image_search_source_tineye))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            TINEYE_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = TINEYE_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                                 DropdownMenuItem(
                                     text = {
-                                        Text("Bing")
+                                        Text(stringResource(R.string.image_search_source_bing))
                                     },
                                     onClick = {
-                                        imagePagerViewModel.findImage(
-                                            uriHandler,
-                                            content[pagerState.currentPage].urlBig,
-                                            BING_SEARCH_URL
+                                        processIntent(
+                                            ImagePagerIntent.FindImage(
+                                                link = state.contentList[pagerState.currentPage].urlBig,
+                                                source = BING_SEARCH_URL
+                                            )
                                         )
-                                        menuExpanded = false
+                                        processIntent(ImagePagerIntent.ToggleMenu)
                                     }
                                 )
                             }
@@ -318,16 +309,16 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                     state = pagerState,
                 ) { index ->
                     ScalableCoilImage(
-                        imageUrl = content[index].urlBig,
-                        fullScreen = !notFullScreen,
+                        imageUrl = state.contentList[index].urlBig,
+                        fullScreen = state.fullScreen,
                         onImageClicked = {
-                            notFullScreen = !notFullScreen
+                            processIntent(ImagePagerIntent.ToggleFullScreen)
                         })
                 }
                 AnimatedVisibility(
                     modifier = Modifier
                         .align(Alignment.BottomCenter),
-                    visible = notFullScreen,
+                    visible = !state.fullScreen,
                     enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
                     exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
                 ) {
@@ -341,15 +332,15 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             items(
-                                items = content,
+                                items = state.contentList,
                                 key = { it.contentId }
                             ) { item ->
                                 AsyncImage(
                                     modifier = Modifier
-                                        .size(if (item.contentId == content[pagerState.currentPage].contentId) 60.dp else 30.dp)
+                                        .size(if (item.contentId == state.contentList[pagerState.currentPage].contentId) 60.dp else 30.dp)
                                         .clickable(onClick = {
                                             scope.launch {
-                                                val currentIndex = content.indexOf(item)
+                                                val currentIndex = state.contentList.indexOf(item)
                                                 pagerState.scrollToPage(page = currentIndex)
                                             }
                                         }),
@@ -369,10 +360,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                         ) {
                             IconButton(
                                 onClick = {
-                                    imagePagerViewModel.openPostUri(
-                                        uriHandler = uriHandler,
-                                        content = content[index]
-                                    )
+                                    processIntent(ImagePagerIntent.OpenPostUri(state.contentList[state.pageIndex]))
                                 }
                             ) {
                                 Image(
@@ -388,29 +376,15 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
                             )
                             IconButton(
                                 onClick = {
-                                    scope.launch {
-                                        val connect = imagePagerViewModel.checkConnect()
-                                        if (!connect) {
-                                            imagePagerViewModel.navigateToLogin()
-                                            return@launch
-                                        }
-
-                                        imagePagerViewModel.changeLikeStatus(content[pagerState.currentPage])
-
-                                        val updatedContent = content.mapIndexed { index, entity ->
-                                            if (index == pagerState.currentPage) {
-                                                entity.copy(isLiked = !entity.isLiked)
-                                            } else {
-                                                entity
-                                            }
-                                        }
-                                        content = updatedContent
-                                    }
+                                    processIntent(ImagePagerIntent.LikeClicked(pagerState.currentPage))
                                 }
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_like),
-                                    tint = if (content[pagerState.currentPage].isLiked) LikedHeart else Color.White,
+                                    tint = when (state.contentList.getOrNull(pagerState.currentPage)?.isLiked) {
+                                        true -> LikedHeart
+                                        false, null -> Color.White
+                                    },
                                     contentDescription = null
                                 )
                             }
@@ -421,6 +395,7 @@ val ImagePagerScreen by navDestination<ImagePagerArgs> {
         }
     }
 }
+
 
 @Composable
 fun ScalableCoilImage(
@@ -438,7 +413,7 @@ fun ScalableCoilImage(
                 if (fullScreen) {
                     Modifier.pointerInput(Unit) {
                         detectTransformGestures { _, pan, zoom, _ ->
-                            scale = (scale * zoom).coerceIn(1f, 5f) // Ограничение масштаба
+                            scale = (scale * zoom).coerceIn(1f, 5f)
                             offset += pan
                         }
                     }
@@ -477,7 +452,7 @@ fun ScalableCoilImage(
                     )
                 }
             },
-            contentScale = ContentScale.Fit // Масштабируем содержимое по Crop
+            contentScale = ContentScale.Fit
         )
     }
 }
