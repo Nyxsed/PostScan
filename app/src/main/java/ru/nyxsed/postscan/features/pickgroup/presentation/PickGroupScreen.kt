@@ -15,12 +15,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,26 +26,23 @@ import com.composegears.tiamat.navArgs
 import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.GroupCard
 
-val PickGroupScreen by navDestination<String> {
+val PickGroupScreen by navDestination<PickGroupMode> {
     val mode = navArgs()
-    val context = LocalContext.current
     val navController = navController()
 
-    val pickGroupViewModel = koinViewModel<PickGroupViewModel>()
-    val screenState = pickGroupViewModel.screenStateFlow.collectAsState()
-
-    var searchQuery = pickGroupViewModel.searchQuery.collectAsState()
-    val showDeleteDialog = pickGroupViewModel.showDeleteDialog.collectAsState()
-
-    LaunchedEffect(mode) {
-        pickGroupViewModel.setMode(mode)
-    }
+    val pickGroupViewModel = koinViewModel<PickGroupViewModel>(
+        parameters = { parametersOf(mode) },
+        key = mode.toString()
+    )
+    val state by pickGroupViewModel.state.collectAsState()
 
     CollectUiEvent(
         uiEventFlow = pickGroupViewModel.uiEventFlow,
@@ -55,19 +50,17 @@ val PickGroupScreen by navDestination<String> {
     )
 
     PickGroupContent(
-        pickGroupViewModel = pickGroupViewModel,
-        screenState = screenState,
-        searchQuery = searchQuery,
-        showDeleteDialog = showDeleteDialog
+        state = state,
+        processIntent = {
+            pickGroupViewModel.processIntent(it)
+        }
     )
 }
 
 @Composable
 fun PickGroupContent(
-    pickGroupViewModel: PickGroupViewModel,
-    screenState: State<PickGroupState>,
-    searchQuery: State<String>,
-    showDeleteDialog: State<Boolean>,
+    state: PickGroupState,
+    processIntent: (PickGroupIntent) -> Unit,
 ) {
     Scaffold { paddings ->
         Column(
@@ -80,17 +73,15 @@ fun PickGroupContent(
                 modifier = Modifier
                     .weight(1f),
             ) {
-                val currentState = screenState.value
-
-                when (currentState) {
-                    is PickGroupState.Loading -> {
+                when (state.mode) {
+                    PickGroupMode.LOADING -> {
                         SearchView(
-                            searchQuery = searchQuery,
+                            searchQuery = state.searchQuery,
                             onSearchQueryChange = {
-                                pickGroupViewModel.changeSearchQuery(it)
+                                processIntent(PickGroupIntent.ChangeSearchQuery(it))
                             },
                             onSearchClicked = {
-                                pickGroupViewModel.fetchedGroups(it)
+                                processIntent(PickGroupIntent.FetchGroups(it))
                             }
                         )
                         Box(
@@ -102,42 +93,42 @@ fun PickGroupContent(
                         }
                     }
 
-                    is PickGroupState.Search -> {
-                        SearchView(
-                            onSearchClicked = {
-                                pickGroupViewModel.fetchedGroups(it)
-                            },
-                            searchQuery = searchQuery,
-                            onSearchQueryChange = {
-                                pickGroupViewModel.changeSearchQuery(it)
-                            },
-                        )
-                        GroupsLazyColum(
-                            groupState = screenState,
+                    PickGroupMode.USER -> {
+                        GroupsLazyColumn(
+                            state = state,
                             onGroupCardClicked = {
-                                val existingGroup = currentState.existingGroups.any { existed ->
+                                val existingGroup = state.existingGroups.any { existed ->
                                     existed.groupId == it.groupId
                                 }
                                 if (existingGroup) {
-                                    pickGroupViewModel.toggleDeleteDialog(it)
+                                    processIntent(PickGroupIntent.ToggleDeleteDialog(it))
                                 } else {
-                                    pickGroupViewModel.addGroup(it)
+                                    processIntent(PickGroupIntent.AddGroup(it))
                                 }
                             }
                         )
                     }
 
-                    is PickGroupState.User -> {
-                        GroupsLazyColum(
-                            groupState = screenState,
+                    PickGroupMode.SEARCH -> {
+                        SearchView(
+                            onSearchClicked = {
+                                processIntent(PickGroupIntent.FetchGroups(it))
+                            },
+                            searchQuery = state.searchQuery,
+                            onSearchQueryChange = {
+                                processIntent(PickGroupIntent.ChangeSearchQuery(it))
+                            },
+                        )
+                        GroupsLazyColumn(
+                            state = state,
                             onGroupCardClicked = {
-                                val existingGroup = currentState.existingGroups.any { existed ->
+                                val existingGroup = state.existingGroups.any { existed ->
                                     existed.groupId == it.groupId
                                 }
                                 if (existingGroup) {
-                                    pickGroupViewModel.toggleDeleteDialog(it)
+                                    processIntent(PickGroupIntent.ToggleDeleteDialog(it))
                                 } else {
-                                    pickGroupViewModel.addGroup(it)
+                                    processIntent(PickGroupIntent.AddGroup(it))
                                 }
                             }
                         )
@@ -149,7 +140,7 @@ fun PickGroupContent(
                     .fillMaxWidth()
                     .padding(4.dp),
                 onClick = {
-                    pickGroupViewModel.navigateBack()
+                    processIntent(PickGroupIntent.NavigateBack)
                 },
             ) {
                 Text(text = stringResource(R.string.back))
@@ -158,12 +149,12 @@ fun PickGroupContent(
         DeleteModalDialog(
             title = stringResource(R.string.delete_group),
             description = stringResource(R.string.group_delete_dialog_question),
-            showDialog = showDeleteDialog.value,
+            showDialog = state.showDeleteDialog,
             onDismiss = {
-                pickGroupViewModel.toggleDeleteDialog()
+                processIntent(PickGroupIntent.ToggleDeleteDialog(null))
             },
             onConfirmClicked = {
-                pickGroupViewModel.deleteGroupWithPosts()
+                processIntent(PickGroupIntent.DeleteGroupWithPosts)
             }
         )
     }
@@ -171,7 +162,7 @@ fun PickGroupContent(
 
 @Composable
 fun SearchView(
-    searchQuery: State<String>,
+    searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit,
 ) {
@@ -179,7 +170,7 @@ fun SearchView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 10.dp),
-        value = searchQuery.value,
+        value = searchQuery,
         onValueChange = {
             onSearchQueryChange(it)
         },
@@ -192,7 +183,7 @@ fun SearchView(
             .fillMaxWidth()
             .padding(top = 10.dp),
         onClick = {
-            onSearchClicked(searchQuery.value)
+            onSearchClicked(searchQuery)
         }
     ) {
         Text(stringResource(R.string.search_for_group))
@@ -200,20 +191,20 @@ fun SearchView(
 }
 
 @Composable
-fun GroupsLazyColum(
-    groupState: State<PickGroupState>,
+fun GroupsLazyColumn(
+    state: PickGroupState,
     onGroupCardClicked: (Group) -> Unit,
 ) {
-    val existingGroups = when (val state = groupState.value) {
-        is PickGroupState.Search -> state.existingGroups
-        is PickGroupState.User -> state.existingGroups
-        is PickGroupState.Loading -> emptyList()
+    val existingGroups = when (state.mode) {
+        PickGroupMode.LOADING -> emptyList()
+        PickGroupMode.USER -> state.existingGroups
+        PickGroupMode.SEARCH -> state.existingGroups
     }
 
-    val fetchedGroups = when (val state = groupState.value) {
-        is PickGroupState.Search -> state.groups
-        is PickGroupState.User -> state.groups
-        is PickGroupState.Loading -> emptyList()
+    val fetchedGroups = when (state.mode) {
+        PickGroupMode.LOADING -> emptyList()
+        PickGroupMode.USER -> state.fetchedGroups
+        PickGroupMode.SEARCH -> state.fetchedGroups
     }
 
     if (fetchedGroups.isEmpty()) {

@@ -1,6 +1,7 @@
 package ru.nyxsed.postscan.features.groups.presentation
 
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 
 sealed class GroupsIntent {
     object DeleteGroupWithPosts : GroupsIntent()
@@ -11,6 +12,6 @@ sealed class GroupsIntent {
     object ToggleDeleteAllDialog : GroupsIntent()
     data class ToggleDeleteDialog(val group: Group?) : GroupsIntent()
     data class NavigateToChangeGroupScreen(val group: Group) : GroupsIntent()
-    data class NavigateToPickScreen(val dest: String): GroupsIntent()
+    data class NavigateToPickScreen(val dest: PickGroupMode): GroupsIntent()
     data class LoadPosts(val startDate: String, val endDate: String): GroupsIntent()
 }

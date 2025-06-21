@@ -5,14 +5,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
@@ -35,45 +35,48 @@ class PickGroupViewModel(
     private val addGroupUseCase: AddGroupUseCase,
     private val deleteGroupUseCase: DeleteGroupUseCase,
     private val deleteGroupPostsUseCase: DeleteGroupPostsUseCase,
+    private val mode: PickGroupMode,
 ) : ViewModel() {
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    private val _screenStateFlow = MutableStateFlow<PickGroupState>(PickGroupState.User())
-    val screenStateFlow: StateFlow<PickGroupState> = _screenStateFlow.asStateFlow()
+    private val _state = MutableStateFlow<PickGroupState>(
+        PickGroupState(
+            mode = mode
+        )
+    )
+    val state: StateFlow<PickGroupState> = _state.asStateFlow()
 
-    private val fetchedGroupsState = MutableStateFlow<List<Group>>(emptyList())
-
-    private val existingGroupsSate: StateFlow<List<Group>> = getAllGroupsUseCase()
-
-    private val _searchQuery = MutableStateFlow<String>("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
-
-    val groupsState = getGroupsUseCase()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    fun setMode(mode: String) {
-        when (mode) {
-            "USER_GROUPS" -> {
-                viewModelScope.launch {
-                    groupsState
-                        .collect {
-                            fetchedGroupsState.value = it
-                            _screenStateFlow.value = PickGroupState.User(
-                                groups = fetchedGroupsState.value,
-                                existingGroups = existingGroupsSate.value
-                            )
-                        }
-                }
+    init {
+        viewModelScope.launch {
+            getAllGroupsUseCase().collect { groups ->
+                _state.update { it.copy(existingGroups = groups) }
             }
+        }
 
-            "SEARCH" -> {
-                _screenStateFlow.value = PickGroupState.Search()
+        if (_state.value.mode == PickGroupMode.USER) {
+            viewModelScope.launch {
+                getGroupsUseCase().collect { groups ->
+                    _state.update { it.copy(fetchedGroups = groups) }
+                }
             }
         }
     }
 
-    fun fetchedGroups(searchQuery: String) {
+    fun processIntent(intent: PickGroupIntent) {
+        viewModelScope.launch {
+            when (intent) {
+                PickGroupIntent.DeleteGroupWithPosts -> deleteGroupWithPosts()
+                PickGroupIntent.NavigateBack -> _uiEventFlow.emit(UiEvent.NavigateBack())
+                is PickGroupIntent.ChangeSearchQuery -> _state.update { it.copy(searchQuery = intent.query) }
+                is PickGroupIntent.ToggleDeleteDialog -> toggleDeleteDialog(intent.group)
+                is PickGroupIntent.AddGroup -> addGroupUseCase(intent.group)
+                is PickGroupIntent.FetchGroups -> fetchGroups(intent.query)
+            }
+        }
+    }
+
+    private fun fetchGroups(searchQuery: String) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
@@ -85,73 +88,31 @@ class PickGroupViewModel(
                 return@launch
             }
 
-            _screenStateFlow.value = PickGroupState.Loading
+            _state.update { it.copy(mode = PickGroupMode.LOADING) }
+
             try {
-                val groups = searchGroupsUseCase(searchQuery)
-                fetchedGroupsState.value = groups.distinctBy { it.groupId }
+                val foundGroups = searchGroupsUseCase(searchQuery).distinctBy { it.groupId }
+                _state.update { it.copy(fetchedGroups = foundGroups) }
             } catch (e: Exception) {
                 _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
             }
 
-            _screenStateFlow.value =
-                PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = existingGroupsSate.value)
+            _state.update { it.copy(mode = PickGroupMode.SEARCH) }
         }
     }
-
-    fun addGroup(group: Group) {
-        viewModelScope.launch {
-            addGroupUseCase(group)
-            getAllGroupsUseCase().collect {
-                when (_screenStateFlow.value) {
-                    is PickGroupState.Search -> _screenStateFlow.value =
-                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
-
-                    is PickGroupState.User -> _screenStateFlow.value =
-                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
-
-                    else -> {}
-                }
-            }
-        }
-    }
-
-
-    fun changeSearchQuery(value: String) {
-        _searchQuery.value = value
-    }
-
-    fun navigateBack() {
-        viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.NavigateBack())
-        }
-    }
-
-    private var groupToDelete: Group? = null
-
-    private val _showDeleteDialog = MutableStateFlow(false)
-    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
 
     fun toggleDeleteDialog(group: Group? = null) {
-        _showDeleteDialog.value = !_showDeleteDialog.value
-        groupToDelete = group
+        _state.update {
+            it.copy(
+                showDeleteDialog = !_state.value.showDeleteDialog,
+                groupToDelete = group
+            )
+        }
     }
 
-    fun deleteGroupWithPosts() {
-        viewModelScope.launch {
-            deleteGroupUseCase(groupToDelete!!)
-            deleteGroupPostsUseCase(groupToDelete!!)
-            toggleDeleteDialog()
-            getAllGroupsUseCase().collect {
-                when (_screenStateFlow.value) {
-                    is PickGroupState.Search -> _screenStateFlow.value =
-                        PickGroupState.Search(groups = fetchedGroupsState.value, existingGroups = it)
-
-                    is PickGroupState.User -> _screenStateFlow.value =
-                        PickGroupState.User(groups = fetchedGroupsState.value, existingGroups = it)
-
-                    else -> {}
-                }
-            }
-        }
+    private suspend fun deleteGroupWithPosts() {
+        deleteGroupUseCase(_state.value.groupToDelete!!)
+        deleteGroupPostsUseCase(_state.value.groupToDelete!!)
+        toggleDeleteDialog()
     }
 }

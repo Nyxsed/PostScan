@@ -34,6 +34,7 @@ import com.composegears.tiamat.navController
 import com.composegears.tiamat.navDestination
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.AddModalDialog
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
@@ -179,10 +180,10 @@ fun GroupScreenContent(
                     processIntent(GroupsIntent.ToggleAddDialog)
                 },
                 onSearchClicked = {
-                    processIntent(GroupsIntent.NavigateToPickScreen("SEARCH"))
+                    processIntent(GroupsIntent.NavigateToPickScreen(PickGroupMode.SEARCH))
                 },
                 onPickClicked = {
-                    processIntent(GroupsIntent.NavigateToPickScreen("USER_GROUPS"))
+                    processIntent(GroupsIntent.NavigateToPickScreen(PickGroupMode.USER))
                 }
             )
             DeleteModalDialog(
