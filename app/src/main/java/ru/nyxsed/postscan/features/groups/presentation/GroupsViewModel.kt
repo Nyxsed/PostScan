@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupPostsUseCase
@@ -87,7 +88,7 @@ class GroupsViewModel(
         }
     }
 
-    private fun navigateToPickScreen(param: String) {
+    private fun navigateToPickScreen(param: PickGroupMode) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
                 _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))

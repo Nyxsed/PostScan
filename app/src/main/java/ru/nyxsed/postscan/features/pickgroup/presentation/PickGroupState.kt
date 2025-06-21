@@ -1,17 +1,13 @@
 package ru.nyxsed.postscan.features.pickgroup.presentation
 
 import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 
-sealed class PickGroupState {
-    data class Search(
-        val groups: List<Group> = emptyList(),
-        val existingGroups: List<Group> = emptyList(),
-    ) : PickGroupState()
-
-    data class User(
-        val groups: List<Group> = emptyList(),
-        val existingGroups: List<Group> = emptyList(),
-    ) : PickGroupState()
-
-    object Loading : PickGroupState()
-}
+data class PickGroupState (
+    val mode : PickGroupMode = PickGroupMode.LOADING,
+    val existingGroups: List<Group> = emptyList(),
+    val fetchedGroups: List<Group> = emptyList(),
+    val searchQuery: String = "",
+    val showDeleteDialog: Boolean = false,
+    val groupToDelete: Group? = null
+)

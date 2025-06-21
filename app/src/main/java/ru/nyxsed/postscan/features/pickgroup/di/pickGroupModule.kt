@@ -2,6 +2,7 @@ package ru.nyxsed.postscan.features.pickgroup.di
 
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
+import ru.nyxsed.postscan.core.domain.models.PickGroupMode
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.AddGroupUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.SearchGroupsUseCase
@@ -12,7 +13,7 @@ val pickGroupModule = module {
     factory { SearchGroupsUseCase(get(), get()) }
     factory { AddGroupUseCase(get()) }
 
-    viewModel {
+    viewModel {(mode : PickGroupMode) ->
         PickGroupViewModel(
             getResourceUseCase = get(),
             isInternetAvailableUseCase = get(),
@@ -23,6 +24,7 @@ val pickGroupModule = module {
             addGroupUseCase = get(),
             deleteGroupUseCase = get(),
             deleteGroupPostsUseCase = get(),
+            mode = mode,
         )
     }
 }
