@@ -22,14 +22,14 @@ import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.AddGroupUseCase
-import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetGroupsUseCase
+import ru.nyxsed.postscan.features.pickgroup.domain.usecase.GetUserGroupsUseCase
 import ru.nyxsed.postscan.features.pickgroup.domain.usecase.SearchGroupsUseCase
 
 class PickGroupViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,
-    private val getGroupsUseCase: GetGroupsUseCase,
+    private val getUserGroupsUseCase: GetUserGroupsUseCase,
     private val searchGroupsUseCase: SearchGroupsUseCase,
     private val getAllGroupsUseCase: GetAllGroupsUseCase,
     private val addGroupUseCase: AddGroupUseCase,
@@ -56,7 +56,7 @@ class PickGroupViewModel(
 
         if (_state.value.mode == PickGroupMode.USER) {
             viewModelScope.launch {
-                getGroupsUseCase().collect { groups ->
+                getUserGroupsUseCase().collect { groups ->
                     _state.update { it.copy(fetchedGroups = groups) }
                 }
             }

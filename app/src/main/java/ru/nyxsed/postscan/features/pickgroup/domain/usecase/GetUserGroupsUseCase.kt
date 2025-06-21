@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.retry
 import ru.nyxsed.postscan.core.domain.models.Group
 import ru.nyxsed.postscan.core.domain.repository.VkRepository
 
-class GetGroupsUseCase(private val vkRepository: VkRepository) {
+class GetUserGroupsUseCase(private val vkRepository: VkRepository) {
     operator fun invoke(): Flow<List<Group>> {
         val token = vkRepository.getAccessToken()
         return flow {
