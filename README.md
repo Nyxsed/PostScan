@@ -28,6 +28,18 @@
 2. Выберите нужные группы для выгрузки
 3. Нажмите на загрузку постов
 
+## 🧰 Технологический стек
+- Kotlin, Android SDK
+- Jetpack Compose для UI
+- Clean Architecture, MVI
+- Coroutines и Flow для асинхронности и реактивности
+- Retrofit для сетевых запросов к VK API
+- Koin для внедрения зависимостей
+- Room для локального хранения данных
+- Coil для загурзки картинок
+- Tiamat - навигация
+- Firebase, Mock, JUnit, Splash screen API, Pager
+
 ## 🤝 Вклад
 Мы приветствуем участие в разработке! Вы можете:
 - Создавать **issue** с багами и предложениями.
@@ -38,7 +50,7 @@
 Если вы хотите собрать свой .apk файл:
 - Создайте приложение в сервисе VK ID - укажите название пакета ru.nyxsed.postscan и сгенерируйте хэш
 - в файле `PostScan\build.gradle.kts` укажите параметры приложения `vkidRedirectScheme` и `vkidClientId`
-- Добавьте файл `gradle.properties` и укажите там секретный ключ приложения VK ID `VKID_CLIENT_SECRET=`
+- Добавьте в файл `local.properties` секретный ключ приложения VK ID `VKID_CLIENT_SECRET=`
 
 ## 📄 Лицензия
 Проект распространяется под лицензией MIT. Подробнее см. в [LICENSE](LICENSE).
