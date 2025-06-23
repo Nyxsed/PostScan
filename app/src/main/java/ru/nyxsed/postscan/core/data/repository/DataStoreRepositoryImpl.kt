@@ -21,7 +21,6 @@ class DataStoreRepositoryImpl(
         return setting == "1"
     }
 
-
     override suspend fun getString(key: SettingKey): String {
         val preferences = dataStore.data.first()
         return preferences[stringPreferencesKey(key.toString())] ?: "default_value"

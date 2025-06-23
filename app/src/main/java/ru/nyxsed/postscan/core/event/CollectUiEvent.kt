@@ -3,9 +3,11 @@ package ru.nyxsed.postscan.core.event
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -20,7 +22,7 @@ fun CollectUiEvent(
     uiEventFlow: Flow<UiEvent>,
     navController: NavController? = null,
     scrollState: LazyListState? = null,
-    circularIndicatorState: MutableState<Boolean>? = null,
+    snackbarHostState: SnackbarHostState? = null,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -33,9 +35,6 @@ fun CollectUiEvent(
 
                 is UiEvent.Scroll ->
                     scrollState?.scrollToItem(0)
-
-                is UiEvent.UpdateStatus ->
-                    circularIndicatorState?.value = event.status
 
                 is UiEvent.NavigateBack ->
                     navController?.back()
@@ -64,6 +63,18 @@ fun CollectUiEvent(
                     clipboardManager.setText(
                         annotatedString = AnnotatedString(event.text)
                     )
+                }
+
+                is UiEvent.ShowSnackbar -> {
+                    snackbarHostState?.currentSnackbarData?.dismiss()
+                    val snackbarResult = snackbarHostState?.showSnackbar(
+                        message = context.getString(event.messageID),
+                        actionLabel = context.getString(event.actionLabelID),
+                        duration = SnackbarDuration.Short
+                    )
+                    if (snackbarResult == SnackbarResult.ActionPerformed) {
+                        event.onAction()
+                    }
                 }
             }
         }

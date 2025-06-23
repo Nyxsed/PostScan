@@ -19,22 +19,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -43,232 +37,203 @@ import com.composegears.tiamat.navDestination
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
-import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.event.CollectUiEvent
+import ru.nyxsed.postscan.core.util.Constants.VK_URL
+import ru.nyxsed.postscan.core.util.Constants.VK_WALL_URL
 import ru.nyxsed.postscan.core.util.Constants.findOrFirst
 import ru.nyxsed.postscan.features.groups.presentation.GroupsScreen
-import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalMaterial3Api::class)
 val PostsScreen by navDestination<Unit> {
     val postsViewModel = koinViewModel<PostsViewModel>()
-    val postListState = postsViewModel.posts.collectAsState()
-    val groupListState = postsViewModel.groups.collectAsState()
-
     val navController = navController()
-    val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
-    val snackbarHostState = SnackbarHostState()
-    val scope = rememberCoroutineScope()
+    val state by postsViewModel.state.collectAsState()
 
-    var groupSelected = postsViewModel.groupSelected.collectAsState()
     val scrollState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    var settingUseMihon by remember { mutableStateOf(true) }
-    var settingDeleteAfterLike by remember { mutableStateOf(false) }
-
-    var showedTutorial by remember { mutableStateOf(true) }
-
-    var circularIndicatorState = remember { mutableStateOf(false) }
-
-    val sortOption by postsViewModel.sortOption.collectAsState()
-
-
-    LaunchedEffect(Unit) {
-        settingUseMihon = postsViewModel.getSettingBoolean(SettingKey.USE_MIHON)
-        settingDeleteAfterLike = postsViewModel.getSettingBoolean(SettingKey.DELETE_AFTER_LIKE)
-        showedTutorial = postsViewModel.getSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS)
-    }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     CollectUiEvent(
         uiEventFlow = postsViewModel.uiEventFlow,
         navController = navController,
         scrollState = scrollState,
-        circularIndicatorState = circularIndicatorState
+        snackbarHostState = snackbarHostState,
     )
 
-    sortOption?.let {
-        Scaffold(
-            topBar = {
-                PostsScreenBar(
-                    onRefreshClicked = {
-                        postsViewModel.refreshPosts(context)
-                    },
-                    onNavToGroupsClicked = {
-                        navController.navigate(GroupsScreen)
-                    },
-                    onNavToSettingsClicked = {
-                        navController.navigate(PreferencesScreen)
-                    },
-                    scrollBehavior = scrollBehavior,
-                    showShowcase = !showedTutorial,
-                    onShowcaseShowed = {
-                        showedTutorial = true
-                        postsViewModel.setSettingBoolean(SettingKey.SHOWED_TUTORIAL_POSTS, true)
-                    },
-                    onSortClicked = {
-                        if (sortOption == SortOption.ASCENDING) {
-                            postsViewModel.changeSorting(SortOption.DESCENDING)
-                        } else {
-                            postsViewModel.changeSorting(SortOption.ASCENDING)
-                        }
+    PostsScreenContent(
+        state = state,
+        processIntent = {
+            postsViewModel.processIntent(it)
+        },
+        scrollState = scrollState,
+        snackbarHostState = snackbarHostState,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PostsScreenContent(
+    state: PostsState,
+    processIntent: (PostsIntent) -> Unit,
+    scrollState: LazyListState,
+    snackbarHostState: SnackbarHostState,
+) {
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    Scaffold(
+        topBar = {
+            PostsScreenBar(
+                onRefreshClicked = {
+                    processIntent(PostsIntent.RefreshPosts)
+                },
+                onNavToGroupsClicked = {
+                    processIntent(PostsIntent.Navigate(GroupsScreen))
+                },
+                onNavToSettingsClicked = {
+                    processIntent(PostsIntent.Navigate(PreferencesScreen))
+                },
+                scrollBehavior = scrollBehavior,
+                showShowcase = !state.showedTutorial,
+                onShowcaseShowed = {
+                    processIntent(PostsIntent.ShowedTutorial)
+                },
+                onSortClicked = {
+                    if (state.sortOption == SortOption.ASCENDING) {
+                        processIntent(PostsIntent.ChangeSorting(SortOption.DESCENDING))
+                    } else {
+                        processIntent(PostsIntent.ChangeSorting(SortOption.ASCENDING))
                     }
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(snackbarHostState)
-            }
-        ) { paddings ->
+                }
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { paddings ->
+        Box(
+            modifier = Modifier
+                .padding(paddings)
+                .fillMaxSize()
+        ) {
             Box(
                 modifier = Modifier
-                    .padding(paddings)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
-                Box(
+                // Group Chips
+                LazyRow(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .padding(4.dp)
+                        .fillMaxWidth()
+                        .zIndex(1f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // Group Chips
-                    LazyRow(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .fillMaxWidth()
-                            .zIndex(1f),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        groupListState.value.forEach { group ->
-                            val postCount = postListState.value.filter { it.ownerId.absoluteValue == group.groupId }.size
-                            if (postCount > 0) {
-                                item(
-                                    key = group.groupId
-                                ) {
-                                    GroupChip(
-                                        group = group,
-                                        isSelected = group.groupId == groupSelected.value,
-                                        postCount = postCount,
-                                        onChipClicked = {
-                                            if (groupSelected.value != group.groupId) {
-                                                postsViewModel.selectGroup(group.groupId)
-                                            } else {
-                                                postsViewModel.selectGroup(0L)
-                                            }
-                                            scope.launch {
-                                                scrollState.scrollToItem(0)
-                                            }
+                    state.groups.forEach { group ->
+                        val postCount = state.posts.filter { it.ownerId.absoluteValue == group.groupId }.size
+                        if (postCount > 0) {
+                            item(
+                                key = group.groupId
+                            ) {
+                                GroupChip(
+                                    group = group,
+                                    isSelected = group.groupId == state.selectedGroupId,
+                                    postCount = postCount,
+                                    onChipClicked = {
+                                        if (state.selectedGroupId != group.groupId) {
+                                            processIntent(PostsIntent.SelectGroup(group.groupId))
+                                        } else {
+                                            processIntent(PostsIntent.SelectGroup(0L))
                                         }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    // Posts
-                    if (postListState.value.isEmpty()) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_data_found),
-                                fontSize = 24.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    } else {
-                        LazyColumn(
-                            state = scrollState,
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .nestedScroll(scrollBehavior.nestedScrollConnection),
-                            contentPadding = PaddingValues(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .height(37.dp),
+                                        scope.launch {
+                                            scrollState.scrollToItem(0)
+                                        }
+                                    }
                                 )
                             }
-                            val sortedList = when (sortOption) {
-                                SortOption.ASCENDING -> postListState.value.sortedBy { it.postId }
-                                SortOption.DESCENDING -> postListState.value.sortedByDescending { it.postId }
-                                else -> postListState.value.sortedBy { it.postId }
-                            }
-                            items(
-                                items = sortedList.filter {
-                                    if (groupSelected.value == 0L) true else it.ownerId.absoluteValue == groupSelected.value
-                                },
-                                key = { it.postId }
+                        }
+                    }
+                }
+                // Posts
+                if (state.posts.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_data_found),
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                        contentPadding = PaddingValues(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(37.dp),
+                            )
+                        }
+                        val sortedList = when (state.sortOption) {
+                            SortOption.ASCENDING -> state.posts.sortedBy { it.postId }
+                            SortOption.DESCENDING -> state.posts.sortedByDescending { it.postId }
+                        }
+                        items(
+                            items = sortedList.filter {
+                                if (state.selectedGroupId == 0L) true else it.ownerId.absoluteValue == state.selectedGroupId
+                            },
+                            key = { it.postId }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .animateItem()
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .animateItem()
-                                ) {
-                                    PostCard(
-                                        post = it,
-                                        settingUseMihon = settingUseMihon,
-                                        onPostDeleteClicked = {
-                                            postsViewModel.deletePost(
-                                                post = it,
-                                                context = context,
-                                                snackbarHostState = snackbarHostState
-                                            )
-                                        },
-                                        onLikeClicked = {
-                                            postsViewModel.changeLikeStatus(
-                                                post = it,
-                                                settingDeleteAfterLike = settingDeleteAfterLike,
-                                                context = context,
-                                                snackbarHostState = snackbarHostState
-                                            )
-                                        },
-                                        onToVkClicked = {
-                                            postsViewModel.openPostUri(
-                                                uriHandler = uriHandler,
-                                                post = it
-                                            )
-                                        },
-                                        onToMihonClicked = {
-                                            postsViewModel.openMihon(it)
-                                        },
-                                        onTextLongClick = {
-                                            clipboardManager.setText(
-                                                annotatedString = AnnotatedString(it.contentText)
-                                            )
-                                        },
-                                        onImageClicked = { content, index ->
-                                            val imagePagerArgs = ImagePagerArgs(content, index)
-                                            navController.navigate(ImagePagerScreen, imagePagerArgs)
-                                        },
-                                        onCommentsClicked = {
-                                            postsViewModel.toComments(it)
-                                        },
-                                        onGroupClicked = { post ->
-                                            val group =
-                                                groupListState.value.findOrFirst { it.groupId == post.ownerId.absoluteValue }
-                                            postsViewModel.openGroupUri(
-                                                uriHandler = uriHandler,
-                                                group = group
-                                            )
-                                        }
-                                    )
-                                }
+                                PostCard(
+                                    post = it,
+                                    settingUseMihon = state.settingUseMihon,
+                                    onPostDeleteClicked = {
+                                        processIntent(PostsIntent.DeletePost(it))
+                                    },
+                                    onLikeClicked = {
+                                        processIntent(PostsIntent.ChangeLikeStatus(it))
+                                    },
+                                    onToVkClicked = {
+                                        processIntent(PostsIntent.OpenUri("${VK_WALL_URL}${it.ownerId}_${it.postId}"))
+                                    },
+                                    onToMihonClicked = {
+                                        processIntent(PostsIntent.OpenMihon(it))
+                                    },
+                                    onTextLongClick = {
+                                        processIntent(PostsIntent.CopyToClipboard(it.contentText))
+                                    },
+                                    onImageClicked = { content, index ->
+                                        processIntent(PostsIntent.NavigateToImagePager(content, index))
+                                    },
+                                    onCommentsClicked = {
+                                        processIntent(PostsIntent.NavigateToComments(it))
+                                    },
+                                    onGroupClicked = { post ->
+                                        val group = state.groups.findOrFirst { it.groupId == post.ownerId.absoluteValue }
+                                        processIntent(PostsIntent.OpenUri("${VK_URL}${group.screenName}"))
+                                    }
+                                )
                             }
                         }
                     }
                 }
-                if (circularIndicatorState.value) {
-                    CenteredLoadingIndicator()
-                }
+            }
+            if (state.showCircularIndicator) {
+                CenteredLoadingIndicator()
             }
         }
     }
 }
-
