@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
@@ -16,7 +19,7 @@ import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
@@ -41,7 +44,6 @@ class PostsViewModel(
     private val isTokenValidUseCase: IsTokenValidUseCase,
     private val getSettingStringUseCase: GetSettingStringUseCase,
     private val setSettingStringUseCase: SetSettingStringUseCase,
-    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val getAllPostsUseCase: GetAllPostsUseCase,
     private val getAllGroupsUseCase: GetAllGroupsUseCase,
@@ -52,6 +54,7 @@ class PostsViewModel(
     private val getPostsForGroupUseCase: GetPostsForGroupUseCase,
     private val changePostLikeStatusUseCase: ChangePostLikeStatusUseCase,
     private val notificationHelper: NotificationHelper,
+    private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
 ) : ViewModel() {
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
@@ -59,6 +62,56 @@ class PostsViewModel(
 
     private val _state = MutableStateFlow(PostsState())
     val state = _state.asStateFlow()
+
+    private val isLoading = MutableStateFlow(false)
+
+    init {
+        viewModelScope.launch {
+            val settingSortOption =
+                if (getSettingStringUseCase(SettingKey.SORT_OPTION) == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
+            _state.update { it.copy(sortOption = settingSortOption) }
+        }
+        observeBooleanSettings()
+
+        viewModelScope.launch {
+            getAllPostsUseCase()
+                .combine(isLoading) { posts, isLoading ->
+                    if (isLoading) null else posts
+                }
+                .filterNotNull()
+                .collect { posts ->
+                    _state.update { it.copy(posts = posts) }
+                }
+        }
+        viewModelScope.launch {
+            getAllGroupsUseCase()
+                .collect { groups ->
+                    _state.update { it.copy(groups = groups) }
+                }
+        }
+    }
+
+    private fun observeBooleanSettings() {
+        observeBooleanSetting(SettingKey.USE_MIHON) { setting ->
+            _state.update { it.copy(settingUseMihon = setting) }
+        }
+        observeBooleanSetting(SettingKey.DELETE_AFTER_LIKE) { setting ->
+            _state.update { it.copy(settingDeleteAfterLike = setting) }
+        }
+        observeBooleanSetting(SettingKey.SHOWED_TUTORIAL_POSTS) { setting ->
+            _state.update { it.copy(showedTutorial = setting) }
+        }
+    }
+
+    private fun observeBooleanSetting(key: SettingKey, apply: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            getSettingBooleanFlowUseCase(key)
+                .distinctUntilChanged()
+                .collect { setting ->
+                    apply(setting)
+                }
+        }
+    }
 
     fun processIntent(intent: PostsIntent) {
         viewModelScope.launch {
@@ -91,42 +144,11 @@ class PostsViewModel(
         }
     }
 
-    init {
-        viewModelScope.launch {
-            val settingSortOption =
-                if (getSettingStringUseCase(SettingKey.SORT_OPTION) == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
-            val settingUseMihon = getSettingBooleanUseCase(SettingKey.USE_MIHON) // TODO переписать на flow с подпиской втч на остальных экранах
-            val settingDeleteAfterLike = getSettingBooleanUseCase(SettingKey.DELETE_AFTER_LIKE)
-            val showedTutorial = getSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_POSTS)
-
-            _state.update {
-                it.copy(
-                    sortOption = settingSortOption,
-                    settingUseMihon = settingUseMihon,
-                    settingDeleteAfterLike = settingDeleteAfterLike,
-                    showedTutorial = showedTutorial,
-                )
-            }
-        }
-
-        viewModelScope.launch {
-            getAllPostsUseCase()
-                .collect { posts ->
-                    _state.update { it.copy(posts = posts) }
-                }
-        }
-        viewModelScope.launch {
-            getAllGroupsUseCase()
-                .collect { groups ->
-                    _state.update { it.copy(groups = groups) }
-                }
-        }
-    }
-
     private fun loadPosts() {
         viewModelScope.launch {
             notificationHelper.initNotification()
             _state.update { it.copy(showCircularIndicator = true) }
+            isLoading.value = true
             try {
                 _state.value.groups.forEachIndexed { index, group ->
                     val postEntities = getPostsForGroupUseCase(group)
@@ -144,10 +166,12 @@ class PostsViewModel(
                 }
                 notificationHelper.completeNotification()
                 _state.update { it.copy(showCircularIndicator = false) }
+                isLoading.value = false
             } catch (e: Exception) {
                 _uiEventFlow.emit(ShowToast(e.message!!))
                 notificationHelper.errorNotification(e.message!!)
                 _state.update { it.copy(showCircularIndicator = false) }
+                isLoading.value = false
             }
         }
     }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
@@ -20,7 +21,7 @@ import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
@@ -36,7 +37,7 @@ class GroupsViewModel(
     private val getResourceUseCase: GetResourceUseCase,
     private val isInternetAvailableUseCase: IsInternetAvailableUseCase,
     private val isTokenValidUseCase: IsTokenValidUseCase,
-    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val getAllGroupsUseCase: GetAllGroupsUseCase,
     private val deleteGroupUseCase: DeleteGroupUseCase,
@@ -55,10 +56,15 @@ class GroupsViewModel(
 
     init {
         viewModelScope.launch {
-            val setting = getSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_GROUPS)
-
+            getSettingBooleanFlowUseCase(SettingKey.SHOWED_TUTORIAL_GROUPS)
+                .distinctUntilChanged()
+                .collect { setting ->
+                    _state.update { it.copy(showTutorial = setting) }
+                }
+        }
+        viewModelScope.launch {
             getAllGroupsUseCase().collectLatest { groups ->
-                _state.update { it.copy(showTutorial = setting, groups = groups) }
+                _state.update { it.copy(groups = groups) }
             }
         }
     }

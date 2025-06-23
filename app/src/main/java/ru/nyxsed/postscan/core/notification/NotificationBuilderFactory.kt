@@ -8,7 +8,7 @@ class NotificationBuilderFactory(private val context: Context) {
 
     fun create(channelId: String): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_download) // замени на свой икон
+            .setSmallIcon(R.drawable.ic_download)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle(context.getString(R.string.loading_posts))
             .setContentText(context.getString(R.string.loading_progress))

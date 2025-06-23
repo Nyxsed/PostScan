@@ -35,6 +35,7 @@ class NotificationHelperImpl(
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.ic_download)
                 .setSound(null)
             notificationManager.notify(notificationId, builder.build())
         }
@@ -47,6 +48,7 @@ class NotificationHelperImpl(
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             builder.setProgress(100, progress, false)
+                .setSmallIcon(R.drawable.ic_download)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
             notificationManager.notify(notificationId, builder.build())
         }

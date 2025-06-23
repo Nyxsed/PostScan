@@ -7,7 +7,7 @@ import ru.nyxsed.postscan.core.domain.usecase.DeleteGroupUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetPostsForGroupDateIntervalUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.domain.usecase.GetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
@@ -16,7 +16,7 @@ import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
 
 val coreModule = module {
-    factory { GetSettingBooleanUseCase(get()) }
+    factory { GetSettingBooleanFlowUseCase(get()) }
     factory { SetSettingBooleanUseCase(get()) }
     factory { GetSettingStringUseCase(get()) }
     factory { SetSettingStringUseCase(get()) }

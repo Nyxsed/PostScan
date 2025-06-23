@@ -55,30 +55,30 @@ class ChangeGroupViewModel(
     }
 
     fun processIntent(changeGroupIntent: ChangeGroupIntent) {
-        when (changeGroupIntent) {
-            ChangeGroupIntent.ToggleDeleteDialog -> _state.update { it.copy(showDeleteDialog = !it.showDeleteDialog) }
-            ChangeGroupIntent.ToggleDownloadDialog -> _state.update { it.copy(showDownloadDialog = !it.showDownloadDialog) }
-            is ChangeGroupIntent.ChangeGroupName -> _state.update { it.copy(groupName = changeGroupIntent.value) }
-            is ChangeGroupIntent.ChangeLastFetchDate -> _state.update { it.copy(lastFetchDate = changeGroupIntent.value) }
-            ChangeGroupIntent.UpdateGroup -> updateGroup()
-            ChangeGroupIntent.OpenGroupUri -> openGroupUri()
-            is ChangeGroupIntent.LoadPosts -> loadPosts(changeGroupIntent.startDate, changeGroupIntent.endDate)
-            ChangeGroupIntent.DeleteGroupPosts -> deleteGroupPosts()
+        viewModelScope.launch {
+            when (changeGroupIntent) {
+                ChangeGroupIntent.ToggleDeleteDialog -> _state.update { it.copy(showDeleteDialog = !it.showDeleteDialog) }
+                ChangeGroupIntent.ToggleDownloadDialog -> _state.update { it.copy(showDownloadDialog = !it.showDownloadDialog) }
+                is ChangeGroupIntent.ChangeGroupName -> _state.update { it.copy(groupName = changeGroupIntent.value) }
+                is ChangeGroupIntent.ChangeLastFetchDate -> _state.update { it.copy(lastFetchDate = changeGroupIntent.value) }
+                ChangeGroupIntent.UpdateGroup -> updateGroup()
+                ChangeGroupIntent.OpenGroupUri -> openGroupUri()
+                is ChangeGroupIntent.LoadPosts -> loadPosts(changeGroupIntent.startDate, changeGroupIntent.endDate)
+                ChangeGroupIntent.DeleteGroupPosts -> deleteGroupPosts()
+            }
         }
     }
 
-    private fun updateGroup() {
-        viewModelScope.launch {
-            _state.value.let {
-                val group = Group(
-                    groupId = it.groupId,
-                    name = it.groupName,
-                    screenName = it.screenName,
-                    avatarUrl = it.avatarUrl,
-                    lastFetchDate = it.lastFetchDate.toDateLong()
-                )
-            }
-            updateGroupUseCase(group)
+    private suspend fun updateGroup() {
+        _state.value.let {
+            val groupUpdated = Group(
+                groupId = it.groupId,
+                name = it.groupName,
+                screenName = it.screenName,
+                avatarUrl = it.avatarUrl,
+                lastFetchDate = it.lastFetchDate.toDateLong()
+            )
+            updateGroupUseCase(groupUpdated)
             _uiEventFlow.emit(UiEvent.NavigateBack())
         }
     }
