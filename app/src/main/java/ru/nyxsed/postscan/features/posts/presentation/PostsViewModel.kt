@@ -1,21 +1,16 @@
 package ru.nyxsed.postscan.features.posts.presentation
 
-import android.content.Context
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
-import ru.nyxsed.postscan.core.domain.models.Group
+import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
@@ -30,9 +25,9 @@ import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
 import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
 import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.event.UiEvent
-import ru.nyxsed.postscan.core.util.Constants.VK_URL
-import ru.nyxsed.postscan.core.util.Constants.VK_WALL_URL
+import ru.nyxsed.postscan.core.event.UiEvent.*
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
+import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
 import ru.nyxsed.postscan.features.posts.domain.usecase.ChangePostLikeStatusUseCase
 import ru.nyxsed.postscan.features.posts.domain.usecase.DeletePostUseCase
@@ -58,31 +53,82 @@ class PostsViewModel(
     private val changePostLikeStatusUseCase: ChangePostLikeStatusUseCase,
     private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
-    val posts = getAllPostsUseCase()
-    val groups = getAllGroupsUseCase()
 
     private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
-    private val _groupSelected = MutableStateFlow<Long>(0L)
-    val groupSelected: StateFlow<Long> = _groupSelected.asStateFlow()
+    private val _state = MutableStateFlow(PostsState())
+    val state = _state.asStateFlow()
 
-    private val _sortOption = MutableStateFlow<SortOption?>(null)
-    val sortOption: StateFlow<SortOption?> = _sortOption.asStateFlow()
-
-    init {
+    fun processIntent(intent: PostsIntent) {
         viewModelScope.launch {
-            val setting = getSetting(SettingKey.SORT_OPTION)
-            _sortOption.value = if (setting == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
+            when (intent) {
+                is PostsIntent.OpenUri -> _uiEventFlow.emit(OpenUrl(intent.query))
+                is PostsIntent.OpenMihon -> _uiEventFlow.emit(OpenMihon(intent.query))
+                is PostsIntent.CopyToClipboard -> _uiEventFlow.emit(CopyToClipboard(intent.text))
+                is PostsIntent.SelectGroup -> _state.update { it.copy(selectedGroupId = intent.groupId) }
+                is PostsIntent.NavigateToComments -> navigateToComments(intent.post)
+                is PostsIntent.NavigateToImagePager -> {
+                    val imagePagerArgs = ImagePagerArgs(intent.list, intent.index)
+                    _uiEventFlow.emit(NavigateTo(ImagePagerScreen, imagePagerArgs))
+                }
+
+                is PostsIntent.ChangeSorting -> {
+                    _state.update { it.copy(sortOption = intent.sortOption) }
+                    setSettingStringUseCase(SettingKey.SORT_OPTION, intent.sortOption.toString())
+                }
+
+                is PostsIntent.Navigate -> _uiEventFlow.emit(NavigateTo(intent.destination))
+                PostsIntent.RefreshPosts -> refreshPosts()
+                PostsIntent.ShowedTutorial -> {
+                    _state.update { it.copy(showedTutorial = true) }
+                    setSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_POSTS, true)
+                }
+
+                is PostsIntent.DeletePost -> deletePost(intent.post)
+                is PostsIntent.ChangeLikeStatus -> changeLikeStatus(intent.post)
+            }
         }
     }
 
-    fun loadPosts() {
+    init {
+        viewModelScope.launch {
+            val settingSortOption =
+                if (getSettingStringUseCase(SettingKey.SORT_OPTION) == "DESCENDING") SortOption.DESCENDING else SortOption.ASCENDING
+            val settingUseMihon = getSettingBooleanUseCase(SettingKey.USE_MIHON) // TODO переписать на flow с подпиской втч на остальных экранах
+            val settingDeleteAfterLike = getSettingBooleanUseCase(SettingKey.DELETE_AFTER_LIKE)
+            val showedTutorial = getSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_POSTS)
+
+            _state.update {
+                it.copy(
+                    sortOption = settingSortOption,
+                    settingUseMihon = settingUseMihon,
+                    settingDeleteAfterLike = settingDeleteAfterLike,
+                    showedTutorial = showedTutorial,
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            getAllPostsUseCase()
+                .collect { posts ->
+                    _state.update { it.copy(posts = posts) }
+                }
+        }
+        viewModelScope.launch {
+            getAllGroupsUseCase()
+                .collect { groups ->
+                    _state.update { it.copy(groups = groups) }
+                }
+        }
+    }
+
+    private fun loadPosts() {
         viewModelScope.launch {
             notificationHelper.initNotification()
-            _uiEventFlow.emit(UiEvent.UpdateStatus(true))
+            _state.update { it.copy(showCircularIndicator = true) }
             try {
-                groups.value.forEachIndexed { index, group ->
+                _state.value.groups.forEachIndexed { index, group ->
                     val postEntities = getPostsForGroupUseCase(group)
                     postEntities.forEach { post ->
                         addPostUseCase(post)
@@ -93,159 +139,104 @@ class PostsViewModel(
                     )
                     updateGroupUseCase(updatedGroup)
 
-                    val percentage = (index + 1) * 100 / groups.value.size
+                    val percentage = (index + 1) * 100 / _state.value.groups.size
                     notificationHelper.updateProgressNotification(percentage)
                 }
                 notificationHelper.completeNotification()
-                _uiEventFlow.emit(UiEvent.UpdateStatus(false))
+                _state.update { it.copy(showCircularIndicator = false) }
             } catch (e: Exception) {
-                _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
+                _uiEventFlow.emit(ShowToast(e.message!!))
                 notificationHelper.errorNotification(e.message!!)
-                _uiEventFlow.emit(UiEvent.UpdateStatus(false))
+                _state.update { it.copy(showCircularIndicator = false) }
             }
         }
     }
 
-    fun addPost(post: Post) {
+    private fun addPost(post: Post) {
         viewModelScope.launch {
             addPostUseCase(post)
         }
     }
 
-    fun deletePost(post: Post, context: Context, snackbarHostState: SnackbarHostState) {
+    private fun deletePost(post: Post) {
         viewModelScope.launch {
-            if (posts.value.filter { it.ownerId == post.ownerId }.size == 1) {
-                selectGroup(0L)
+            if (_state.value.posts.filter { it.ownerId == post.ownerId }.size == 1) {
+                _state.update { it.copy(selectedGroupId = 0L) }
             }
             deletePostUseCase(post)
-
-            snackbarHostState.currentSnackbarData?.dismiss()
-            val snackbarResult = snackbarHostState.showSnackbar(
-                message = context.getString(R.string.post_deleted),
-                actionLabel = context.getString(R.string.undo),
-                duration = SnackbarDuration.Short
+            _uiEventFlow.emit(
+                ShowSnackbar(
+                    messageID = R.string.post_deleted,
+                    actionLabelID = R.string.undo,
+                    onAction = {
+                        addPost(post)
+                    }
+                )
             )
-            if (snackbarResult == SnackbarResult.ActionPerformed) {
-                addPost(post)
-            }
         }
     }
 
-    fun changeLikeStatus(
+    private fun changeLikeStatus(
         post: Post,
-        settingDeleteAfterLike: Boolean,
-        context: Context,
-        snackbarHostState: SnackbarHostState,
     ) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
+                _uiEventFlow.emit(ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
+                _uiEventFlow.emit(NavigateTo(LoginScreen))
                 return@launch
             }
             try {
-                changeLikeStatusVK(post)
-                if (settingDeleteAfterLike) {
-                    deletePost(post, context, snackbarHostState)
+                changePostLikeStatusUseCase(post)
+                if (_state.value.settingDeleteAfterLike) {
+                    deletePost(post)
                 } else {
-                    changeLikeStatusDb(post)
+                    updatePostUseCase(post.copy(isLiked = !post.isLiked))
                 }
             } catch (e: Exception) {
-                _uiEventFlow.emit(UiEvent.ShowToast(e.message!!))
+                _uiEventFlow.emit(ShowToast(e.message!!))
             }
         }
     }
 
-    suspend fun changeLikeStatusVK(post: Post) {
-        changePostLikeStatusUseCase(post)
-    }
-
-    suspend fun changeLikeStatusDb(post: Post) {
-        updatePostUseCase(post.copy(isLiked = !post.isLiked))
-    }
-
-    fun openPostUri(uriHandler: UriHandler, post: Post) {
-        uriHandler.openUri("${VK_WALL_URL}${post.ownerId}_${post.postId}")
-    }
-
-    fun openGroupUri(uriHandler: UriHandler, group: Group) {
-        uriHandler.openUri("${VK_URL}${group.screenName}")
-    }
-
-    suspend fun getSettingBoolean(key: SettingKey): Boolean {
-        return getSettingBooleanUseCase(key)
-    }
-
-    fun setSettingBoolean(key: SettingKey, value: Boolean) {
-        viewModelScope.launch {
-            setSettingBooleanUseCase(key, value)
-        }
-    }
-
-    suspend fun getSetting(key: SettingKey): String {
-        return getSettingStringUseCase(key)
-    }
-
-    fun setSetting(key: SettingKey, value: String) {
-        viewModelScope.launch {
-            setSettingStringUseCase(key, value)
-        }
-    }
-
-    fun refreshPosts(context: Context) {
+    private fun refreshPosts() {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
+                _uiEventFlow.emit(ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
+                _uiEventFlow.emit(NavigateTo(LoginScreen))
                 return@launch
             }
 
-            if (groups.value.isEmpty()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.groups_not_found)))
+            if (_state.value.groups.isEmpty()) {
+                _uiEventFlow.emit(ShowToast(getResourceUseCase(R.string.groups_not_found)))
                 return@launch
             }
 
             loadPosts()
-            _uiEventFlow.emit(UiEvent.Scroll())
+            _uiEventFlow.emit(Scroll())
         }
     }
 
-    fun toComments(post: Post) {
+    private fun navigateToComments(post: Post) {
         viewModelScope.launch {
             if (!isInternetAvailableUseCase()) {
-                _uiEventFlow.emit(UiEvent.ShowToast(getResourceUseCase(R.string.no_internet_connection)))
+                _uiEventFlow.emit(ShowToast(getResourceUseCase(R.string.no_internet_connection)))
                 return@launch
             }
 
             if (!isTokenValidUseCase()) {
-                _uiEventFlow.emit(UiEvent.NavigateTo(LoginScreen))
+                _uiEventFlow.emit(NavigateTo(LoginScreen))
                 return@launch
             }
 
-            _uiEventFlow.emit(UiEvent.NavigateTo(CommentsScreen, post))
-        }
-    }
-
-    fun selectGroup(groupId: Long) {
-        _groupSelected.value = groupId
-    }
-
-    fun changeSorting(sortOption: SortOption) {
-        _sortOption.value = sortOption
-        setSetting(SettingKey.SORT_OPTION, sortOption.toString())
-    }
-
-    fun openMihon(query: String) {
-        viewModelScope.launch {
-            _uiEventFlow.emit(UiEvent.OpenMihon(query))
+            _uiEventFlow.emit(NavigateTo(CommentsScreen, post))
         }
     }
 }
