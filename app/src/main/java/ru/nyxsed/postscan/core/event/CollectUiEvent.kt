@@ -17,6 +17,11 @@ import com.composegears.tiamat.NavDestination
 import kotlinx.coroutines.flow.Flow
 import ru.nyxsed.postscan.core.util.Constants.MANGA_SEARCH_ACTION
 
+/**
+ * Собирает UI-события из ViewModel и выполняет побочные действия (тосты, навигация, скролл и т.д.)
+ *
+ * Вызывается один раз на экране
+ */
 @Composable
 fun CollectUiEvent(
     uiEventFlow: Flow<UiEvent>,

@@ -46,6 +46,10 @@ import ru.nyxsed.postscan.features.preferences.presentation.PreferencesScreen
 import ru.nyxsed.postscan.uikit.components.CenteredLoadingIndicator
 import kotlin.math.absoluteValue
 
+/**
+ * Экран постов, входная точка приложения
+ *
+ */
 val PostsScreen by navDestination<Unit> {
     val postsViewModel = koinViewModel<PostsViewModel>()
     val navController = navController()

@@ -42,6 +42,9 @@ import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 import ru.nyxsed.postscan.uikit.components.GroupCard
 
+/**
+ * Экран списка групп
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 val GroupsScreen by navDestination<Unit> {
     val navController = navController()

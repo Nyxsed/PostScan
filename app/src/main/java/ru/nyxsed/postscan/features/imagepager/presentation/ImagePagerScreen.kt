@@ -84,6 +84,10 @@ import ru.nyxsed.postscan.core.util.Constants.TRACE_SEARCH_URL
 import ru.nyxsed.postscan.core.util.Constants.YANDEX_SEARCH_URL
 import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
 
+/**
+ * Экран просмотра контента поста - картинок, видео
+ *
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 val ImagePagerScreen by navDestination<ImagePagerArgs> {
     val imagePagerArgs = navArgs()

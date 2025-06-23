@@ -7,6 +7,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import kotlin.math.absoluteValue
 import kotlin.text.forEach
 
+/**
+ * Визуальная трасформация по маске
+ *
+ * @property mask передается маска для трасформации даты в читаемый вид "##.##.####"
+ *
+ */
 class MaskVisualTransformation(private val mask: String) : VisualTransformation {
 
     private val specialSymbolsIndices = mask.indices.filter { mask[it] != '#' }

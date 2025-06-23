@@ -40,7 +40,9 @@ import ru.nyxsed.postscan.uikit.components.DatePickerTextField
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.DownloadModalDialog
 
-
+/**
+ * Экран редактирования группы
+ */
 val ChangeGroupScreen by navDestination<Group> {
     val group = navArgs()
     val changeGroupViewModel: ChangeGroupViewModel = koinViewModel(

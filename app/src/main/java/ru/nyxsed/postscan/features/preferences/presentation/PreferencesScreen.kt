@@ -20,7 +20,10 @@ import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.BasicButton
 import ru.nyxsed.postscan.uikit.components.SettingRow
 
-
+/**
+ * Экран настроек приложения
+ *
+ */
 val PreferencesScreen by navDestination<Unit> {
     val preferencesViewModel = koinViewModel<PreferencesViewModel>()
     val state by preferencesViewModel.state.collectAsState()

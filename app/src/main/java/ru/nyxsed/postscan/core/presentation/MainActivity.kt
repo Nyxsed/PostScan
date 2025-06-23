@@ -37,10 +37,12 @@ import ru.nyxsed.postscan.uikit.ui.theme.PostScanTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Включаем Edge-to-Edge режим и устанавливаем SplashScreen
         enableEdgeToEdge()
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        // Проверяем разрешение на уведомления и показываем диалог, если нужно
         val datastore: DataStoreRepository by inject()
         lifecycleScope.launch {
             val isNotificationPermissionRequested =
@@ -70,6 +72,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Инициализация Compose UI и навигации
         setContent {
             val navController = rememberNavController(
                 startDestination = PostsScreen,
@@ -95,6 +98,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Проверка и обновление токена VK при необходимости
         lifecycleScope.launch {
             val currentToken = VKID.Companion.instance.accessToken
             if (currentToken?.token == null) return@launch
@@ -103,7 +107,7 @@ class MainActivity : ComponentActivity() {
                 VKID.instance.refreshToken(
                     callback = object : VKIDRefreshTokenCallback {
                         override fun onSuccess(token: AccessToken) {
-                            // do nothing
+                            // токен обновлен, действий никаких не нужно
                         }
 
                         override fun onFail(fail: VKIDRefreshTokenFail) {
