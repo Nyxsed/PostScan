@@ -3,7 +3,10 @@ package ru.nyxsed.postscan.core.util
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
+/**
+ * Константы приложения и утилитарные методы
+ *
+ */
 object Constants {
     const val VK_API_VERSION = "5.199"
     const val VK_BASE_URL = "https://api.vk.com/method/"
@@ -22,17 +25,31 @@ object Constants {
 
     const val DATE_MASK = "##.##.####"
 
+    /**
+     * Возвращает элемент, удовлетворяющий условию, либо первый элемент списка
+     */
     fun <T> List<T>.findOrFirst(predicate: (T) -> Boolean): T =
         find(predicate) ?: first()
 
+    /**
+     * Возвращает элемент, удовлетворяющий условию, либо последний элемент списка
+     */
     fun <T> List<T>.findOrLast(predicate: (T) -> Boolean): T =
         find(predicate) ?: last()
 
+    /**
+     * Преобразует строку формата "ddMMyyyy" в unix-время (Long)
+     * Если парсинг не удался — возвращает текущее время
+     */
     fun String.toDateLong(): Long {
         val format = SimpleDateFormat("ddMMyyyy")
         return format.parse(this)?.time ?: System.currentTimeMillis()
     }
 
+    /**
+     * Преобразует unix-время (Long) в строку формата "dd.MM.yyyy"
+     *
+     */
     fun Long.toStringDate(): String {
         val date = Date(this)
         val format = SimpleDateFormat("dd.MM.yyyy")

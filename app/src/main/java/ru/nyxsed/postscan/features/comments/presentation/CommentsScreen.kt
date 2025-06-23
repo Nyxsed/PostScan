@@ -26,6 +26,10 @@ import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 
+/**
+ * Экран комментариев к посту
+ *
+ */
 val CommentsScreen by navDestination<Post> {
     val args = navArgs()
     val commentsViewModel = koinViewModel<CommentsViewModel>(

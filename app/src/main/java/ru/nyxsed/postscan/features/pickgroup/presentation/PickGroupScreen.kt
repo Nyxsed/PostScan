@@ -34,6 +34,15 @@ import ru.nyxsed.postscan.core.event.CollectUiEvent
 import ru.nyxsed.postscan.uikit.components.DeleteModalDialog
 import ru.nyxsed.postscan.uikit.components.GroupCard
 
+/**
+ * Экран выбора группы для загрузки постов
+ *
+ * Принимает аргумент [mode] — режим отображения:
+ * - [PickGroupMode.USER] — выбор из групп, на которые подписан пользователь
+ * - [PickGroupMode.SEARCH] — Поиск по id или названию группы
+ *
+ * В зависимости от режима отображаются разные элементы интерфейса.
+ */
 val PickGroupScreen by navDestination<PickGroupMode> {
     val mode = navArgs()
     val navController = navController()

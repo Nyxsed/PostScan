@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import ru.nyxsed.postscan.R
 
+/**
+ * Фабрика для создания уведомлений с базовой настройкой для загрузки постов.
+ */
 class NotificationBuilderFactory(private val context: Context) {
 
     fun create(channelId: String): NotificationCompat.Builder {

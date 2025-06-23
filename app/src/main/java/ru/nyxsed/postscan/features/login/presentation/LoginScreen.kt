@@ -22,6 +22,9 @@ import org.koin.androidx.compose.koinViewModel
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.event.CollectUiEvent
 
+/**
+ * экран для авторизации в VK
+ */
 val LoginScreen by navDestination<Unit> {
     val navController = navController()
     val loginViewModel = koinViewModel<LoginViewModel>()
