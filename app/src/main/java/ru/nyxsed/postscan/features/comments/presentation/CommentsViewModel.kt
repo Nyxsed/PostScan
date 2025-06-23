@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.features.comments.domain.usecase.GetCommentsUseCase
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
@@ -20,7 +21,7 @@ import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 class CommentsViewModel(
     private val post: Post,
     private val getCommentsUseCase: GetCommentsUseCase,
-    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CommentsState())
     val state = _state.asStateFlow()
@@ -30,14 +31,15 @@ class CommentsViewModel(
 
     init {
         viewModelScope.launch {
-            val useMihon = getSettingBooleanUseCase(SettingKey.USE_MIHON)
-            getCommentsUseCase(post).collect { comments ->
-                _state.update {
-                    it.copy(
-                        comments = comments,
-                        settingMihon = useMihon,
-                    )
+            getSettingBooleanFlowUseCase(SettingKey.USE_MIHON)
+                .distinctUntilChanged()
+                .collect { setting ->
+                    _state.update { it.copy(settingMihon = setting) }
                 }
+        }
+        viewModelScope.launch {
+            getCommentsUseCase(post).collect { comments ->
+                _state.update { it.copy(comments = comments) }
             }
         }
     }

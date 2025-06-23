@@ -12,19 +12,20 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
 import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ExportDbUseCase
 import ru.nyxsed.postscan.features.preferences.domain.usecase.ImportDbUseCase
 
 class PreferencesViewModel(
-    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val exportDbUseCase: ExportDbUseCase,
     private val importDbUseCase: ImportDbUseCase,
@@ -38,32 +39,40 @@ class PreferencesViewModel(
     val state: StateFlow<PreferencesState> = _state.asStateFlow()
 
     fun processIntent(intent: PreferencesIntent) {
-        when (intent) {
-            is PreferencesIntent.ExportDB -> exportDataBaseToFile(intent.uri)
-            is PreferencesIntent.ImportDB -> importDataBaseFromFile(intent.uri)
-            PreferencesIntent.LoadSettings -> loadSettings()
-            PreferencesIntent.Logout -> logOut()
-            PreferencesIntent.ResetTutorial -> resetTutorials()
-            is PreferencesIntent.ToggleSetting -> toggleSetting(intent.key, intent.value)
-        }
-    }
-
-    private fun loadSettings() {
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    notLoadLikedPosts = getSettingBooleanUseCase(SettingKey.NOT_LOAD_LIKED_POSTS),
-                    useMihon = getSettingBooleanUseCase(SettingKey.USE_MIHON),
-                    deleteAfterLike = getSettingBooleanUseCase(SettingKey.DELETE_AFTER_LIKE)
-                )
+            when (intent) {
+                is PreferencesIntent.ExportDB -> exportDataBaseToFile(intent.uri)
+                is PreferencesIntent.ImportDB -> importDataBaseFromFile(intent.uri)
+                PreferencesIntent.Logout -> logOut()
+                PreferencesIntent.ResetTutorial -> resetTutorials()
+                is PreferencesIntent.ToggleSetting -> setSettingBooleanUseCase(intent.key, intent.value)
             }
         }
     }
 
-    private fun toggleSetting(key: SettingKey, value: Boolean) {
+    init {
+        observeBooleanSettings()
+    }
+
+    private fun observeBooleanSettings() {
+        observeBooleanSetting(SettingKey.USE_MIHON) { setting ->
+            _state.update { it.copy(useMihon = setting) }
+        }
+        observeBooleanSetting(SettingKey.DELETE_AFTER_LIKE) { setting ->
+            _state.update { it.copy(deleteAfterLike = setting) }
+        }
+        observeBooleanSetting(SettingKey.NOT_LOAD_LIKED_POSTS) { setting ->
+            _state.update { it.copy(notLoadLikedPosts = setting) }
+        }
+    }
+
+    private fun observeBooleanSetting(key: SettingKey, apply: (Boolean) -> Unit) {
         viewModelScope.launch {
-            setSettingBooleanUseCase(key, value)
-            loadSettings()
+            getSettingBooleanFlowUseCase(key)
+                .distinctUntilChanged()
+                .collect { setting ->
+                    apply(setting)
+                }
         }
     }
 

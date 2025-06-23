@@ -13,7 +13,7 @@ val commentsModule = module {
         CommentsViewModel(
             post = post,
             getCommentsUseCase = get(),
-            getSettingBooleanUseCase = get(),
+            getSettingBooleanFlowUseCase = get(),
         )
     }
 }

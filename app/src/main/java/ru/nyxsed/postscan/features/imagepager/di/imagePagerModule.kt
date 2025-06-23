@@ -14,7 +14,7 @@ val imagePagerModule = module {
     viewModel {(contentList: List<Content>, pageIndex : Int) ->
         ImagePagerViewModel(
             getResourceUseCase = get(),
-            getSettingBooleanUseCase = get(),
+            getSettingBooleanFlowUseCase = get(),
             setSettingBooleanUseCase = get(),
             checkContentLikeStatusUseCase = get(),
             changeContentLikeStatusUseCase = get(),

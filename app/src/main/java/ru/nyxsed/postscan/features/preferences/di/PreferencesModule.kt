@@ -12,7 +12,7 @@ val preferencesModule = module {
 
     viewModel {
         PreferencesViewModel(
-            getSettingBooleanUseCase = get(),
+            getSettingBooleanFlowUseCase = get(),
             setSettingBooleanUseCase = get(),
             exportDbUseCase = get(),
             importDbUseCase = get(),

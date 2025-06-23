@@ -7,13 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.Content
 import ru.nyxsed.postscan.core.domain.models.SettingKey
 import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanUseCase
+import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
 import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
 import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
@@ -27,7 +28,7 @@ import java.net.URLEncoder
 
 class ImagePagerViewModel(
     private val getResourceUseCase: GetResourceUseCase,
-    private val getSettingBooleanUseCase: GetSettingBooleanUseCase,
+    private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
     private val setSettingBooleanUseCase: SetSettingBooleanUseCase,
     private val checkContentLikeStatusUseCase: CheckContentLikeStatusUseCase,
     private val changeContentLikeStatusUseCase: ChangeContentLikeStatusUseCase,
@@ -47,8 +48,11 @@ class ImagePagerViewModel(
 
     init {
         viewModelScope.launch {
-            val setting = getSettingBooleanUseCase(SettingKey.SHOWED_TUTORIAL_IMAGE)
-            _state.update { it.copy(showTutorial = setting) }
+            getSettingBooleanFlowUseCase(SettingKey.SHOWED_TUTORIAL_IMAGE)
+                .distinctUntilChanged()
+                .collect { setting ->
+                    _state.update { it.copy(showTutorial = setting) }
+                }
         }
     }
 
