@@ -89,4 +89,3 @@ out/
 ~/
 /app/release/baselineProfiles/
 /app/release/output-metadata.json
-/gradle.properties
