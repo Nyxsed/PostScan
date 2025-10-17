@@ -56,8 +56,8 @@ fun PostsScreenBar(
                     modifier = Modifier.introShowCaseTarget(
                         index = 1,
                         style = ShowcaseStyle.Default.copy(
-                            backgroundColor = Color(0xFF1C0A00), // specify color of background
-                            backgroundAlpha = 0.98f, // specify transparency of background
+                            backgroundColor = Color(0xFF1C0A00),
+                            backgroundAlpha = 0.98f,
                             targetCircleColor = Color.White
                         ),
                         content = {
@@ -89,8 +89,8 @@ fun PostsScreenBar(
                     modifier = Modifier.introShowCaseTarget(
                         index = 0,
                         style = ShowcaseStyle.Default.copy(
-                            backgroundColor = Color(0xFF1C0A00), // specify color of background
-                            backgroundAlpha = 0.98f, // specify transparency of background
+                            backgroundColor = Color(0xFF1C0A00),
+                            backgroundAlpha = 0.98f,
                             targetCircleColor = Color.White
                         ),
                         content = {
@@ -123,8 +123,8 @@ fun PostsScreenBar(
                     modifier = Modifier.introShowCaseTarget(
                         index = 3,
                         style = ShowcaseStyle.Default.copy(
-                            backgroundColor = Color(0xFF1C0A00), // specify color of background
-                            backgroundAlpha = 0.98f, // specify transparency of background
+                            backgroundColor = Color(0xFF1C0A00),
+                            backgroundAlpha = 0.98f,
                             targetCircleColor = Color.White
                         ),
                         content = {
@@ -156,8 +156,8 @@ fun PostsScreenBar(
                     modifier = Modifier.introShowCaseTarget(
                         index = 2,
                         style = ShowcaseStyle.Default.copy(
-                            backgroundColor = Color(0xFF1C0A00), // specify color of background
-                            backgroundAlpha = 0.98f, // specify transparency of background
+                            backgroundColor = Color(0xFF1C0A00),
+                            backgroundAlpha = 0.98f,
                             targetCircleColor = Color.White
                         ),
                         content = {

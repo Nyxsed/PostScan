@@ -18,9 +18,8 @@ import kotlinx.coroutines.flow.Flow
 import ru.nyxsed.postscan.core.util.Constants.MANGA_SEARCH_ACTION
 
 /**
- * Собирает UI-события из ViewModel и выполняет побочные действия (тосты, навигация, скролл и т.д.)
+ * Собирает UI-события из ViewModel
  *
- * Вызывается один раз на экране
  */
 @Composable
 fun CollectUiEvent(

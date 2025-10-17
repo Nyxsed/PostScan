@@ -85,7 +85,7 @@ import ru.nyxsed.postscan.core.util.Constants.YANDEX_SEARCH_URL
 import ru.nyxsed.postscan.uikit.ui.theme.LikedHeart
 
 /**
- * Экран просмотра контента поста - картинок, видео
+ * Экран просмотра контента поста
  *
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,8 +183,8 @@ fun ImagePagerContent(
                                 modifier = Modifier.introShowCaseTarget(
                                     index = 0,
                                     style = ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00), // specify color of background
-                                        backgroundAlpha = 0.98f, // specify transparency of background
+                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundAlpha = 0.98f,
                                         targetCircleColor = Color.White
                                     ),
                                     content = {

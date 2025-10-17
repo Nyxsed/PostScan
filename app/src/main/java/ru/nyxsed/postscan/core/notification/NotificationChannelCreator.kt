@@ -4,9 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 
-/**
- * Создаёт и регистрирует NotificationChannel
- */
 class NotificationChannelCreator(private val context: Context) {
 
     fun createChannel(channelId: String, channelName: String): NotificationManager {

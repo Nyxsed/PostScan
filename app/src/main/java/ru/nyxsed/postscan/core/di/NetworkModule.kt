@@ -22,7 +22,7 @@ val networkModule = module {
         Retrofit.Builder()
             .baseUrl(VK_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(get())
+            .client(get<OkHttpClient>())
             .build()
     }
 

@@ -3,10 +3,10 @@ package ru.nyxsed.postscan.core.event
 import com.composegears.tiamat.NavDestination
 
 /**
- * UI-события, отправляемые из ViewModel и не включаемые в State.
+ * UI-события, отправляемые из ViewModel
  *
- * Используются для однократных действий: тосты, навигация, скролл,
- * работа с буфером обмена, открытие ссылок и т. д.
+ * Используются для однократных действий: тост, навигация, скролл,
+ * буфер обмена, открытие ссылок
  */
 sealed class UiEvent {
     class ShowToast(val message: String) : UiEvent()

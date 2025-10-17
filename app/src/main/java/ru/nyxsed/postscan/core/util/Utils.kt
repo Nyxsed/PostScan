@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 /**
- * Константы приложения и утилитарные методы
+ * Константы приложения и утилиты
  *
  */
 object Constants {
@@ -38,7 +38,7 @@ object Constants {
         find(predicate) ?: last()
 
     /**
-     * Преобразует строку формата "ddMMyyyy" в unix-время (Long)
+     * Преобразует строку формата "ddMMyyyy" в long
      * Если парсинг не удался — возвращает текущее время
      */
     fun String.toDateLong(): Long {
@@ -47,7 +47,7 @@ object Constants {
     }
 
     /**
-     * Преобразует unix-время (Long) в строку формата "dd.MM.yyyy"
+     * Преобразует long в строку формата "dd.MM.yyyy"
      *
      */
     fun Long.toStringDate(): String {

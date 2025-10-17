@@ -5,7 +5,7 @@ import androidx.core.app.NotificationCompat
 import ru.nyxsed.postscan.R
 
 /**
- * Фабрика для создания уведомлений с базовой настройкой для загрузки постов.
+ * Фабрика для создания уведомлений загрузки постов.
  */
 class NotificationBuilderFactory(private val context: Context) {
 
