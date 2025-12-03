@@ -2,41 +2,20 @@ package ru.nyxsed.postscan.features.posts.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.R
 import ru.nyxsed.postscan.core.domain.models.ImagePagerArgs
 import ru.nyxsed.postscan.core.domain.models.Post
 import ru.nyxsed.postscan.core.domain.models.SettingKey
-import ru.nyxsed.postscan.core.domain.usecase.AddPostUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetAllGroupsUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetResourceUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingBooleanFlowUseCase
-import ru.nyxsed.postscan.core.domain.usecase.GetSettingStringUseCase
-import ru.nyxsed.postscan.core.domain.usecase.IsInternetAvailableUseCase
-import ru.nyxsed.postscan.core.domain.usecase.IsTokenValidUseCase
-import ru.nyxsed.postscan.core.domain.usecase.SetSettingBooleanUseCase
-import ru.nyxsed.postscan.core.domain.usecase.SetSettingStringUseCase
-import ru.nyxsed.postscan.core.domain.usecase.UpdateGroupUseCase
+import ru.nyxsed.postscan.core.domain.usecase.*
 import ru.nyxsed.postscan.core.domain.util.NotificationHelper
 import ru.nyxsed.postscan.core.event.UiEvent
 import ru.nyxsed.postscan.core.event.UiEvent.*
 import ru.nyxsed.postscan.features.comments.presentation.CommentsScreen
 import ru.nyxsed.postscan.features.imagepager.presentation.ImagePagerScreen
 import ru.nyxsed.postscan.features.login.presentation.LoginScreen
-import ru.nyxsed.postscan.features.posts.domain.usecase.ChangePostLikeStatusUseCase
-import ru.nyxsed.postscan.features.posts.domain.usecase.DeletePostUseCase
-import ru.nyxsed.postscan.features.posts.domain.usecase.GetAllPostsUseCase
-import ru.nyxsed.postscan.features.posts.domain.usecase.GetPostsForGroupUseCase
-import ru.nyxsed.postscan.features.posts.domain.usecase.UpdatePostUseCase
+import ru.nyxsed.postscan.features.posts.domain.usecase.*
 
 class PostsViewModel(
     private val getResourceUseCase: GetResourceUseCase,
@@ -57,7 +36,7 @@ class PostsViewModel(
     private val getSettingBooleanFlowUseCase: GetSettingBooleanFlowUseCase,
 ) : ViewModel() {
 
-    private val _uiEventFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
+    private val _uiEventFlow = MutableSharedFlow<UiEvent>()
     val uiEventFlow: SharedFlow<UiEvent> = _uiEventFlow.asSharedFlow()
 
     private val _state = MutableStateFlow(PostsState())
@@ -131,7 +110,10 @@ class PostsViewModel(
                     setSettingStringUseCase(SettingKey.SORT_OPTION, intent.sortOption.toString())
                 }
 
-                is PostsIntent.Navigate -> _uiEventFlow.emit(NavigateTo(intent.destination))
+                is PostsIntent.Navigate -> {
+                    _uiEventFlow.emit(NavigateTo(intent.destination))
+                }
+
                 PostsIntent.RefreshPosts -> refreshPosts()
                 PostsIntent.ShowedTutorial -> {
                     _state.update { it.copy(showedTutorial = true) }

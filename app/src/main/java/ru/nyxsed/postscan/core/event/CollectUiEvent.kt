@@ -15,6 +15,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.composegears.tiamat.NavController
 import com.composegears.tiamat.NavDestination
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import ru.nyxsed.postscan.core.util.Constants.MANGA_SEARCH_ACTION
 
 /**
@@ -37,8 +38,11 @@ fun CollectUiEvent(
             when (event) {
                 is UiEvent.ShowToast -> Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
 
-                is UiEvent.Scroll ->
-                    scrollState?.scrollToItem(0)
+                is UiEvent.Scroll -> {
+                    launch {
+                        scrollState?.scrollToItem(0)
+                    }
+                }
 
                 is UiEvent.NavigateBack ->
                     navController?.back()
